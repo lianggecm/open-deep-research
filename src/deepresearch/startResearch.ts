@@ -12,8 +12,8 @@ export const startResearch = async ({
   topic: string;
 }) => {
   // Get the base URL for the workflow
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
+  const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : "http://localhost:3000";
 
   const workflowUrl = `${baseUrl}/api/workflows/nested-research/start-research`;
