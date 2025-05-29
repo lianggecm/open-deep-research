@@ -37,7 +37,6 @@ export const DeepResearchTool = ({
         data.type === "research_completed" ||
         (data.type === "research_status" && data.row.status === "completed")
       ) {
-        console.log("Research completed", data);
         eventSource.close();
         setIsStreaming(false);
         onResearchEnd && onResearchEnd();
@@ -73,7 +72,6 @@ export const DeepResearchTool = ({
 
   return (
     <>
-      {isStreaming ? "Streaming research..." : "Not stream!"}
       <ResearchProgress
         events={researchData}
         isStreaming={isStreaming}

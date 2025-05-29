@@ -1,5 +1,8 @@
 import { Chat } from "@/components/chat";
+import { db } from "@/db";
+import { eq, desc } from "drizzle-orm";
 import { loadChat } from "@/db/action";
+import { deepresearch } from "@/db/schema";
 import { Metadata } from "next";
 
 export async function generateMetadata({
@@ -9,8 +12,6 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { chatId } = await params;
 
-  const messages = chatId ? await loadChat(chatId) : []; // load the chat messages
-
   if (!chatId) {
     return {
       title: "Chat Not Found | DeepSeek Research",
@@ -18,16 +19,44 @@ export async function generateMetadata({
     };
   }
 
-  if (!messages || messages.length === 0) return {};
+  const messages = chatId ? await loadChat(chatId) : []; // load the chat messages
 
-  const firstUserMessage = messages.find((message) => message.role === "user");
-  const textMessage =
-    firstUserMessage?.parts[0].type === "text"
-      ? firstUserMessage.parts[0].text
-      : "";
+  const researches = chatId
+    ? await db
+        .select()
+        .from(deepresearch)
+        .where(eq(deepresearch.chatId, chatId))
 
-  const title = `Research on "${textMessage.slice(0, 50)}" @ DeepSeek Research`;
-  const description = `${textMessage.slice(0, 200)} | DeepSeek Research`;
+        .orderBy(desc(deepresearch.createdAt))
+        .limit(1)
+    : null;
+
+  const research = researches && researches.length >= 1 ? researches[0] : null;
+
+  if (!research) {
+    const firstUserMessage = messages.find(
+      (message) => message.role === "user"
+    );
+    const textMessage =
+      firstUserMessage?.parts[0].type === "text"
+        ? firstUserMessage.parts[0].text
+        : "";
+
+    const title = `Chat on "${textMessage.slice(0, 50)}" | DeepSeek Research`;
+    const description = `${textMessage}`;
+
+    return {
+      title: title,
+      description: description,
+      openGraph: {
+        title: title,
+        description: description,
+      },
+    };
+  }
+
+  const title = `${research.topic} | DeepSeek Research`;
+  const description = `Discover the research on "${research.topic}" ${research.status} | DeepSeek Research`;
 
   return {
     title: title,
@@ -35,6 +64,7 @@ export async function generateMetadata({
     openGraph: {
       title: title,
       description: description,
+      images: research.coverUrl ? [research.coverUrl] : [],
     },
   };
 }

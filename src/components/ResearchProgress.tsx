@@ -246,7 +246,7 @@ export default function ResearchProgress({
             {planningCompleted?.plan && (
               <div>
                 <h4 className="font-semibold mb-1.5 text-sm">Research Plan</h4>
-                <div className="text-xs text-muted-foreground whitespace-pre-wrap max-h-52 overflow-y-auto">
+                <div className="text-xs text-muted-foreground bg-muted rounded p-1 whitespace-pre-wrap max-h-52 overflow-y-auto">
                   <Markdown components={markdownComponents}>
                     {planningCompleted.plan}
                   </Markdown>

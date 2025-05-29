@@ -133,11 +133,9 @@ export function Messages({ messages, status, onResearchEnd }: MessagesProps) {
     }
   }, [messagesLength]);
 
-  // console.log("messages", messages);
-
   return (
     <div
-      className="flex flex-col gap-8 items-center w-full px-2 bg-white"
+      className="flex flex-col gap-8 items-center w-full px-2 bg-white z-10"
       ref={messagesRef}
     >
       {messages.map((message) => (

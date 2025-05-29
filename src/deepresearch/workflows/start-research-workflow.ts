@@ -270,8 +270,7 @@ export const startResearchWorkflow = createWorkflow<
       } satisfies ReportStartedEvent);
 
       console.log(
-        `📝 Generating report for ${finalState.searchResults.length} results`,
-        finalState.searchResults
+        `📝 Generating report for ${finalState.searchResults.length} results`
       );
 
       const report = await generateResearchAnswer({
