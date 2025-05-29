@@ -39,16 +39,7 @@ export async function GET(req: Request) {
       ...events,
     ];
 
-    const response = {
-      task_id: sessionId,
-      status: research.status,
-      events: steps,
-      is_completed:
-        research.status === "completed" ||
-        events.some((event) => event.type === "research_completed"),
-    };
-
-    return new Response(JSON.stringify(response), {
+    return new Response(JSON.stringify(steps), {
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "no-cache",

@@ -30,25 +30,31 @@ export const DeepResearchTool = ({
       const response = await fetch(`/api/research/?sessionId=${researchId}`);
       if (!response.ok) throw new Error("Failed to fetch research data");
 
-      const data = await response.json();
+      const events: ResearchEventStreamEvents[] = await response.json();
 
-      if (data.is_completed) {
+      if (
+        events.some((event) => event.type === "research_completed") ||
+        events.some(
+          (event) =>
+            event.type === "research_status" && event.status === "completed"
+        )
+      ) {
         setIsStreaming(false);
         onResearchEnd && onResearchEnd();
+        return { isCompleted: true };
       } else {
         if (!isStreaming) setIsStreaming(true);
       }
 
       // Update research data, maintaining chronological order
       setResearchData(
-        data.events.sort((a: any, b: any) => a.timestamp - b.timestamp)
+        events.sort((a: any, b: any) => a.timestamp - b.timestamp)
       );
-
-      return data.is_completed;
+      return { isCompleted: false };
     } catch (error) {
       console.error("Error fetching research:", error);
       setIsStreaming(false);
-      return false;
+      return { isCompleted: true };
     }
   };
 
@@ -61,7 +67,7 @@ export const DeepResearchTool = ({
     const pollResearch = async () => {
       if (!isPolling) return;
 
-      const isCompleted = await fetchResearch(result.researchId);
+      const { isCompleted } = await fetchResearch(result.researchId);
 
       if (!isCompleted && isPolling) {
         pollInterval = setTimeout(pollResearch, 2000);
