@@ -25,49 +25,57 @@ export const DeepResearchTool = ({
   );
   const [isStreaming, setIsStreaming] = useState(false);
 
-  const streamResearch = (researchId: string, onData: (data: any) => void) => {
-    const eventSource = new EventSource(
-      `/api/research/?sessionId=${researchId}`
-    );
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+  const fetchResearch = async (researchId: string) => {
+    try {
+      const response = await fetch(`/api/research/?sessionId=${researchId}`);
+      if (!response.ok) throw new Error("Failed to fetch research data");
 
-      if (
-        data.task_status === "completed" ||
-        data.type === "research_completed" ||
-        (data.type === "research_status" && data.row.status === "completed")
-      ) {
-        eventSource.close();
+      const data = await response.json();
+
+      if (data.is_completed) {
         setIsStreaming(false);
         onResearchEnd && onResearchEnd();
-      } else if (data.row) {
+      } else {
         if (!isStreaming) setIsStreaming(true);
-        onData(data.row);
       }
-    };
-    eventSource.onerror = () => {
-      eventSource.close();
-      setIsStreaming(false);
-    };
 
-    return () => {
-      eventSource.close();
+      // Update research data, maintaining chronological order
+      setResearchData(
+        data.events.sort((a: any, b: any) => a.timestamp - b.timestamp)
+      );
+
+      return data.is_completed;
+    } catch (error) {
+      console.error("Error fetching research:", error);
       setIsStreaming(false);
-    };
+      return false;
+    }
   };
 
   useEffect(() => {
     if (!result) return;
-    const cleanup = streamResearch(result.researchId, (data) => {
-      if (data) {
-        setResearchData((prevData) => {
-          // Sort by timestamp to maintain chronological order
-          const newData = [...prevData, data];
-          return newData.sort((a, b) => a.timestamp - b.timestamp);
-        });
+
+    let pollInterval: NodeJS.Timeout;
+    let isPolling = true;
+
+    const pollResearch = async () => {
+      if (!isPolling) return;
+
+      const isCompleted = await fetchResearch(result.researchId);
+
+      if (!isCompleted && isPolling) {
+        pollInterval = setTimeout(pollResearch, 2000);
       }
-    });
-    return cleanup;
+    };
+
+    // Start polling
+    pollResearch();
+
+    // Cleanup function
+    return () => {
+      isPolling = false;
+      if (pollInterval) clearTimeout(pollInterval);
+    };
   }, [result?.researchId]);
 
   return (
