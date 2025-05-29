@@ -302,6 +302,7 @@ export const startResearchWorkflow = createWorkflow<
         .update(deepresearch)
         .set({
           report: report,
+          coverUrl: coverImage,
           status: "completed",
         })
         .where(eq(deepresearch.id, sessionId))
