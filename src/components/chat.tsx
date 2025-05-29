@@ -69,7 +69,7 @@ export function Chat({
         />
       )}
 
-      <div className="flex flex-col gap-4 w-full fixed bottom-0 pb-4 z-[-1]">
+      <div className="flex flex-col gap-4 w-full fixed bottom-0 pb-4">
         {messages.length <= 5 && (
           <ChatInput
             isGeneratingResponse={isGeneratingResponse}

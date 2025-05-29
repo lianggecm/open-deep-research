@@ -1,5 +1,5 @@
 "use client";
-
+import { formatDistanceToNow } from "date-fns";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -238,11 +238,11 @@ export default function ResearchProgress({
         );
         return (
           <div className="space-y-3">
-            {!planningCompleted && renderLoadingState()}
             <div>
               <h4 className="font-semibold mb-1.5 text-sm">Research Topic</h4>
               <p className="text-xs text-muted-foreground">{researchTopic}</p>
             </div>
+            {!planningCompleted && renderLoadingState()}
             {planningCompleted?.plan && (
               <div>
                 <h4 className="font-semibold mb-1.5 text-sm">Research Plan</h4>
@@ -420,11 +420,11 @@ export default function ResearchProgress({
         );
         return (
           <div className="space-y-3">
-            {!evaluationCompleted && renderLoadingState()}
             <div>
               <h4 className="font-semibold mb-1.5 text-sm">
                 Evaluation Results
               </h4>
+              {!evaluationCompleted && renderLoadingState()}
               {evaluationCompleted && (
                 <div className="space-y-1.5">
                   <div className="flex items-center space-x-1.5">
@@ -443,6 +443,17 @@ export default function ResearchProgress({
                 </div>
               )}
             </div>
+            {evaluationCompleted?.reasoning && (
+              <div>
+                <h4 className="font-semibold mb-1.5 text-sm">Reasoning</h4>
+                <div className="text-xs text-muted-foreground whitespace-pre-wrap max-h-36 overflow-y-auto">
+                  {truncateText(evaluationCompleted.reasoning, 500)}
+                  <Markdown components={markdownComponents}>
+                    {evaluationCompleted.reasoning}
+                  </Markdown>
+                </div>
+              </div>
+            )}
             {evaluationCompleted?.additionalQueries && (
               <div>
                 <h4 className="font-semibold mb-1.5 text-sm">Next Queries</h4>
@@ -456,17 +467,6 @@ export default function ResearchProgress({
                       {query}
                     </Badge>
                   ))}
-                </div>
-              </div>
-            )}
-            {evaluationCompleted?.reasoning && (
-              <div>
-                <h4 className="font-semibold mb-1.5 text-sm">Reasoning</h4>
-                <div className="text-xs text-muted-foreground whitespace-pre-wrap max-h-36 overflow-y-auto">
-                  {truncateText(evaluationCompleted.reasoning, 500)}
-                  <Markdown components={markdownComponents}>
-                    {evaluationCompleted.reasoning}
-                  </Markdown>
                 </div>
               </div>
             )}
@@ -559,25 +559,19 @@ export default function ResearchProgress({
         {selectedStepData ? (
           <>
             <div className="p-4 border-b">
-              <div className="flex items-center space-x-2 mb-1.5">
-                {getStepIcon(selectedStepData.type)}
-                <h1 className="text-lg font-semibold">
-                  {selectedStepData.title}
-                </h1>
-                <Badge
-                  variant={
-                    selectedStepData.status === "completed"
-                      ? "default"
-                      : "secondary"
-                  }
-                  className="px-2 py-0.5 text-xs"
-                >
-                  {selectedStepData.status}
-                </Badge>
+              <div className="flex flex-col gap-2 justify-between">
+                <div className="flex flex-row gap-1 items-center">
+                  {getStepIcon(selectedStepData.type)}
+                  <h1 className="text-lg font-semibold">
+                    {selectedStepData.title}
+                  </h1>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(new Date(selectedStepData.timestamp), {
+                    addSuffix: true,
+                  })}
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {formatTimestamp(selectedStepData.timestamp)}
-              </p>
             </div>
             <ScrollArea className="flex-1">
               <div className="p-4">{renderStepDetails(selectedStepData)}</div>

@@ -264,6 +264,11 @@ export const startResearchWorkflow = createWorkflow<
         timestamp: Date.now(),
       } satisfies ReportStartedEvent);
 
+      console.log(
+        `📝 Generating report for ${finalState.searchResults.length} results`,
+        finalState.searchResults
+      );
+
       const report = await generateResearchAnswer({
         topic,
         results: finalState.searchResults,
