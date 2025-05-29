@@ -74,7 +74,11 @@ export const DeepResearchTool = ({
   return (
     <>
       {isStreaming ? "Streaming research..." : "Not stream!"}
-      <ResearchProgress events={researchData} isStreaming={isStreaming} />
+      <ResearchProgress
+        events={researchData}
+        isStreaming={isStreaming}
+        researchTopic={args.topic}
+      />
     </>
   );
 };

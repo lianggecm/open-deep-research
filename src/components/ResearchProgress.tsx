@@ -29,6 +29,7 @@ import { markdownComponents } from "./markdown-components";
 interface ResearchProgressProps {
   events: ResearchEventStreamEvents[];
   isStreaming: boolean;
+  researchTopic: string;
 }
 
 interface ProcessedStep {
@@ -41,12 +42,10 @@ interface ProcessedStep {
   timestamp: number;
 }
 
-// Process events into steps
 const processSteps = (events: ResearchEventStreamEvents[]): ProcessedStep[] => {
   const steps: ProcessedStep[] = [];
   let currentIteration = 0;
 
-  // Group events by type and iteration
   const eventGroups: { [key: string]: ResearchEventStreamEvents[] } = {};
 
   events.forEach((event) => {
@@ -61,7 +60,6 @@ const processSteps = (events: ResearchEventStreamEvents[]): ProcessedStep[] => {
     eventGroups[key].push(event);
   });
 
-  // Create planning step
   const planningEvents = events.filter(
     (e) => e.type === "planning_started" || e.type === "planning_completed"
   );
@@ -78,11 +76,9 @@ const processSteps = (events: ResearchEventStreamEvents[]): ProcessedStep[] => {
     });
   }
 
-  // Create iteration steps
   for (let i = 1; i <= currentIteration; i++) {
     const iterationEvents = events.filter((e) => e.iteration === i);
 
-    // Search queries step
     const searchEvents = iterationEvents.filter(
       (e) => e.type === "search_started" || e.type === "search_completed"
     );
@@ -106,7 +102,6 @@ const processSteps = (events: ResearchEventStreamEvents[]): ProcessedStep[] => {
       });
     }
 
-    // Content processing step
     const contentEvents = iterationEvents.filter(
       (e) => e.type === "content_processing" || e.type === "content_summarized"
     );
@@ -124,7 +119,6 @@ const processSteps = (events: ResearchEventStreamEvents[]): ProcessedStep[] => {
       });
     }
 
-    // Evaluation step
     const evaluationEvents = iterationEvents.filter(
       (e) =>
         e.type === "evaluation_started" || e.type === "evaluation_completed"
@@ -144,7 +138,6 @@ const processSteps = (events: ResearchEventStreamEvents[]): ProcessedStep[] => {
     }
   }
 
-  // Report generation step
   const reportEvents = events.filter(
     (e) => e.type === "report_started" || e.type === "report_generated"
   );
@@ -166,15 +159,14 @@ const processSteps = (events: ResearchEventStreamEvents[]): ProcessedStep[] => {
 
 export default function ResearchProgress({
   events,
+  researchTopic,
   isStreaming,
 }: ResearchProgressProps) {
   const [selectedStep, setSelectedStep] = useState<string | null>(null);
 
-  // Automatically select the latest step when new events arrive
   const steps = useMemo(() => {
     const processedSteps = processSteps(events);
-    // Auto-select the latest step when steps increase
-    if (processedSteps.length > 0) {
+    if (processedSteps.length > 0 && !selectedStep) {
       const latestStep = processedSteps[processedSteps.length - 1];
       setSelectedStep(latestStep.id);
     }
@@ -246,47 +238,36 @@ export default function ResearchProgress({
         );
         return (
           <div className="space-y-3">
-            {!planningCompleted && renderLoadingState()} {/* Reduced space */}
+            {!planningCompleted && renderLoadingState()}
             <div>
-              <h4 className="font-semibold mb-1.5 text-sm">Research Topic</h4>{" "}
-              {/* Reduced margin and text size */}
-              <p className="text-xs text-muted-foreground">
-                {step.data[0]?.type}
-              </p>
+              <h4 className="font-semibold mb-1.5 text-sm">Research Topic</h4>
+              <p className="text-xs text-muted-foreground">{researchTopic}</p>
             </div>
+            {planningCompleted?.plan && (
+              <div>
+                <h4 className="font-semibold mb-1.5 text-sm">Research Plan</h4>
+                <div className="text-xs text-muted-foreground whitespace-pre-wrap max-h-52 overflow-y-auto">
+                  <Markdown components={markdownComponents}>
+                    {planningCompleted.plan}
+                  </Markdown>
+                </div>
+              </div>
+            )}
             {planningCompleted?.queries && (
               <div>
                 <h4 className="font-semibold mb-1.5 text-sm">
                   Generated Queries
-                </h4>{" "}
-                {/* Reduced margin and text size */}
+                </h4>
                 <div className="space-y-1.5">
-                  {" "}
-                  {/* Reduced space */}
                   {planningCompleted.queries.map((query, idx) => (
                     <Badge
                       key={idx}
                       variant="secondary"
                       className="mr-1.5 mb-1.5 px-2 py-0.5 text-xs truncate"
                     >
-                      {" "}
-                      {/* Reduced margins, padding, text size */}
                       {query}
                     </Badge>
                   ))}
-                </div>
-              </div>
-            )}
-            {planningCompleted?.plan && (
-              <div>
-                <h4 className="font-semibold mb-1.5 text-sm">Research Plan</h4>{" "}
-                {/* Reduced margin and text size */}
-                <div className="text-xs text-muted-foreground whitespace-pre-wrap max-h-52 overflow-y-auto">
-                  {" "}
-                  {/* Reduced max-h, text size */}
-                  <Markdown components={markdownComponents}>
-                    {planningCompleted.plan}
-                  </Markdown>
                 </div>
               </div>
             )}
@@ -306,8 +287,6 @@ export default function ResearchProgress({
                   Search Results ({searchCompleted.resultCount})
                 </h4>
                 <div className="space-y-1.5">
-                  {" "}
-                  {/* Reduced space */}
                   {searchCompleted.urls.map((url, idx) => {
                     const contentProcessing = events
                       .filter((e) => e.type === "content_processing")
@@ -325,7 +304,7 @@ export default function ResearchProgress({
                         <div className="flex items-center justify-between gap-1.5">
                           <div className="flex flex-row gap-1.5">
                             <img
-                              className="size-3.5 rounded-full" /* Reduced icon size */
+                              className="size-3.5 rounded-full"
                               src={`https://www.google.com/s2/favicons?domain=${getDomainFromUrl(
                                 url
                               )}`}
@@ -335,8 +314,6 @@ export default function ResearchProgress({
                                 {getDomainFromUrl(url)}
                               </p>
                               <p className="text-[10px] text-muted-foreground truncate max-w-[360px]">
-                                {" "}
-                                {/* Further reduced text size */}
                                 {url}
                               </p>
                             </div>
@@ -346,9 +323,8 @@ export default function ResearchProgress({
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />{" "}
+                            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
                           </a>
-                          {/* Reduced icon size */}
                         </div>
                         <Accordion type="single" collapsible className="w-full">
                           {contentProcessing?.content && (
@@ -397,13 +373,11 @@ export default function ResearchProgress({
         return (
           <div className="space-y-3">
             {processingContent.length > summarizedContent.length &&
-              renderLoadingState()}{" "}
-            {/* Reduced space */}
+              renderLoadingState()}
             <div>
               <h4 className="font-semibold mb-1.5 text-sm">
                 Content Processing Status
-              </h4>{" "}
-              {/* Reduced margin and text size */}
+              </h4>
               <p className="text-xs text-muted-foreground">
                 {summarizedContent.length} of {processingContent.length} pages
                 summarized
@@ -412,37 +386,24 @@ export default function ResearchProgress({
             <div>
               <h4 className="font-semibold mb-1.5 text-sm">
                 Processed Content
-              </h4>{" "}
-              {/* Reduced margin and text size */}
+              </h4>
               <div className="space-y-2">
-                {" "}
-                {/* Reduced space */}
                 {summarizedContent.map((content, idx) => (
                   <div key={idx} className="border rounded p-2">
-                    {" "}
-                    {/* Reduced padding */}
                     <div className="flex items-start space-x-1.5 mb-1.5">
-                      {" "}
-                      {/* Reduced space and margin */}
-                      <Globe className="h-3.5 w-3.5 text-muted-foreground mt-0.5" />{" "}
-                      {/* Reduced icon size */}
+                      <Globe className="h-3.5 w-3.5 text-muted-foreground mt-0.5" />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium truncate">
                           {content.title}
                         </p>
                         <p className="text-[10px] text-muted-foreground truncate">
-                          {" "}
-                          {/* Further reduced text size */}
                           {content.url}
                         </p>
                       </div>
-                      <CheckCircle className="h-3.5 w-3.5 text-green-500" />{" "}
-                      {/* Reduced icon size */}
+                      <CheckCircle className="h-3.5 w-3.5 text-green-500" />
                     </div>
                     {content.summaryFirstHundredChars && (
                       <p className="text-[10px] text-muted-foreground">
-                        {" "}
-                        {/* Further reduced text size */}
                         {truncateText(content.summaryFirstHundredChars, 150)}
                       </p>
                     )}
@@ -459,19 +420,14 @@ export default function ResearchProgress({
         );
         return (
           <div className="space-y-3">
-            {!evaluationCompleted && renderLoadingState()} {/* Reduced space */}
+            {!evaluationCompleted && renderLoadingState()}
             <div>
               <h4 className="font-semibold mb-1.5 text-sm">
                 Evaluation Results
-              </h4>{" "}
-              {/* Reduced margin and text size */}
+              </h4>
               {evaluationCompleted && (
                 <div className="space-y-1.5">
-                  {" "}
-                  {/* Reduced space */}
                   <div className="flex items-center space-x-1.5">
-                    {" "}
-                    {/* Reduced space */}
                     <span className="text-xs">Continue Research:</span>
                     <Badge
                       variant={
@@ -479,7 +435,7 @@ export default function ResearchProgress({
                           ? "destructive"
                           : "default"
                       }
-                      className="px-2 py-0.5 text-xs" /* Reduced padding and text size */
+                      className="px-2 py-0.5 text-xs"
                     >
                       {evaluationCompleted.needsMore ? "Yes" : "No"}
                     </Badge>
@@ -489,19 +445,14 @@ export default function ResearchProgress({
             </div>
             {evaluationCompleted?.additionalQueries && (
               <div>
-                <h4 className="font-semibold mb-1.5 text-sm">Next Queries</h4>{" "}
-                {/* Reduced margin and text size */}
+                <h4 className="font-semibold mb-1.5 text-sm">Next Queries</h4>
                 <div className="space-y-1">
-                  {" "}
-                  {/* Reduced space */}
                   {evaluationCompleted.additionalQueries.map((query, idx) => (
                     <Badge
                       key={idx}
                       variant="secondary"
                       className="mr-1.5 mb-1.5 px-2 py-0.5 text-xs"
                     >
-                      {" "}
-                      {/* Reduced margins, padding, text size */}
                       {query}
                     </Badge>
                   ))}
@@ -510,11 +461,8 @@ export default function ResearchProgress({
             )}
             {evaluationCompleted?.reasoning && (
               <div>
-                <h4 className="font-semibold mb-1.5 text-sm">Reasoning</h4>{" "}
-                {/* Reduced margin and text size */}
+                <h4 className="font-semibold mb-1.5 text-sm">Reasoning</h4>
                 <div className="text-xs text-muted-foreground whitespace-pre-wrap max-h-36 overflow-y-auto">
-                  {" "}
-                  {/* Reduced max-h, text size */}
                   {truncateText(evaluationCompleted.reasoning, 500)}
                   <Markdown components={markdownComponents}>
                     {evaluationCompleted.reasoning}
@@ -531,24 +479,18 @@ export default function ResearchProgress({
         );
         return (
           <div className="space-y-3">
-            {" "}
-            {/* Reduced space */}
             <div>
               <h4 className="font-semibold mb-1.5 text-sm">
                 Report Generation
-              </h4>{" "}
-              {/* Reduced margin and text size */}
+              </h4>
               {reportGenerated && (
                 <div className="space-y-1.5">
-                  {" "}
-                  {/* Reduced space */}
                   <div className="text-xs text-muted-foreground">
                     Report Length: {reportGenerated.reportLength} characters
                   </div>
                   <Badge variant="default" className="px-2 py-0.5 text-xs">
                     Report Complete
-                  </Badge>{" "}
-                  {/* Reduced padding and text size */}
+                  </Badge>
                 </div>
               )}
             </div>
@@ -589,7 +531,6 @@ export default function ResearchProgress({
                       <div className="flex-col items-center">
                         <div
                           className={`w-2.5 h-2.5 rounded-full ${getStatusColor(
-                            /* Reduced status dot size */
                             step.status
                           )}`}
                         />
@@ -599,12 +540,8 @@ export default function ResearchProgress({
                       </div>
                       <div className="flex-1 text-left">
                         <div className="flex items-center space-x-1.5 mb-0.5">
-                          {" "}
-                          {/* Reduced space and margin */}
-                          {getStepIcon(step.type)}{" "}
-                          {/* Icons are already h-4 w-4, which is small */}
-                          <span className="font-medium">{step.title}</span>{" "}
-                          {/* Removed explicit text-sm, inherits from parent */}
+                          {getStepIcon(step.type)}
+                          <span className="font-medium">{step.title}</span>
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {formatTimestamp(step.timestamp)}
@@ -622,15 +559,9 @@ export default function ResearchProgress({
         {selectedStepData ? (
           <>
             <div className="p-4 border-b">
-              {" "}
-              {/* Reduced padding */}
               <div className="flex items-center space-x-2 mb-1.5">
-                {" "}
-                {/* Reduced space and margin */}
                 {getStepIcon(selectedStepData.type)}
                 <h1 className="text-lg font-semibold">
-                  {" "}
-                  {/* Reduced heading size */}
                   {selectedStepData.title}
                 </h1>
                 <Badge
@@ -639,7 +570,7 @@ export default function ResearchProgress({
                       ? "default"
                       : "secondary"
                   }
-                  className="px-2 py-0.5 text-xs" /* Reduced badge padding and text size */
+                  className="px-2 py-0.5 text-xs"
                 >
                   {selectedStepData.status}
                 </Badge>
@@ -649,8 +580,7 @@ export default function ResearchProgress({
               </p>
             </div>
             <ScrollArea className="flex-1">
-              <div className="p-4">{renderStepDetails(selectedStepData)}</div>{" "}
-              {/* Reduced padding */}
+              <div className="p-4">{renderStepDetails(selectedStepData)}</div>
             </ScrollArea>
           </>
         ) : (
