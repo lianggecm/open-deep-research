@@ -32,16 +32,16 @@ export const DeepResearchTool = ({
 
       const events: ResearchEventStreamEvents[] = await response.json();
 
-      if (
+      const isCompleted =
         events.some((event) => event.type === "research_completed") ||
         events.some(
           (event) =>
             event.type === "research_status" && event.status === "completed"
-        )
-      ) {
+        );
+
+      if (isCompleted) {
         setIsStreaming(false);
         onResearchEnd && onResearchEnd();
-        return { isCompleted: true };
       } else {
         if (!isStreaming) setIsStreaming(true);
       }
@@ -50,7 +50,7 @@ export const DeepResearchTool = ({
       setResearchData(
         events.sort((a: any, b: any) => a.timestamp - b.timestamp)
       );
-      return { isCompleted: false };
+      return { isCompleted: isCompleted };
     } catch (error) {
       console.error("Error fetching research:", error);
       setIsStreaming(false);

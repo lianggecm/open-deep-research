@@ -483,6 +483,7 @@ export default function ResearchProgress({
               <h4 className="font-semibold mb-1.5 text-sm">
                 Report Generation
               </h4>
+              {!reportGenerated && renderLoadingState()}
               {reportGenerated && (
                 <div className="space-y-1.5">
                   <div className="text-xs text-muted-foreground">
