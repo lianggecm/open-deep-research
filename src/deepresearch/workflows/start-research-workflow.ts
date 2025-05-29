@@ -87,7 +87,12 @@ const generateResearchAnswer = async ({
   topic: string;
   results: SearchResult[];
 }): Promise<string> => {
-  const formattedResults = results.toString();
+  const formattedSearchResults = results
+    .map(
+      (result) =>
+        `- Link: ${result.link}\nTitle: ${result.title}\nSummary: ${result.summary}\n\n`
+    )
+    .join("\n");
 
   const enhancedModel = wrapLanguageModel({
     model: togetheraiClient(MODEL_CONFIG.answerModel),
@@ -100,7 +105,7 @@ const generateResearchAnswer = async ({
       { role: "system", content: PROMPTS.answerPrompt },
       {
         role: "user",
-        content: `Research Topic: ${topic}\n\nSearch Results:\n${formattedResults}`,
+        content: `Research Topic: ${topic}\n\nSearch Results:\n${formattedSearchResults}`,
       },
     ],
   });
