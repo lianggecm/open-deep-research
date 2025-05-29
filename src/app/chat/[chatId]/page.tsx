@@ -34,6 +34,10 @@ export async function generateMetadata({
   const research = researches && researches.length >= 1 ? researches[0] : null;
 
   if (!research) {
+    if (!messages || messages.length === 0) {
+      return {};
+    }
+
     const firstUserMessage = messages.find(
       (message) => message.role === "user"
     );
