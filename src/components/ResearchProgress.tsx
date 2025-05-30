@@ -539,10 +539,12 @@ export default function ResearchProgress({
                 Report Generation
               </h4>
               {!reportGenerated && renderLoadingState()}
-              {reportGenerated && (
+              {reportGenerated?.report && (
                 <div className="space-y-1.5">
-                  <div className="text-xs text-muted-foreground">
-                    Report Length: {reportGenerated.reportLength} characters
+                  <div className="text-xs text-muted-foreground bg-muted rounded p-1 whitespace-pre-wrap max-h-52 overflow-y-auto">
+                    <Markdown components={markdownComponents}>
+                      {reportGenerated.report}
+                    </Markdown>
                   </div>
                   <Badge variant="default" className="px-2 py-0.5 text-xs">
                     Report Complete

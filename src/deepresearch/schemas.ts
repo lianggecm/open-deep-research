@@ -115,7 +115,7 @@ export const reportStartedEventSchema = baseEventSchema.extend({
 
 export const reportGeneratedEventSchema = baseEventSchema.extend({
   type: z.literal("report_generated"),
-  reportLength: z.number(),
+  report: z.string().optional(),
 });
 
 // Status events

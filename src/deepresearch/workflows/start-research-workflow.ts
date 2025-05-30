@@ -199,12 +199,12 @@ export const startResearchWorkflow = createWorkflow<
 
   // Step 3: Generate a cover image for the research topic
   const coverImagePromise = context.run("generate-toc-image", async () => {
-    console.log(`🎨 Generating table of contents image...`);
+    console.log(`🎨 Generating cover image...`);
 
     try {
       // Generate the image prompt using the planning model
       const imageGenerationPrompt = await generateText({
-        model: togetheraiClient(MODEL_CONFIG.planningModel),
+        model: togetheraiClient(MODEL_CONFIG.summaryModel),
         messages: [
           { role: "system", content: PROMPTS.dataVisualizerPrompt },
           { role: "user", content: `Research Topic: ${topic}` },
@@ -295,7 +295,7 @@ export const startResearchWorkflow = createWorkflow<
       // Emit report generated event
       await streamStorage.addEvent(sessionId, {
         type: "report_generated",
-        reportLength: report.length,
+        report: report,
         timestamp: Date.now(),
       } satisfies ReportGeneratedEvent);
 
