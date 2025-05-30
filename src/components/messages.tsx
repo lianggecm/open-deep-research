@@ -171,25 +171,26 @@ function MessageActions({
   );
 }
 
+// Helper to get the first text part from a message (for assistant)
+function getFirstAssistantTextPart(message: UIMessage) {
+  return message.parts.find((part) => part.type === "text");
+}
+
+// Helper to get all text parts from a message (for copy, only first for assistant)
+function getAssistantText(message: UIMessage) {
+  const firstTextPart = getFirstAssistantTextPart(message);
+  return firstTextPart ? firstTextPart.text : "";
+}
+
 export function Messages({ messages, status, onResearchEnd }: MessagesProps) {
   const messagesRef = useRef<HTMLDivElement>(null);
   const messagesLength = useMemo(() => messages.length, [messages]);
-
-  console.log("messages", messages);
 
   useEffect(() => {
     if (messagesRef.current) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
     }
   }, [messagesLength]);
-
-  // Helper to get all text parts from a message
-  function getAssistantText(message: UIMessage) {
-    return message.parts
-      .filter((part) => part.type === "text")
-      .map((part) => part.text)
-      .join("\n\n");
-  }
 
   return (
     <div
@@ -241,12 +242,11 @@ export function Messages({ messages, status, onResearchEnd }: MessagesProps) {
 
                   if (part.type === "text") {
                     // Only render the first text part for assistant messages
-                    if (
-                      isAssistant &&
-                      message.parts.findIndex((p) => p.type === "text") !==
-                        partIndex
-                    ) {
-                      return null;
+                    if (isAssistant) {
+                      const firstTextPart = getFirstAssistantTextPart(message);
+                      if (firstTextPart !== part) {
+                        return null;
+                      }
                     }
                     return (
                       <TextMessagePart

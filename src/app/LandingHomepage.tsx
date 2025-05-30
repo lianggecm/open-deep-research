@@ -27,9 +27,7 @@ export const LandingHomepage = () => {
               clerkUserId: isSignedIn ? user.id : undefined,
             });
           }}
-          stop={() => {
-            console.log("stop");
-          }}
+          stop={() => {}}
           isGeneratingResponse={false}
         />
 
