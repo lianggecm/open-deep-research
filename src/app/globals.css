@@ -164,3 +164,21 @@
 .markdown-content h6 {
   @apply text-sm font-semibold mt-6 mb-2;
 }
+.markdown-content table {
+  @apply w-full text-sm text-left border-collapse my-4 rounded-lg overflow-hidden;
+}
+.markdown-content thead {
+  @apply bg-muted;
+}
+.markdown-content th {
+  @apply px-4 py-2 font-semibold text-foreground border-b border-border;
+}
+.markdown-content td {
+  @apply px-4 py-2 border-b border-border;
+}
+.markdown-content tr:last-child td {
+  @apply border-b-0;
+}
+.markdown-content tr {
+  @apply hover:bg-accent transition-colors;
+}
