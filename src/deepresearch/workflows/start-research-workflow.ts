@@ -299,44 +299,6 @@ export const startResearchWorkflow = createWorkflow<
         timestamp: Date.now(),
       } satisfies ReportGeneratedEvent);
 
-      // Emit research completed event
-      await streamStorage.addEvent(sessionId, {
-        type: "research_completed",
-        finalResultCount: finalState.searchResults.length,
-        totalIterations: finalState.iteration,
-        timestamp: Date.now(),
-      } satisfies ResearchCompletedEvent);
-
-      console.log(
-        `🎉 Research completed: ${finalState.allQueries.length} queries, ${finalState.searchResults.length} results, ${finalState.iteration} iterations`
-      );
-
-      const deepresearchDb = await db
-        .update(deepresearch)
-        .set({
-          report: report,
-          coverUrl: coverImage,
-          status: "completed",
-        })
-        .where(eq(deepresearch.id, sessionId))
-        .returning();
-
-      await db.insert(messages).values({
-        role: "assistant",
-        chatId: deepresearchDb[0].chatId,
-        createdAt: new Date(),
-        parts: [
-          {
-            text: `${
-              coverImage
-                ? `![Cover image for research on ${topic}](${coverImage})\n`
-                : ""
-            }\n\n${report}`,
-            type: "text",
-          },
-        ],
-      });
-
       return report;
     } catch (error) {
       // Emit error event

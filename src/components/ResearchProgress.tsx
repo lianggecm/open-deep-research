@@ -154,6 +154,24 @@ const processSteps = (events: ResearchEventStreamEvents[]): ProcessedStep[] => {
     });
   }
 
+  const coverEvents = events.filter(
+    (e) =>
+      e.type === "cover_generation_started" ||
+      e.type === "cover_generation_completed"
+  );
+  if (coverEvents.length > 0) {
+    steps.push({
+      id: "cover",
+      title: "Cover Generation",
+      status: coverEvents.some((e) => e.type === "cover_generation_completed")
+        ? "completed"
+        : "in-progress",
+      type: "cover",
+      data: coverEvents,
+      timestamp: coverEvents[0].timestamp,
+    });
+  }
+
   return steps;
 };
 
@@ -186,6 +204,8 @@ export default function ResearchProgress({
       case "evaluation":
         return <BarChart3 className="h-4 w-4" />;
       case "report":
+        return <FileText className="h-4 w-4" />;
+      case "cover":
         return <FileText className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
@@ -269,6 +289,41 @@ export default function ResearchProgress({
                     </Badge>
                   ))}
                 </div>
+              </div>
+            )}
+          </div>
+        );
+
+      case "cover":
+        const coverStarted = step.data.find(
+          (e) => e.type === "cover_generation_started"
+        );
+        const coverCompleted = step.data.find(
+          (e) => e.type === "cover_generation_completed"
+        );
+        return (
+          <div className="space-y-3">
+            {coverStarted?.prompt && (
+              <div>
+                <h4 className="font-semibold mb-1.5 text-sm">
+                  Generated Prompt
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  {coverStarted.prompt}
+                </p>
+              </div>
+            )}
+            {!coverCompleted && renderLoadingState()}
+            {coverCompleted?.coverImage && (
+              <div>
+                <h4 className="font-semibold mb-1.5 text-sm">
+                  Generated Cover
+                </h4>
+                <img
+                  src={coverCompleted.coverImage}
+                  alt="Generated cover image"
+                  className="w-full rounded-lg shadow-sm"
+                />
               </div>
             )}
           </div>
