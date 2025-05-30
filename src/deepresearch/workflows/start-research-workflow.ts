@@ -359,65 +359,67 @@ export const startResearchWorkflow = createWorkflow<
   ]);
 
   // Step 5: Store the final report with cover image in the database and mark as completed the research
-  context.run("complete-research", async () => {
-    try {
-      // Read final state from Redis
-      const finalState = await stateStorage.get(sessionId);
-      if (!finalState) {
-        throw new Error("Could not read final research state");
+  if (coverImage && finalReport) {
+    await context.run("complete-research", async () => {
+      try {
+        // Read final state from Redis
+        const finalState = await stateStorage.get(sessionId);
+        if (!finalState) {
+          throw new Error("Could not read final research state");
+        }
+
+        const deepresearchDb = await db
+          .update(deepresearch)
+          .set({
+            report: finalReport,
+            coverUrl: coverImage,
+            status: "completed",
+          })
+          .where(eq(deepresearch.id, sessionId))
+          .returning();
+
+        await db.insert(messages).values({
+          role: "assistant",
+          chatId: deepresearchDb[0].chatId,
+          createdAt: new Date(),
+          parts: [
+            {
+              text: `${
+                coverImage
+                  ? `![Cover image for research on ${topic}](${coverImage})\n`
+                  : ""
+              }\n\n${finalReport}`,
+              type: "text",
+            },
+          ],
+        });
+
+        // Emit research completed event
+        await streamStorage.addEvent(sessionId, {
+          type: "research_completed",
+          finalResultCount: finalState.searchResults.length,
+          totalIterations: finalState.iteration,
+          timestamp: Date.now(),
+        } satisfies ResearchCompletedEvent);
+
+        console.log(
+          `🎉 Research completed: ${finalState.allQueries.length} queries, ${finalState.searchResults.length} results, ${finalState.iteration} iterations`
+        );
+      } catch (error) {
+        // Emit error event
+        await streamStorage.addEvent(sessionId, {
+          type: "error",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Unknown error during report generation",
+          step: "complete-research",
+          timestamp: Date.now(),
+        } satisfies ErrorEvent);
+        throw error;
       }
-
-      const deepresearchDb = await db
-        .update(deepresearch)
-        .set({
-          report: finalReport,
-          coverUrl: coverImage,
-          status: "completed",
-        })
-        .where(eq(deepresearch.id, sessionId))
-        .returning();
-
-      await db.insert(messages).values({
-        role: "assistant",
-        chatId: deepresearchDb[0].chatId,
-        createdAt: new Date(),
-        parts: [
-          {
-            text: `${
-              coverImage
-                ? `![Cover image for research on ${topic}](${coverImage})\n`
-                : ""
-            }\n\n${finalReport}`,
-            type: "text",
-          },
-        ],
-      });
-
-      // Emit research completed event
-      await streamStorage.addEvent(sessionId, {
-        type: "research_completed",
-        finalResultCount: finalState.searchResults.length,
-        totalIterations: finalState.iteration,
-        timestamp: Date.now(),
-      } satisfies ResearchCompletedEvent);
-
-      console.log(
-        `🎉 Research completed: ${finalState.allQueries.length} queries, ${finalState.searchResults.length} results, ${finalState.iteration} iterations`
-      );
-    } catch (error) {
-      // Emit error event
-      await streamStorage.addEvent(sessionId, {
-        type: "error",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Unknown error during report generation",
-        step: "complete-research",
-        timestamp: Date.now(),
-      } satisfies ErrorEvent);
-      throw error;
-    }
-  });
+    });
+  }
 
   return finalReport;
 });
