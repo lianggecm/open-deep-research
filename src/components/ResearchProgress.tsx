@@ -138,7 +138,10 @@ const processSteps = (events: ResearchEventStreamEvents[]): ProcessedStep[] => {
   }
 
   const reportEvents = events.filter(
-    (e) => e.type === "report_started" || e.type === "report_generated"
+    (e) =>
+      e.type === "report_started" ||
+      e.type === "report_generated" ||
+      e.type === "report_generating"
   );
   if (reportEvents.length > 0) {
     steps.push({
@@ -378,33 +381,51 @@ export default function ResearchProgress({
                             <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
                           </a>
                         </div>
-                        <Accordion type="single" collapsible className="w-full">
-                          {contentProcessing?.content && (
-                            <AccordionItem value="webpage-content">
-                              <AccordionTrigger className="text-xs !py-2">
-                                Web Page Content
-                              </AccordionTrigger>
-                              <AccordionContent>
-                                <p className="text-[10px] text-muted-foreground bg-muted p-0.5 rounded">
-                                  {contentProcessing?.content.slice(0, 2000)}...
-                                </p>
-                              </AccordionContent>
-                            </AccordionItem>
-                          )}
-                          {contentSummarised?.summaryFirstHundredChars && (
-                            <AccordionItem value="summary">
-                              <AccordionTrigger className="text-xs !py-2">
-                                Summary of Page
-                              </AccordionTrigger>
-                              <AccordionContent>
-                                <p className="text-[10px] text-muted-foreground bg-muted p-0.5 rounded">
-                                  {contentSummarised?.summaryFirstHundredChars}
-                                  ...
-                                </p>
-                              </AccordionContent>
-                            </AccordionItem>
-                          )}
-                        </Accordion>
+
+                        {contentProcessing && (
+                          <Accordion
+                            type="single"
+                            collapsible
+                            className="w-full"
+                          >
+                            {contentProcessing?.content && (
+                              <AccordionItem value="webpage-content">
+                                <AccordionTrigger className="text-xs !py-2">
+                                  Web Page Content
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                  <p className="text-[10px] text-muted-foreground bg-muted p-0.5 rounded">
+                                    {contentProcessing?.content.slice(0, 2000)}
+                                    ...
+                                  </p>
+                                </AccordionContent>
+                              </AccordionItem>
+                            )}
+                            {!contentSummarised ||
+                            !contentSummarised?.summaryFirstHundredChars ? (
+                              <div className="flex items-center space-x-2 text-muted-foreground p-2">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span className="text-xs">
+                                  Processing summary...
+                                </span>
+                              </div>
+                            ) : (
+                              <AccordionItem value="summary">
+                                <AccordionTrigger className="text-xs !py-2">
+                                  Summary of Page
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                  <p className="text-[10px] text-muted-foreground bg-muted p-0.5 rounded">
+                                    {
+                                      contentSummarised?.summaryFirstHundredChars
+                                    }
+                                    ...
+                                  </p>
+                                </AccordionContent>
+                              </AccordionItem>
+                            )}
+                          </Accordion>
+                        )}
                       </div>
                     );
                   })}
@@ -546,11 +567,6 @@ export default function ResearchProgress({
                         reportGenerating?.partialReport}
                     </Markdown>
                   </div>
-                  {reportGenerated && (
-                    <Badge variant="default" className="px-2 py-0.5 text-xs">
-                      Report Complete
-                    </Badge>
-                  )}
                   {!reportGenerated && reportGenerating && (
                     <Badge
                       variant="secondary"

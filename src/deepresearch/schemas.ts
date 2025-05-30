@@ -113,6 +113,11 @@ export const reportStartedEventSchema = baseEventSchema.extend({
   type: z.literal("report_started"),
 });
 
+export const reportGeneratingEventSchema = baseEventSchema.extend({
+  type: z.literal("report_generating"),
+  partialReport: z.string(),
+});
+
 export const reportGeneratedEventSchema = baseEventSchema.extend({
   type: z.literal("report_generated"),
   report: z.string().optional(),
@@ -151,6 +156,7 @@ export const streamEventSchema = z.discriminatedUnion("type", [
   coverGenerationStartedEventSchema,
   coverGenerationCompletedEventSchema,
   reportStartedEventSchema,
+  reportGeneratingEventSchema,
   reportGeneratedEventSchema,
   iterationCompletedEventSchema,
   researchCompletedEventSchema,
@@ -191,6 +197,7 @@ export type CoverGenerationCompletedEvent = z.infer<
 >;
 
 export type ReportStartedEvent = z.infer<typeof reportStartedEventSchema>;
+export type ReportGeneratingEvent = z.infer<typeof reportGeneratingEventSchema>;
 export type ReportGeneratedEvent = z.infer<typeof reportGeneratedEventSchema>;
 
 export type ResearchCompletedEvent = z.infer<
