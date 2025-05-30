@@ -314,7 +314,8 @@ export const gatherSearchQueriesWorkflow = createWorkflow<
       "evaluate-research-completeness",
       async () => {
         const currentState = await stateStorage.get(sessionId);
-        if (!currentState) {
+        // we don't do evaluation if we don't have a state or if we're at the last iteration since we won't continue even if we might need more queries.
+        if (!currentState || budget === 1) {
           return { needsMore: false, additionalQueries: [] };
         }
 
