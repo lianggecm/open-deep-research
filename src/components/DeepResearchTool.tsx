@@ -70,7 +70,7 @@ export const DeepResearchTool = ({
       const { isCompleted } = await fetchResearch(result.researchId);
 
       if (!isCompleted && isPolling) {
-        pollInterval = setTimeout(pollResearch, 2000);
+        pollInterval = setTimeout(pollResearch, 4000);
       }
     };
 

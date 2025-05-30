@@ -23,8 +23,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { ResearchEventStreamEvents } from "@/app/api/research/route";
-import Markdown from "react-markdown";
-import { markdownComponents } from "./markdown-components";
+import { Markdown } from "./Markdown";
 
 interface ResearchProgressProps {
   events: ResearchEventStreamEvents[];
@@ -267,9 +266,7 @@ export default function ResearchProgress({
               <div>
                 <h4 className="font-semibold mb-1.5 text-sm">Research Plan</h4>
                 <div className="text-xs text-muted-foreground bg-muted rounded p-1 whitespace-pre-wrap max-h-52 overflow-y-auto">
-                  <Markdown components={markdownComponents}>
-                    {planningCompleted.plan}
-                  </Markdown>
+                  <Markdown>{planningCompleted.plan}</Markdown>
                 </div>
               </div>
             )}
@@ -503,9 +500,7 @@ export default function ResearchProgress({
                 <h4 className="font-semibold mb-1.5 text-sm">Reasoning</h4>
                 <div className="text-xs text-muted-foreground whitespace-pre-wrap max-h-36 overflow-y-auto">
                   {truncateText(evaluationCompleted.reasoning, 500)}
-                  <Markdown components={markdownComponents}>
-                    {evaluationCompleted.reasoning}
-                  </Markdown>
+                  <Markdown>{evaluationCompleted.reasoning}</Markdown>
                 </div>
               </div>
             )}
@@ -532,23 +527,38 @@ export default function ResearchProgress({
         const reportGenerated = step.data.find(
           (e) => e.type === "report_generated"
         );
+        const reportGenerating = step.data
+          .filter((e) => e.type === "report_generating")
+          .sort((a, b) => b.timestamp - a.timestamp)[0];
+
         return (
           <div className="space-y-3">
             <div>
               <h4 className="font-semibold mb-1.5 text-sm">
                 Report Generation
               </h4>
-              {!reportGenerated && renderLoadingState()}
-              {reportGenerated?.report && (
+              {!reportGenerated && !reportGenerating && renderLoadingState()}
+              {(reportGenerating?.partialReport || reportGenerated?.report) && (
                 <div className="space-y-1.5">
                   <div className="text-xs text-muted-foreground bg-muted rounded p-1 whitespace-pre-wrap max-h-52 overflow-y-auto">
-                    <Markdown components={markdownComponents}>
-                      {reportGenerated.report}
+                    <Markdown>
+                      {reportGenerated?.report ||
+                        reportGenerating?.partialReport}
                     </Markdown>
                   </div>
-                  <Badge variant="default" className="px-2 py-0.5 text-xs">
-                    Report Complete
-                  </Badge>
+                  {reportGenerated && (
+                    <Badge variant="default" className="px-2 py-0.5 text-xs">
+                      Report Complete
+                    </Badge>
+                  )}
+                  {!reportGenerated && reportGenerating && (
+                    <Badge
+                      variant="secondary"
+                      className="px-2 py-0.5 text-xs animate-pulse"
+                    >
+                      Generating...
+                    </Badge>
+                  )}
                 </div>
               )}
             </div>

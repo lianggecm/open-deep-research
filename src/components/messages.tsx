@@ -1,14 +1,13 @@
 "use client";
 
 import cn from "classnames";
-import Markdown from "react-markdown";
-import { markdownComponents } from "./markdown-components";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon, SpinnerIcon } from "./icons";
 import { UIMessage } from "ai";
 import { UseChatHelpers } from "@ai-sdk/react";
 import { DeepResearchTool } from "./DeepResearchTool";
+import { Markdown } from "./Markdown";
 
 interface ReasoningPart {
   type: "reasoning";
@@ -89,9 +88,7 @@ export function ReasoningMessagePart({
           >
             {part.details.map((detail, detailIndex) =>
               detail.type === "text" ? (
-                <Markdown key={detailIndex} components={markdownComponents}>
-                  {detail.text}
-                </Markdown>
+                <Markdown key={detailIndex}>{detail.text}</Markdown>
               ) : (
                 "<redacted>"
               )
@@ -112,7 +109,7 @@ interface TextMessagePartProps {
 export function TextMessagePart({ text }: TextMessagePartProps) {
   return (
     <div className="flex flex-col gap-4">
-      <Markdown components={markdownComponents}>{text}</Markdown>
+      <Markdown>{text}</Markdown>
     </div>
   );
 }
