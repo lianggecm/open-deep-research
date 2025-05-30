@@ -1,11 +1,12 @@
 "use client";
-import { Chat } from "@/components/chat";
 import { ChatInput } from "@/components/ChatInput";
 import { Footnote } from "@/components/footnote";
 import { createNewChat } from "@/db/action";
-import { useSearchParams } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 export const LandingHomepage = () => {
+  const { isSignedIn, user, isLoaded } = useUser();
+
   return (
     <div className="flex flex-col size-full items-center h-screen justify-center">
       <div className="px-4 md:px-0 pb-4 pt-8 flex flex-col items-center w-full max-w-3xl justify-center gap-4">
@@ -19,9 +20,12 @@ export const LandingHomepage = () => {
           </p>
         </div>
         <ChatInput
+          disabled={!isLoaded}
           append={(message) => {
             localStorage.setItem("firstMessage", message.content);
-            createNewChat();
+            createNewChat({
+              clerkUserId: isSignedIn ? user.id : undefined,
+            });
           }}
           stop={() => {
             console.log("stop");

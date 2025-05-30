@@ -11,8 +11,13 @@ import {
 import { UIMessage } from "ai";
 import { redirect } from "next/navigation";
 
-export const createChat = async () => {
-  const [result] = await db.insert(chats).values({}).returning();
+export const createChat = async ({ clerkUserId }: { clerkUserId?: string }) => {
+  const [result] = await db
+    .insert(chats)
+    .values({
+      clerkUserId,
+    })
+    .returning();
   return result.id;
 };
 
@@ -91,8 +96,10 @@ export const deleteMessage = async (messageId: string) => {
   });
 };
 
-export async function createNewChat() {
-  const id = await createChat();
+export async function createNewChat({ clerkUserId }: { clerkUserId?: string }) {
+  const id = await createChat({
+    clerkUserId,
+  });
   redirect(`/chat/${id}`);
 }
 

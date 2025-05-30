@@ -58,7 +58,7 @@ export default function RootLayout({
                     </div>
                   </Link>
 
-                  {false && (
+                  {process.env.NODE_ENV === "development" && (
                     <div className="flex flex-row items-center gap-2">
                       <SignedOut>
                         <SignInButton>

@@ -16,6 +16,7 @@ export const chats = pgTable("chats", {
   id: varchar()
     .primaryKey()
     .$defaultFn(() => nanoid()),
+  clerkUserId: varchar(),
 });
 
 export const roleEnum = pgEnum("role", ["user", "assistant", "system", "data"]);

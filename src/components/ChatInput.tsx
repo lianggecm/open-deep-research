@@ -8,7 +8,9 @@ export const ChatInput = ({
   append,
   stop,
   isGeneratingResponse,
+  disabled,
 }: {
+  disabled?: boolean;
   append: (message: {
     role: "user" | "assistant";
     content: string;
@@ -28,6 +30,7 @@ export const ChatInput = ({
         className="mb-12 resize-none w-full min-h-12 outline-none bg-transparent placeholder:text-zinc-400"
         placeholder="Type in your prompt"
         value={input}
+        disabled={disabled}
         autoFocus
         onChange={(event) => {
           setInput(event.currentTarget.value);
