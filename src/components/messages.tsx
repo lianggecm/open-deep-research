@@ -175,6 +175,8 @@ export function Messages({ messages, status, onResearchEnd }: MessagesProps) {
   const messagesRef = useRef<HTMLDivElement>(null);
   const messagesLength = useMemo(() => messages.length, [messages]);
 
+  console.log("messages", messages);
+
   useEffect(() => {
     if (messagesRef.current) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
@@ -238,6 +240,14 @@ export function Messages({ messages, status, onResearchEnd }: MessagesProps) {
                   }
 
                   if (part.type === "text") {
+                    // Only render the first text part for assistant messages
+                    if (
+                      isAssistant &&
+                      message.parts.findIndex((p) => p.type === "text") !==
+                        partIndex
+                    ) {
+                      return null;
+                    }
                     return (
                       <TextMessagePart
                         key={`${message.id}-${partIndex}`}
