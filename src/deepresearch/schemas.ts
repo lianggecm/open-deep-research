@@ -98,6 +98,16 @@ export const evaluationCompletedEventSchema = baseEventSchema.extend({
   iteration: z.number(),
 });
 
+export const coverGenerationStartedEventSchema = baseEventSchema.extend({
+  type: z.literal("cover_generation_started"),
+  prompt: z.string(),
+});
+
+export const coverGenerationCompletedEventSchema = baseEventSchema.extend({
+  type: z.literal("cover_generation_completed"),
+  coverImage: z.string(),
+});
+
 // Report events
 export const reportStartedEventSchema = baseEventSchema.extend({
   type: z.literal("report_started"),
@@ -138,6 +148,8 @@ export const streamEventSchema = z.discriminatedUnion("type", [
   contentSummarizedEventSchema,
   evaluationStartedEventSchema,
   evaluationCompletedEventSchema,
+  coverGenerationStartedEventSchema,
+  coverGenerationCompletedEventSchema,
   reportStartedEventSchema,
   reportGeneratedEventSchema,
   iterationCompletedEventSchema,
@@ -166,11 +178,21 @@ export type EvaluationStartedEvent = z.infer<
 export type EvaluationCompletedEvent = z.infer<
   typeof evaluationCompletedEventSchema
 >;
-export type ReportStartedEvent = z.infer<typeof reportStartedEventSchema>;
-export type ReportGeneratedEvent = z.infer<typeof reportGeneratedEventSchema>;
+
 export type IterationCompletedEvent = z.infer<
   typeof iterationCompletedEventSchema
 >;
+
+export type CoverGenerationStartedEvent = z.infer<
+  typeof coverGenerationStartedEventSchema
+>;
+export type CoverGenerationCompletedEvent = z.infer<
+  typeof coverGenerationCompletedEventSchema
+>;
+
+export type ReportStartedEvent = z.infer<typeof reportStartedEventSchema>;
+export type ReportGeneratedEvent = z.infer<typeof reportGeneratedEventSchema>;
+
 export type ResearchCompletedEvent = z.infer<
   typeof researchCompletedEventSchema
 >;

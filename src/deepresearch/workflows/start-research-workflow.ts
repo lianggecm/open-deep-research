@@ -198,7 +198,7 @@ export const startResearchWorkflow = createWorkflow<
   }
 
   // Step 3: Generate a cover image for the research topic
-  const coverImage = await context.run("generate-toc-image", async () => {
+  const coverImagePromise = context.run("generate-toc-image", async () => {
     console.log(`🎨 Generating table of contents image...`);
 
     try {
@@ -216,6 +216,12 @@ export const startResearchWorkflow = createWorkflow<
       }
 
       console.log(`📸 Image generation prompt: ${imageGenerationPrompt.text}`);
+
+      await streamStorage.addEvent(sessionId, {
+        type: "cover_generation_started",
+        prompt: imageGenerationPrompt.text,
+        timestamp: Date.now(),
+      });
 
       const generatedImage = await togetherai.images.create({
         prompt: imageGenerationPrompt.text,
@@ -244,9 +250,17 @@ export const startResearchWorkflow = createWorkflow<
         })
       );
 
-      return `https://${process.env.S3_UPLOAD_BUCKET}.s3.${
+      const imageUrl = `https://${process.env.S3_UPLOAD_BUCKET}.s3.${
         process.env.S3_UPLOAD_REGION || "us-east-1"
       }.amazonaws.com/${coverImageKey}`;
+
+      await streamStorage.addEvent(sessionId, {
+        type: "cover_generation_completed",
+        coverImage: imageUrl,
+        timestamp: Date.now(),
+      });
+
+      return imageUrl;
     } catch (error) {
       console.error(`Failed to generate TOC image: ${error}`);
       throw error;
@@ -254,7 +268,7 @@ export const startResearchWorkflow = createWorkflow<
   });
 
   // Step 4: Generate final comprehensive report using LLM
-  const finalReport = await context.run("generate-final-report", async () => {
+  const finalReportPromise = context.run("generate-final-report", async () => {
     console.log(`✨ Generating final report...`);
 
     try {
@@ -333,6 +347,72 @@ export const startResearchWorkflow = createWorkflow<
             ? error.message
             : "Unknown error during report generation",
         step: "generate-final-report",
+        timestamp: Date.now(),
+      } satisfies ErrorEvent);
+      throw error;
+    }
+  });
+
+  const [coverImage, finalReport] = await Promise.all([
+    coverImagePromise,
+    finalReportPromise,
+  ]);
+
+  // Step 5: Store the final report with cover image in the database and mark as completed the research
+  context.run("complete-research", async () => {
+    try {
+      // Read final state from Redis
+      const finalState = await stateStorage.get(sessionId);
+      if (!finalState) {
+        throw new Error("Could not read final research state");
+      }
+
+      const deepresearchDb = await db
+        .update(deepresearch)
+        .set({
+          report: finalReport,
+          coverUrl: coverImage,
+          status: "completed",
+        })
+        .where(eq(deepresearch.id, sessionId))
+        .returning();
+
+      await db.insert(messages).values({
+        role: "assistant",
+        chatId: deepresearchDb[0].chatId,
+        createdAt: new Date(),
+        parts: [
+          {
+            text: `${
+              coverImage
+                ? `![Cover image for research on ${topic}](${coverImage})\n`
+                : ""
+            }\n\n${finalReport}`,
+            type: "text",
+          },
+        ],
+      });
+
+      // Emit research completed event
+      await streamStorage.addEvent(sessionId, {
+        type: "research_completed",
+        finalResultCount: finalState.searchResults.length,
+        totalIterations: finalState.iteration,
+        timestamp: Date.now(),
+      } satisfies ResearchCompletedEvent);
+
+      console.log(
+        `🎉 Research completed: ${finalState.allQueries.length} queries, ${finalState.searchResults.length} results, ${finalState.iteration} iterations`
+      );
+    } catch (error) {
+      // Emit error event
+      await streamStorage.addEvent(sessionId, {
+        type: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Unknown error during report generation",
+        step: "complete-research",
         timestamp: Date.now(),
       } satisfies ErrorEvent);
       throw error;
