@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { ResearchEventStreamEvents } from "@/app/api/research/route";
 import { Markdown } from "./Markdown";
+import { getDomainFromUrl } from "@/lib/utils";
 
 interface ResearchProgressProps {
   events: ResearchEventStreamEvents[];
@@ -229,14 +230,6 @@ export default function ResearchProgress({
 
   const formatTimestamp = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString();
-  };
-
-  const getDomainFromUrl = (url: string) => {
-    try {
-      return new URL(url).hostname;
-    } catch {
-      return url;
-    }
   };
 
   const truncateText = (text: string, maxLength: number) => {
