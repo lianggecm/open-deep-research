@@ -28,7 +28,7 @@ import { eq } from "drizzle-orm";
 import { awsS3Client } from "@/lib/clients";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
-const MAX_BUDGET = 1;
+const MAX_BUDGET = 3;
 
 // Types
 export type StartResearchPayload = {
@@ -42,6 +42,7 @@ const generateResearchQueries = async (
 ): Promise<{
   queries: string[];
   plan: string;
+  summarisedPlan: string;
 }> => {
   const initialSearchEvaluation = await generateText({
     model: togetheraiClient(MODEL_CONFIG.planningModel),
@@ -60,6 +61,15 @@ const generateResearchQueries = async (
     schema: researchPlanSchema,
   });
 
+  // Generate a one-paragraph summary of the plan
+  const planSummary = await generateText({
+    model: togetheraiClient(MODEL_CONFIG.summaryModel),
+    messages: [
+      { role: "system", content: PROMPTS.planSummaryPrompt },
+      { role: "user", content: initialSearchEvaluation.text },
+    ],
+  });
+
   console.log(
     `📋 Research queries generated: \n - ${parsedPlan.object.queries.join(
       "\n - "
@@ -74,6 +84,7 @@ const generateResearchQueries = async (
   return {
     queries,
     plan: initialSearchEvaluation.text,
+    summarisedPlan: planSummary.text,
   };
 };
 
@@ -148,13 +159,15 @@ export const startResearchWorkflow = createWorkflow<
 
       try {
         // Generate queries using local LLM function
-        const { queries, plan } = await generateResearchQueries(topic);
+        const { queries, plan, summarisedPlan } = await generateResearchQueries(
+          topic
+        );
 
         // Emit queries generated event
         await streamStorage.addEvent(sessionId, {
           type: "planning_completed",
           queries,
-          plan,
+          plan: summarisedPlan,
           iteration: 0,
           timestamp: Date.now(),
         } satisfies PlanningCompletedEvent);
