@@ -23,7 +23,7 @@ import {
   SearchResult,
 } from "../schemas";
 import { db } from "@/db";
-import { deepresearch, messages } from "@/db/schema";
+import { deepresearch } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { awsS3Client } from "@/lib/clients";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
@@ -361,22 +361,6 @@ export const startResearchWorkflow = createWorkflow<
         })
         .where(eq(deepresearch.id, sessionId))
         .returning();
-
-      await db.insert(messages).values({
-        role: "assistant",
-        chatId: deepresearchDb[0].chatId,
-        createdAt: new Date(),
-        parts: [
-          {
-            text: `${
-              coverImage
-                ? `![Cover image for research on ${topic}](${coverImage})\n`
-                : ""
-            }\n\n${finalReport}`,
-            type: "text",
-          },
-        ],
-      });
 
       // Emit research completed event
       await streamStorage.addEvent(sessionId, {

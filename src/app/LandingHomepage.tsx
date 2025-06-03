@@ -33,9 +33,9 @@ export const LandingHomepage = () => {
         <ChatInput
           disabled={!isLoaded}
           append={(message) => {
-            localStorage.setItem("firstMessage", message.content);
             createNewChat({
               clerkUserId: isSignedIn ? user.id : undefined,
+              initialUserMessage: message.content,
             });
           }}
           stop={() => {}}

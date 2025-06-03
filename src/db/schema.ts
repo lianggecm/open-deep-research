@@ -1,4 +1,3 @@
-import { UIMessage } from "ai";
 import {
   jsonb,
   pgEnum,
@@ -17,21 +16,12 @@ export const chats = pgTable("chats", {
     .primaryKey()
     .$defaultFn(() => nanoid()),
   clerkUserId: varchar(),
-});
+  initialUserMessage: varchar().notNull(),
+  questions: jsonb().$type<string[]>(),
+  answers: jsonb().$type<string[]>(),
+  researchTopic: varchar(),
 
-export const roleEnum = pgEnum("role", ["user", "assistant", "system", "data"]);
-
-export const messages = pgTable("messages", {
-  id: varchar()
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  chatId: varchar()
-    .references(() => chats.id, { onDelete: "cascade" })
-    .notNull(),
   createdAt: timestamp().defaultNow().notNull(),
-  // TODO: update type to UIMessagePart in AI SDK v5
-  parts: jsonb().$type<UIMessage["parts"]>().notNull(),
-  role: roleEnum().notNull(),
 });
 
 export const deepresearchStautsEnum = pgEnum("status", [

@@ -79,7 +79,6 @@ export default async function Page(props: {
   const { chatId } = await props.params; // get the chat ID from the URL
   const messages = await loadChat(chatId); // load the chat messages
 
-  // TODO fix any of messages
   return (
     <div className="flex flex-col size-full items-center">
       <div className="px-4 md:px-0 pb-[160px] pt-8 flex flex-col min-h-dvh items-center w-full max-w-3xl justify-between">

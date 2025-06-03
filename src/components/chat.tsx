@@ -5,7 +5,6 @@ import { Messages } from "./messages";
 import { Footnote } from "./footnote";
 
 import { ChatInput } from "./ChatInput";
-import { useEffect } from "react";
 import { UIMessage } from "ai";
 
 export function Chat({
@@ -32,21 +31,6 @@ export function Chat({
       toast.error("An error occurred, please try again!");
     },
   });
-
-  useEffect(() => {
-    if (messages.length === 0) {
-      const firstMessage = localStorage.getItem("firstMessage");
-      if (!firstMessage) {
-        return;
-      }
-      localStorage.removeItem("firstMessage");
-      append({
-        role: "user",
-        content: firstMessage,
-        createdAt: new Date(),
-      });
-    }
-  }, [chatId]);
 
   const isGeneratingResponse = ["streaming", "submitted"].includes(status);
 
