@@ -41,6 +41,9 @@ export const ChatPage = ({
       <ReportLoadingPage
         researchTopic={researchData.initialUserMessage}
         chatId={chatId}
+        researchStartedAt={
+          researchData.researchStartedAt || researchData.createdAt
+        }
       />
     );
   }

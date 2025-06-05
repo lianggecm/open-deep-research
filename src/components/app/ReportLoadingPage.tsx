@@ -2,20 +2,49 @@
 
 import { useEffect, useState } from "react";
 import { Heading } from "../Heading";
-import { ReportSteps } from "./reportLoading/ReportSteps";
+import { ReportSteps, ReportStepType } from "./reportLoading/ReportSteps";
 import TimelineProgress from "./reportLoading/TimelineProgress";
 import { ResearchEventStreamEvents } from "@/app/api/research/route";
 
 export const ReportLoadingPage = ({
   researchTopic,
   chatId,
+  researchStartedAt,
 }: {
+  researchStartedAt: Date;
   researchTopic: string;
   chatId: string;
 }) => {
   const [researchData, setResearchData] = useState<ResearchEventStreamEvents[]>(
     []
   );
+  const [steps, setSteps] = useState<ReportStepType[]>([
+    {
+      id: "initial_planning",
+      title: "Initial Planning",
+      status: "loading",
+    },
+    {
+      id: "iteration_1",
+      title: "Iteration #1",
+      status: "pending",
+    },
+    {
+      id: "iteration_2",
+      title: "Iteration #2",
+      status: "pending",
+    },
+    {
+      id: "iteration_3",
+      title: "Iteration #3",
+      status: "pending",
+    },
+    {
+      id: "writing_report",
+      title: "Writing Report",
+      status: "pending",
+    },
+  ]);
   const [isStreaming, setIsStreaming] = useState(false);
 
   const onResearchEnd = () => {
@@ -23,9 +52,9 @@ export const ReportLoadingPage = ({
     // Additional logic after research is completed
   };
 
-  const fetchResearch = async (researchId: string) => {
+  const fetchResearch = async (chatId: string) => {
     try {
-      const response = await fetch(`/api/research/?sessionId=${researchId}`);
+      const response = await fetch(`/api/research/?chatId=${chatId}`);
       if (!response.ok) throw new Error("Failed to fetch research data");
 
       const events: ResearchEventStreamEvents[] = await response.json();
@@ -79,6 +108,36 @@ export const ReportLoadingPage = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (researchData.length > 0) {
+      const newSteps = [...steps];
+      researchData.map((event) => {
+        if (event.type === "planning_completed") {
+          newSteps[0].status = "completed";
+          newSteps[1].status = "loading";
+        }
+        if (event.type === "iteration_completed") {
+          if (event.iteration === 1) {
+            newSteps[1].status = "completed";
+            newSteps[2].status = "loading";
+          }
+          if (event.iteration === 2) {
+            newSteps[2].status = "completed";
+            newSteps[3].status = "loading";
+          }
+          if (event.iteration === 3) {
+            newSteps[3].status = "completed";
+            newSteps[4].status = "loading";
+          }
+        }
+        if (event.type === "report_generated") {
+          newSteps[4].status = "completed";
+        }
+      });
+      setSteps(newSteps);
+    }
+  }, [researchData]);
+
   return (
     <div className="px-5 py-5 h-full flex flex-col flex-1">
       <Heading
@@ -87,7 +146,11 @@ export const ReportLoadingPage = ({
       />
 
       <div className="flex flex-col gap-2 md:flex-row">
-        <ReportSteps onCancel={() => {}} />
+        <ReportSteps
+          steps={steps}
+          onCancel={() => {}}
+          researchStartedAt={researchStartedAt}
+        />
 
         <TimelineProgress />
       </div>
