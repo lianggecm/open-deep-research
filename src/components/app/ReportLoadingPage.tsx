@@ -17,7 +17,7 @@ export const ReportLoadingPage = ({
   chatId: string;
   onComplete: () => void;
 }) => {
-  const [researchData, setResearchData] = useState<ResearchEventStreamEvents[]>(
+  const [streamEvents, setStreamEvents] = useState<ResearchEventStreamEvents[]>(
     []
   );
   const [steps, setSteps] = useState<ReportStepType[]>([
@@ -75,7 +75,7 @@ export const ReportLoadingPage = ({
       }
 
       // Update research data, maintaining chronological order
-      setResearchData(
+      setStreamEvents(
         events.sort((a: any, b: any) => a.timestamp - b.timestamp)
       );
       return { isCompleted: isCompleted };
@@ -111,9 +111,10 @@ export const ReportLoadingPage = ({
   }, []);
 
   useEffect(() => {
-    if (researchData.length > 0) {
+    if (streamEvents.length > 0) {
       const newSteps = [...steps];
-      researchData.map((event) => {
+      streamEvents.map((event) => {
+        // parsing for steps
         if (event.type === "planning_completed") {
           newSteps[0].status = "completed";
           newSteps[1].status = "loading";
@@ -141,7 +142,7 @@ export const ReportLoadingPage = ({
       });
       setSteps(newSteps);
     }
-  }, [researchData]);
+  }, [streamEvents]);
 
   return (
     <div className="px-5 py-5 h-full flex flex-col flex-1">
@@ -157,7 +158,7 @@ export const ReportLoadingPage = ({
           researchStartedAt={researchStartedAt}
         />
 
-        <TimelineProgress />
+        <TimelineProgress events={streamEvents} />
       </div>
     </div>
   );
