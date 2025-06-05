@@ -9,9 +9,7 @@ import { MODEL_CONFIG, PROMPTS } from "@/deepresearch/config";
 import dedent from "dedent";
 import { togetheraiClient } from "@/deepresearch/apiClients";
 import z from "zod";
-import { Heading } from "@/components/Heading";
-import { AnswerInput } from "@/components/questions/AnswerInput";
-import { QuestionsPage } from "@/components/questions/QuestionsPage";
+import { ChatPage } from "@/components/app/ChatPage";
 
 export async function generateMetadata({
   params,
@@ -33,8 +31,10 @@ export async function generateMetadata({
     return redirect("/");
   }
 
-  const title = `${researchData.researchTopic} | DeepSeek Research`;
-  const description = `Discover the research on "${researchData.researchTopic}" ${researchData.status} | DeepSeek Research`;
+  const topic = researchData.researchTopic || researchData.initialUserMessage;
+
+  const title = `${topic} | DeepSeek Research`;
+  const description = `Discover the research on "${topic}" ${researchData.status} | DeepSeek Research`;
 
   return {
     title: title,
@@ -94,13 +94,5 @@ export default async function Page(props: {
       .where(eq(research.id, researchData.id));
   }
 
-  if (!researchData.answers) {
-    return <QuestionsPage questions={researchData.questions || []} />;
-  }
-
-  if (!researchData?.report) {
-    return <div>Generating research topic...</div>;
-  }
-
-  return <div className="flex flex-col size-full items-center">CIAO</div>;
+  return <ChatPage chatId={chatId} researchData={researchData} />;
 }

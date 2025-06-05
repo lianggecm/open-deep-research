@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "./index";
 import { research } from "./schema";
 import { redirect } from "next/navigation";
+import { startResearch } from "@/deepresearch/startResearch";
 
 export const createResearch = async ({
   clerkUserId,
@@ -55,3 +56,23 @@ export async function createResearchAndRedirect({
   });
   redirect(`/chat/${id}`);
 }
+
+export const skipQuestions = async (chatId: string) => {
+  await db
+    .update(research)
+    .set({
+      answers: [],
+    })
+    .where(eq(research.id, chatId));
+  await startResearch({ chatId });
+};
+
+export const storeAnswers = async (chatId: string, answers: string[]) => {
+  await db
+    .update(research)
+    .set({
+      answers: answers,
+    })
+    .where(eq(research.id, chatId));
+  await startResearch({ chatId });
+};

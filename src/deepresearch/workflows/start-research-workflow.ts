@@ -23,7 +23,7 @@ import {
   SearchResult,
 } from "../schemas";
 import { db } from "@/db";
-import { deepresearch } from "@/db/schema";
+import { research } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { awsS3Client } from "@/lib/clients";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
@@ -353,13 +353,13 @@ export const startResearchWorkflow = createWorkflow<
       }
 
       const deepresearchDb = await db
-        .update(deepresearch)
+        .update(research)
         .set({
           report: finalReport,
           coverUrl: coverImage,
           status: "completed",
         })
-        .where(eq(deepresearch.id, sessionId))
+        .where(eq(research.id, sessionId))
         .returning();
 
       // Emit research completed event

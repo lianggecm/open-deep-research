@@ -1,10 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Heading } from "../Heading";
+import { Heading } from "../../Heading";
 import { AnswerInput } from "./AnswerInput";
 
-export const QuestionsPage = ({ questions }: { questions: string[] }) => {
+export const QuestionsPage = ({
+  questions,
+  onSkip,
+  onGenerate,
+}: {
+  questions: string[];
+  onSkip: () => void;
+  onGenerate: (questions: string[]) => void;
+}) => {
   const [answers, setAnswers] = useState<string[]>(
     Array(questions.length).fill("")
   );
@@ -35,13 +43,17 @@ export const QuestionsPage = ({ questions }: { questions: string[] }) => {
       <div className="w-full items-center flex flex-col gap-3 self-end justify-end flex-1 md:flex-row-reverse">
         <button
           className="px-5 py-1.5 text-base font-medium text-left !text-[#6a7282] cursor-pointer"
-          onClick={() => {}}
+          onClick={() => {
+            onSkip();
+          }}
         >
           Skip
         </button>
         <button
           className="flex flex-col justify-between items-center w-full md:w-[165px] h-[38px] overflow-hidden px-5 py-1.5 rounded bg-[#072d77] border border-[#072d77] cursor-pointer"
-          onClick={() => {}}
+          onClick={() => {
+            onGenerate(answers);
+          }}
         >
           <div className="flex justify-start items-center flex-grow-0 flex-shrink-0 relative gap-1.5">
             <p className="flex-grow-0 flex-shrink-0 text-base font-medium text-left text-white">
