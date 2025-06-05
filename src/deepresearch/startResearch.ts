@@ -27,7 +27,7 @@ export const startResearch = async ({ chatId }: { chatId: string }) => {
           .filter(Boolean)
           .join(" ")
       : ""
-  }`;
+  }`.trim();
 
   await db
     .update(research)
