@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { AnimatePresence } from "framer-motion";
 import { ResearchEventStreamEvents } from "@/app/api/research/route";
+import { TimelineEvent } from "./TimelineEvent";
 
 export default function TimelineProgress({
   events,
 }: {
   events: ResearchEventStreamEvents[];
 }) {
-  const [isGenerating, setIsGenerating] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -43,6 +43,39 @@ export default function TimelineProgress({
   // for report_started we render a loading indicator
   // for report_completed we render the report hiding previous report_started linked to this report and we incrementally show new report_generating events until report_completed
 
+  const renderableEvents: ResearchEventStreamEvents[] = [];
+
+  for (let i = 0; i < events.length; i++) {
+    const currentEvent = events[i];
+    const remainingEvents = events.slice(i + 1);
+
+    switch (currentEvent.type) {
+      case "report_started":
+        // Hide report_started if there's any subsequent report_generating
+        const subsequentReportEvents = remainingEvents.some(
+          (e) => e.type === "report_generating"
+        );
+        if (!subsequentReportEvents) {
+          renderableEvents.push(currentEvent);
+        }
+        break;
+      case "report_generating":
+        // Only include the last report_generating event before a new phase or report_completed
+        const isLastGenerating = !remainingEvents.some(
+          (e) => e.type === "report_generating"
+        );
+        if (isLastGenerating) {
+          renderableEvents.push(currentEvent);
+        }
+        break;
+
+      default:
+        // Include all other event types
+        renderableEvents.push(currentEvent);
+        break;
+    }
+  }
+
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div
@@ -52,35 +85,104 @@ export default function TimelineProgress({
         <div className="p-4">
           <div className="relative">
             {/* Timeline line */}
-            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-[#D1D5DC]" />
+            <div className="absolute left-[9px] top-[1px] bottom-0 w-0.5 bg-[#D1D5DC]" />
 
             <AnimatePresence>
-              {events.map((event, index) => {
-                return <>{/* TimelineEvent */}</>;
-              })}
+              {renderableEvents
+                .map((event, index) => {
+                  const isLast = index === renderableEvents.length - 1;
+
+                  switch (event.type) {
+                    case "planning_started":
+                      return (
+                        <TimelineEvent
+                          key={index}
+                          type={event.type}
+                          isLast={isLast}
+                          title="Research Topic"
+                          description={event.topic}
+                        />
+                      );
+
+                    case "planning_completed":
+                      return (
+                        <TimelineEvent
+                          key={index}
+                          type={event.type}
+                          isLast={isLast}
+                          title="Research Plan"
+                          description={event.plan}
+                        />
+                      );
+
+                    case "search_completed":
+                      return (
+                        <TimelineEvent
+                          key={index}
+                          type={event.type}
+                          isLast={isLast}
+                          title={
+                            <>
+                              <span className="text-sm font-light text-left text-[#6a7282]">
+                                Searched for
+                              </span>
+                              <span className="ml-1 text-sm text-left text-[#4a5565]">
+                                ‘{event.query}‘
+                              </span>
+                            </>
+                          }
+                          webResults={event.urls.map((url) => {
+                            return {
+                              url: url,
+                              title: url,
+                            };
+                          })}
+                        />
+                      );
+
+                    case "evaluation_completed":
+                      return (
+                        <TimelineEvent
+                          key={index}
+                          type={event.type}
+                          isLast={isLast}
+                          title="Evaluation Complete"
+                          description={event.reasoning?.slice(0, 100)}
+                        />
+                      );
+
+                    case "report_started":
+                      return (
+                        <TimelineEvent
+                          key={index}
+                          type={event.type}
+                          isLast={isLast}
+                          title="Generating Report"
+                        />
+                      );
+
+                    case "report_generating":
+                      return (
+                        <TimelineEvent
+                          key={index}
+                          type={event.type}
+                          isLast={isLast}
+                          title="Writing report..."
+                          description={event.partialReport}
+                        />
+                      );
+
+                    default:
+                      return null;
+                  }
+                })
+                .filter(Boolean)}
             </AnimatePresence>
 
-            {/* Loading indicator */}
-            {isGenerating && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="relative flex gap-3 pb-8"
-              >
-                <div className="flex-shrink-0 w-6 h-6 rounded-full border-[0.7px] bg-[#F3F4F6] border-[#D1D5DC] flex items-center justify-center relative z-10 ml-5">
-                  <div className="w-4 h-4 border-2 border-[#4a5565] border-t-transparent rounded-full animate-spin" />
-                </div>
-                <div className="flex-1 min-w-0 pl-1">
-                  <div className="h-4 bg-gray-200 rounded animate-pulse mb-2" />
-                  <div className="h-3 bg-gray-100 rounded animate-pulse w-3/4" />
-                </div>
-              </motion.div>
-            )}
+            {/* Invisible element to scroll to */}
+            <div ref={bottomRef} />
           </div>
         </div>
-
-        {/* Invisible element to scroll to */}
-        <div ref={bottomRef} />
       </div>
     </div>
   );

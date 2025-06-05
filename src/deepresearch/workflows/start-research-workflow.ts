@@ -27,6 +27,7 @@ import { research } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { awsS3Client } from "@/lib/clients";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { getResearch } from "@/db/action";
 
 const MAX_BUDGET = 3;
 
@@ -150,10 +151,12 @@ export const startResearchWorkflow = createWorkflow<
         `🔍 Starting research for: ${topic} and Session ID: ${sessionId}`
       );
 
+      const researchData = await getResearch(sessionId);
+
       // Emit planning started event
       await streamStorage.addEvent(sessionId, {
         type: "planning_started",
-        topic,
+        topic: researchData?.initialUserMessage || topic,
         timestamp: Date.now(),
       } satisfies PlanningStartedEvent);
 
