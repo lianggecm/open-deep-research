@@ -45,6 +45,9 @@ When ranking search results, consider recency as a factor - newer information is
 // System Prompts
 // Instructions for each stage of the research process
 export const PROMPTS = {
+  clarificationParsingPrompt: `You are an AI research assistant. You will be given a research topic and a list of clarifying questions. Your task is to parse the questions return them in an array of strings.
+  `,
+
   // Clarification: Helps to clarify research topics
   clarificationPrompt: `You are an AI research assistant. Your goal is to help users conduct deep research on topics by following a structured two-step workflow.
 

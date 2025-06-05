@@ -2,10 +2,10 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "./index";
-import { chats, deepresearch } from "./schema";
+import { research } from "./schema";
 import { redirect } from "next/navigation";
 
-export const createChat = async ({
+export const createResearch = async ({
   clerkUserId,
   initialUserMessage,
 }: {
@@ -13,44 +13,45 @@ export const createChat = async ({
   initialUserMessage: string;
 }) => {
   const [result] = await db
-    .insert(chats)
+    .insert(research)
     .values({
       clerkUserId,
       initialUserMessage,
     })
     .returning();
+
+  console.log("result", result);
   return result.id;
 };
 
-export const getChats = async () => {
-  const c = await db.select().from(chats);
+export const getResearches = async () => {
+  const c = await db.select().from(research);
   return c;
 };
 
-export const deleteChat = async (chatId: string) => {
-  await db.delete(chats).where(eq(chats.id, chatId));
+export const getResearch = async (id: string) => {
+  const result = await db
+    .select()
+    .from(research)
+    .where(eq(research.id, id))
+    .limit(1);
+  return result.length > 0 ? result[0] : null;
 };
 
-export async function createNewChat({
+export const deleteResearch = async (chatId: string) => {
+  await db.delete(research).where(eq(research.id, chatId));
+};
+
+export async function createResearchAndRedirect({
   clerkUserId,
   initialUserMessage,
 }: {
   clerkUserId?: string;
   initialUserMessage: string;
 }) {
-  const id = await createChat({
+  const id = await createResearch({
     clerkUserId,
     initialUserMessage,
   });
   redirect(`/chat/${id}`);
 }
-
-export const getDeepresearch = async (id: string) => {
-  const result = await db
-    .select()
-    .from(deepresearch)
-    .where(eq(deepresearch.id, id))
-    .limit(1);
-
-  return result[0] || null;
-};
