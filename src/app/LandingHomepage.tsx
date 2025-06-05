@@ -1,6 +1,6 @@
 "use client";
 import { ChatInput } from "@/components/ChatInput";
-import { Footnote } from "@/components/Footnote";
+import { Footer } from "@/components/Footer";
 import { createResearchAndRedirect } from "@/db/action";
 import { useUser } from "@clerk/nextjs";
 
@@ -47,7 +47,7 @@ export const LandingHomepage = () => {
           isGeneratingResponse={false}
         />
 
-        <Footnote />
+        <Footer />
       </div>
     </div>
   );
