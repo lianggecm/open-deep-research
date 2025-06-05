@@ -1,6 +1,6 @@
 "use client";
 import { ChatInput } from "@/components/ChatInput";
-import { Footnote } from "@/components/footnote";
+import { Footnote } from "@/components/Footnote";
 import { createResearchAndRedirect } from "@/db/action";
 import { useUser } from "@clerk/nextjs";
 
