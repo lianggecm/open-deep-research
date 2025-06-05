@@ -1,6 +1,7 @@
 "use client";
 
 import { Heading } from "../Heading";
+import { ReportSteps } from "./reportLoading/ReportSteps";
 
 export const ReportLoadingPage = ({
   researchTopic,
@@ -13,6 +14,8 @@ export const ReportLoadingPage = ({
         title={researchTopic}
         description="It takes a few minutes to gather sources, analyze data, and create your report."
       />
+
+      <ReportSteps />
     </div>
   );
 };
