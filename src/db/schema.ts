@@ -1,4 +1,3 @@
-import { UIMessage } from "ai";
 import {
   jsonb,
   pgEnum,
@@ -12,44 +11,31 @@ const nanoid = customAlphabet(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 );
 
-export const chats = pgTable("chats", {
-  id: varchar()
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  clerkUserId: varchar(),
-});
-
-export const roleEnum = pgEnum("role", ["user", "assistant", "system", "data"]);
-
-export const messages = pgTable("messages", {
-  id: varchar()
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  chatId: varchar()
-    .references(() => chats.id, { onDelete: "cascade" })
-    .notNull(),
-  createdAt: timestamp().defaultNow().notNull(),
-  // TODO: update type to UIMessagePart in AI SDK v5
-  parts: jsonb().$type<UIMessage["parts"]>().notNull(),
-  role: roleEnum().notNull(),
-});
-
 export const deepresearchStautsEnum = pgEnum("status", [
+  "questions",
   "pending",
   "processing",
   "completed",
 ]);
 
-export const deepresearch = pgTable("deepresearch", {
+export const research = pgTable("chats", {
   id: varchar()
     .primaryKey()
     .$defaultFn(() => nanoid()),
+  clerkUserId: varchar(),
+  // message prompt from the user in landing page
+  initialUserMessage: varchar().notNull(),
+  // generated questions based on the user prompt
+  questions: jsonb().$type<string[]>(),
+  // answers given from the user or empty array if skipped
+  answers: jsonb().$type<string[]>(),
+  // research topic
+  researchTopic: varchar(),
+
+  researchStartedAt: timestamp(),
+  status: deepresearchStautsEnum().notNull().default("questions"),
+  report: varchar(), // markdown of the report
+  coverUrl: varchar(), // url of the cover image generated with flux
+
   createdAt: timestamp().defaultNow().notNull(),
-  status: deepresearchStautsEnum().notNull(),
-  topic: varchar().notNull(),
-  report: varchar(),
-  coverUrl: varchar(),
-  chatId: varchar()
-    .references(() => chats.id, { onDelete: "cascade" })
-    .notNull(),
 });

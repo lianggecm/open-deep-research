@@ -1,9 +1,15 @@
-import { Chat } from "@/components/chat";
 import { db } from "@/db";
-import { eq, desc } from "drizzle-orm";
-import { loadChat } from "@/db/action";
-import { deepresearch } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { research } from "@/db/schema";
 import { Metadata } from "next";
+import { getResearch } from "@/db/action";
+import { redirect } from "next/navigation";
+import { generateObject, generateText } from "ai";
+import { MODEL_CONFIG, PROMPTS } from "@/deepresearch/config";
+import dedent from "dedent";
+import { togetheraiClient } from "@/deepresearch/apiClients";
+import z from "zod";
+import { ChatPage } from "@/components/app/ChatPage";
 
 export async function generateMetadata({
   params,
@@ -19,48 +25,16 @@ export async function generateMetadata({
     };
   }
 
-  const messages = chatId ? await loadChat(chatId) : []; // load the chat messages
+  const researchData = chatId ? await getResearch(chatId) : undefined;
 
-  const researches = chatId
-    ? await db
-        .select()
-        .from(deepresearch)
-        .where(eq(deepresearch.chatId, chatId))
-
-        .orderBy(desc(deepresearch.createdAt))
-        .limit(1)
-    : null;
-
-  const research = researches && researches.length >= 1 ? researches[0] : null;
-
-  if (!research) {
-    if (!messages || messages.length === 0) {
-      return {};
-    }
-
-    const firstUserMessage = messages.find(
-      (message) => message.role === "user"
-    );
-    const textMessage =
-      firstUserMessage?.parts[0].type === "text"
-        ? firstUserMessage.parts[0].text
-        : "";
-
-    const title = `Chat on "${textMessage.slice(0, 50)}" | DeepSeek Research`;
-    const description = `${textMessage}`;
-
-    return {
-      title: title,
-      description: description,
-      openGraph: {
-        title: title,
-        description: description,
-      },
-    };
+  if (!researchData) {
+    return redirect("/");
   }
 
-  const title = `${research.topic} | DeepSeek Research`;
-  const description = `Discover the research on "${research.topic}" ${research.status} | DeepSeek Research`;
+  const topic = researchData.researchTopic || researchData.initialUserMessage;
+
+  const title = `${topic} | DeepSeek Research`;
+  const description = `Discover the research on "${topic}" ${researchData.status} | DeepSeek Research`;
 
   return {
     title: title,
@@ -68,7 +42,7 @@ export async function generateMetadata({
     openGraph: {
       title: title,
       description: description,
-      images: research.coverUrl ? [research.coverUrl] : [],
+      images: researchData.coverUrl ? [researchData.coverUrl] : [],
     },
   };
 }
@@ -77,14 +51,47 @@ export default async function Page(props: {
   params: Promise<{ chatId: string }>;
 }) {
   const { chatId } = await props.params; // get the chat ID from the URL
-  const messages = await loadChat(chatId); // load the chat messages
+  const researchData = await getResearch(chatId); // load the chat
 
-  // TODO fix any of messages
-  return (
-    <div className="flex flex-col size-full items-center">
-      <div className="px-4 md:px-0 pb-[160px] pt-8 flex flex-col min-h-dvh items-center w-full max-w-3xl justify-between">
-        <Chat chatId={chatId} initialMessages={messages as any} />
-      </div>
-    </div>
-  );
+  // if we get chat without questions, generate questions with AI LLM and save to DB
+  if (!researchData || !researchData.initialUserMessage) {
+    return redirect("/");
+  }
+
+  if (!researchData.questions) {
+    const questionsText = await generateText({
+      system: dedent(PROMPTS.clarificationPrompt),
+      messages: [
+        {
+          role: "user",
+          content: researchData.initialUserMessage,
+        },
+      ],
+      model: togetheraiClient(MODEL_CONFIG.planningModel),
+    });
+    const result = await generateObject({
+      system: dedent(PROMPTS.clarificationParsingPrompt),
+      model: togetheraiClient(MODEL_CONFIG.jsonModel),
+      messages: [
+        {
+          role: "user",
+          content: questionsText.text,
+        },
+      ],
+      schema: z.object({
+        questions: z.array(z.string()),
+      }),
+    });
+
+    await db
+      .update(research)
+      .set({
+        questions: result.object.questions,
+      })
+      .where(eq(research.id, researchData.id));
+
+    researchData.questions = result.object.questions;
+  }
+
+  return <ChatPage chatId={chatId} researchData={researchData} />;
 }

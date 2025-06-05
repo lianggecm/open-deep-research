@@ -1,13 +1,23 @@
+import { db } from "@/db";
+import { research } from "@/db/schema";
 import { workflow } from "@/lib/clients";
+import { eq } from "drizzle-orm";
 import { NextRequest } from "next/server";
+import { cleanupSession } from "@/deepresearch/storage";
 
 export async function POST(request: NextRequest) {
-  const { id } = await request.json();
-  console.log("cancel workflow with run ID: ", id);
+  const { chatId } = await request.json();
+  console.log("cancel workflow with run ID: ", chatId);
 
   await workflow.cancel({
-    ids: id,
+    ids: chatId,
   });
+
+  // delete this from the db
+  await db.delete(research).where(eq(research.id, chatId));
+
+  // also delete from redis
+  await cleanupSession(chatId);
 
   return new Response("canceled workflow run!");
 }

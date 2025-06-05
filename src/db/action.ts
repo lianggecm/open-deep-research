@@ -1,114 +1,76 @@
 "use server";
 
-import { and, eq, gt } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "./index";
-import {
-  chats,
-  messages,
-  deepresearch,
-  deepresearchStautsEnum,
-} from "./schema";
-import { UIMessage } from "ai";
+import { research } from "./schema";
 import { redirect } from "next/navigation";
+import { startResearch } from "@/deepresearch/startResearch";
 
-export const createChat = async ({ clerkUserId }: { clerkUserId?: string }) => {
+export const createResearch = async ({
+  clerkUserId,
+  initialUserMessage,
+}: {
+  clerkUserId?: string;
+  initialUserMessage: string;
+}) => {
   const [result] = await db
-    .insert(chats)
+    .insert(research)
     .values({
       clerkUserId,
+      initialUserMessage,
     })
     .returning();
   return result.id;
 };
 
-export const upsertMessage = async ({
-  chatId,
-  message,
-  id,
-}: {
-  id: string;
-  chatId: string;
-  message: UIMessage;
-}) => {
-  const [result] = await db
-    .insert(messages)
-    .values({
-      chatId,
-      parts: message.parts ?? [],
-      role: message.role,
-      id,
-    })
-    .onConflictDoUpdate({
-      target: messages.id,
-      set: {
-        parts: message.parts ?? [],
-        chatId,
-      },
-    })
-    .returning();
-  return result;
-};
-
-export const loadChat = async (chatId: string) => {
-  const messagesResult = await db
-    .select()
-    .from(messages)
-    .where(eq(messages.chatId, chatId))
-    .orderBy(messages.createdAt);
-  return messagesResult;
-};
-
-export const getChats = async () => {
-  const c = await db.select().from(chats);
+export const getResearches = async () => {
+  const c = await db.select().from(research);
   return c;
 };
 
-export const deleteChat = async (chatId: string) => {
-  await db.delete(chats).where(eq(chats.id, chatId));
+export const getResearch = async (id: string) => {
+  const result = await db
+    .select()
+    .from(research)
+    .where(eq(research.id, id))
+    .limit(1);
+  return result.length > 0 ? result[0] : null;
 };
 
-export const deleteMessage = async (messageId: string) => {
-  return await db.transaction(async (tx) => {
-    const message = await tx
-      .select()
-      .from(messages)
-      .where(eq(messages.id, messageId))
-      .limit(1);
-
-    if (message.length > 0) {
-      const targetMessage = message[0];
-
-      const removed = await tx
-        .delete(messages)
-        .where(
-          and(
-            eq(messages.chatId, targetMessage.chatId),
-            gt(messages.createdAt, targetMessage.createdAt)
-          )
-        )
-        .returning();
-
-      await tx.delete(messages).where(eq(messages.id, messageId));
-
-      return removed;
-    }
-    return false;
-  });
+export const deleteResearch = async (chatId: string) => {
+  await db.delete(research).where(eq(research.id, chatId));
 };
 
-export async function createNewChat({ clerkUserId }: { clerkUserId?: string }) {
-  const id = await createChat({
+export async function createResearchAndRedirect({
+  clerkUserId,
+  initialUserMessage,
+}: {
+  clerkUserId?: string;
+  initialUserMessage: string;
+}) {
+  const id = await createResearch({
     clerkUserId,
+    initialUserMessage,
   });
   redirect(`/chat/${id}`);
 }
 
-export const getDeepresearch = async (id: string) => {
-  const result = await db
-    .select()
-    .from(deepresearch)
-    .where(eq(deepresearch.id, id))
-    .limit(1);
+export const skipQuestions = async (chatId: string) => {
+  await db
+    .update(research)
+    .set({
+      answers: [],
+    })
+    .where(eq(research.id, chatId));
+  await startResearch({ chatId });
+};
 
-  return result[0] || null;
+export const storeAnswers = async (chatId: string, answers: string[]) => {
+  await db
+    .update(research)
+    .set({
+      answers: answers,
+    })
+    .where(eq(research.id, chatId));
+  await startResearch({ chatId });
 };

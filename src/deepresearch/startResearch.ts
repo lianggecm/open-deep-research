@@ -1,16 +1,13 @@
+"use server";
 import { db } from "@/db";
-import { deepresearch } from "@/db/schema";
+import { getResearch } from "@/db/action";
+import { research } from "@/db/schema";
 import { StartResearchPayload } from "@/deepresearch/workflows/start-research-workflow";
-import { qstash, workflow } from "@/lib/clients";
-import { nanoid } from "nanoid";
+import { workflow } from "@/lib/clients";
+import { eq } from "drizzle-orm";
 
-export const startResearch = async ({
-  chatId,
-  topic,
-}: {
-  chatId: string;
-  topic: string;
-}) => {
+export const startResearch = async ({ chatId }: { chatId: string }) => {
+  console.log("startResearch", chatId);
   // Get the base URL for the workflow
   const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
@@ -18,12 +15,35 @@ export const startResearch = async ({
 
   const workflowUrl = `${baseUrl}/api/workflows/nested-research/start-research`;
 
-  const sessionId = nanoid(10); // Generate a unique session ID for this research session
+  const researchData = await getResearch(chatId);
+
+  const researchTopic = `${researchData?.initialUserMessage} ${
+    researchData?.answers && researchData?.answers?.length > 0
+      ? researchData?.questions
+          ?.map((question, questionIdx) => {
+            const answer = researchData?.answers?.[questionIdx];
+            return answer ? `${questionIdx + 1}. ${question} ${answer}` : "";
+          })
+          .filter(Boolean)
+          .join(" ")
+      : ""
+  }`.trim();
+
+  await db
+    .update(research)
+    .set({
+      researchTopic,
+      researchStartedAt: new Date(),
+    })
+    .where(eq(research.id, chatId))
+    .returning();
 
   const payload: StartResearchPayload = {
-    topic,
-    sessionId,
+    topic: researchTopic,
+    sessionId: chatId,
   };
+
+  // generate researchTopic by joining strings with:initialUserMessage + questions+answers the complete researchTopic to use in the research
 
   const { workflowRunId } = await workflow.trigger({
     url: workflowUrl,
@@ -39,20 +59,13 @@ export const startResearch = async ({
   //   delay: 10,
   // });
 
-  console.log("Started research with ID:", sessionId);
+  console.log(
+    "Started research with ID:",
+    chatId + " WfId:" + workflowRunId + " 🔎:" + researchTopic
+  );
 
   if (!workflowRunId)
     throw new Error("No workflow run ID returned from Trigger");
-
-  const [research] = await db
-    .insert(deepresearch)
-    .values({
-      topic,
-      chatId,
-      id: sessionId,
-      status: "pending",
-    })
-    .returning();
 
   return {
     researchId: research.id,

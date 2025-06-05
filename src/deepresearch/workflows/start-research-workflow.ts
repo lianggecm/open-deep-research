@@ -23,10 +23,11 @@ import {
   SearchResult,
 } from "../schemas";
 import { db } from "@/db";
-import { deepresearch, messages } from "@/db/schema";
+import { research } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { awsS3Client } from "@/lib/clients";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { getResearch } from "@/db/action";
 
 const MAX_BUDGET = 3;
 
@@ -150,10 +151,12 @@ export const startResearchWorkflow = createWorkflow<
         `🔍 Starting research for: ${topic} and Session ID: ${sessionId}`
       );
 
+      const researchData = await getResearch(sessionId);
+
       // Emit planning started event
       await streamStorage.addEvent(sessionId, {
         type: "planning_started",
-        topic,
+        topic: researchData?.initialUserMessage || topic,
         timestamp: Date.now(),
       } satisfies PlanningStartedEvent);
 
@@ -352,31 +355,15 @@ export const startResearchWorkflow = createWorkflow<
         throw new Error("Could not read final research state");
       }
 
-      const deepresearchDb = await db
-        .update(deepresearch)
+      await db
+        .update(research)
         .set({
           report: finalReport,
           coverUrl: coverImage,
           status: "completed",
         })
-        .where(eq(deepresearch.id, sessionId))
+        .where(eq(research.id, sessionId))
         .returning();
-
-      await db.insert(messages).values({
-        role: "assistant",
-        chatId: deepresearchDb[0].chatId,
-        createdAt: new Date(),
-        parts: [
-          {
-            text: `${
-              coverImage
-                ? `![Cover image for research on ${topic}](${coverImage})\n`
-                : ""
-            }\n\n${finalReport}`,
-            type: "text",
-          },
-        ],
-      });
 
       // Emit research completed event
       await streamStorage.addEvent(sessionId, {

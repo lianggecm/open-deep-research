@@ -7,7 +7,11 @@ import Link from "next/link";
 import { FaviconImage } from "./FaviconImage";
 
 const markdownComponents: Partial<Components> = {
-  p: ({ children }) => <p className="leading-6">{children}</p>,
+  p: ({ children }) => (
+    <p className="text-base font-light text-left text-[#0f172b] leading-6 pb-3">
+      {children}
+    </p>
+  ),
   pre: ({ children }) => <>{children}</>,
   img: ({ children, ...props }) => {
     return <img className="max-w-full rounded-lg" {...props} />;
@@ -67,42 +71,42 @@ const markdownComponents: Partial<Components> = {
   },
   h1: ({ children, ...props }) => {
     return (
-      <h1 className="text-3xl font-semibold mt-6 mb-2" {...props}>
+      <h1 className="text-[28px] text-left text-[#0f172b] mt-6 mb-2" {...props}>
         {children}
       </h1>
     );
   },
   h2: ({ children, ...props }) => {
     return (
-      <h2 className="text-2xl font-semibold mt-6 mb-2" {...props}>
+      <h2 className="text-2xl text-left text-[#0f172b] mb-2" {...props}>
         {children}
       </h2>
     );
   },
   h3: ({ children, ...props }) => {
     return (
-      <h3 className="text-xl font-semibold mt-6 mb-2" {...props}>
+      <h3 className="text-xl text-left text-[#0f172b] mb-2" {...props}>
         {children}
       </h3>
     );
   },
   h4: ({ children, ...props }) => {
     return (
-      <h4 className="text-lg font-semibold mt-6 mb-2" {...props}>
+      <h4 className="text-lg text-left text-[#0f172b] mb-2" {...props}>
         {children}
       </h4>
     );
   },
   h5: ({ children, ...props }) => {
     return (
-      <h5 className="text-base font-semibold mt-6 mb-2" {...props}>
+      <h5 className="text-base text-left text-[#0f172b] mb-2" {...props}>
         {children}
       </h5>
     );
   },
   h6: ({ children, ...props }) => {
     return (
-      <h6 className="text-sm font-semibold mt-6 mb-2" {...props}>
+      <h6 className="text-sm text-left text-[#0f172b] mb-2" {...props}>
         {children}
       </h6>
     );
@@ -150,17 +154,11 @@ const markdownComponents: Partial<Components> = {
   },
 };
 
-interface MarkdownProps {
+export const CustomMarkdown: React.FC<{
   children: string;
   className?: string;
   style?: React.CSSProperties;
-}
-
-export const Markdown: React.FC<MarkdownProps> = ({
-  children,
-  className = "",
-  style,
-}) => {
+}> = ({ children, className = "", style }) => {
   // TODO: Consider sanitizing HTML output for security if user input is rendered
   return (
     <ReactMarkdown components={markdownComponents} remarkPlugins={[remarkGfm]}>
