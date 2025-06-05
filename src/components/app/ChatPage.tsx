@@ -63,7 +63,9 @@ export const ChatPage = ({
           />
         </div>
       )}
-      <CustomMarkdown>{researchData.report}</CustomMarkdown>
+      <div className="max-w-[600px]">
+        <CustomMarkdown>{researchData.report}</CustomMarkdown>
+      </div>
     </div>
   );
 };
