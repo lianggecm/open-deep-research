@@ -10,10 +10,12 @@ export const ReportLoadingPage = ({
   researchTopic,
   chatId,
   researchStartedAt,
+  onComplete,
 }: {
   researchStartedAt: Date;
   researchTopic: string;
   chatId: string;
+  onComplete: () => void;
 }) => {
   const [researchData, setResearchData] = useState<ResearchEventStreamEvents[]>(
     []
@@ -49,7 +51,7 @@ export const ReportLoadingPage = ({
 
   const onResearchEnd = () => {
     setIsStreaming(false);
-    // Additional logic after research is completed
+    onComplete();
   };
 
   const fetchResearch = async (chatId: string) => {
@@ -116,7 +118,10 @@ export const ReportLoadingPage = ({
           newSteps[0].status = "completed";
           newSteps[1].status = "loading";
         }
-        if (event.type === "iteration_completed") {
+        if (
+          event.type === "evaluation_completed" ||
+          event.type === "iteration_completed"
+        ) {
           if (event.iteration === 1) {
             newSteps[1].status = "completed";
             newSteps[2].status = "loading";

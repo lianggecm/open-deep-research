@@ -59,7 +59,6 @@ export default async function Page(props: {
   }
 
   if (!researchData.questions) {
-    console.log("Generating questions...");
     const questionsText = await generateText({
       system: dedent(PROMPTS.clarificationPrompt),
       messages: [
@@ -90,6 +89,8 @@ export default async function Page(props: {
         questions: result.object.questions,
       })
       .where(eq(research.id, researchData.id));
+
+    researchData.questions = result.object.questions;
   }
 
   return <ChatPage chatId={chatId} researchData={researchData} />;

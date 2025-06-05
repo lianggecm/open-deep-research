@@ -2,14 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Circle, Clock } from "lucide-react";
 
 interface TimelineItem {
   id: string;
   title: string;
   description: string;
-  status: "completed" | "in-progress" | "pending";
-  timestamp: string;
+  status: "completed" | "in-progress" | "search";
   details?: string[];
 }
 
@@ -19,7 +17,6 @@ const timelineData: TimelineItem[] = [
     title: "Research Topic",
     description: "best adult-only resorts in Greece",
     status: "completed",
-    timestamp: "2 hours ago",
     details: [
       "Santorini luxury resorts",
       "Mykonos exclusive properties",
@@ -32,7 +29,6 @@ const timelineData: TimelineItem[] = [
     description:
       "Top places to visit in Morocco in 2025 include Marrakech, Fes, and the Sahara Desert, known for their history, culture, and stunning landscapes.",
     status: "in-progress",
-    timestamp: "1 hour ago",
     details: [
       "Chefchaouen, Essaouira, and Taghazout are rising in popularity for their charm and relaxed atmosphere",
     ],
@@ -43,7 +39,6 @@ const timelineData: TimelineItem[] = [
     description:
       "Analyzing cost-effective travel options for Mediterranean destinations",
     status: "completed",
-    timestamp: "45 minutes ago",
     details: [
       "Flight comparisons",
       "Accommodation pricing",
@@ -56,49 +51,10 @@ const timelineData: TimelineItem[] = [
     description:
       "Creating detailed day-by-day travel schedules for optimal experience",
     status: "in-progress",
-    timestamp: "30 minutes ago",
     details: [
       "Day 1-3: Athens exploration",
       "Day 4-7: Island hopping",
       "Day 8-10: Cultural sites",
-    ],
-  },
-  {
-    id: "5",
-    title: "Booking Coordination",
-    description:
-      "Coordinating reservations for flights, hotels, and activities",
-    status: "pending",
-    timestamp: "15 minutes ago",
-    details: [
-      "Flight bookings pending",
-      "Hotel confirmations needed",
-      "Activity reservations in progress",
-    ],
-  },
-  {
-    id: "6",
-    title: "Travel Documentation",
-    description: "Preparing all necessary travel documents and requirements",
-    status: "pending",
-    timestamp: "10 minutes ago",
-    details: [
-      "Passport validity check",
-      "Visa requirements",
-      "Travel insurance",
-    ],
-  },
-  {
-    id: "7",
-    title: "Final Review",
-    description:
-      "Comprehensive review of all travel arrangements and preparations",
-    status: "pending",
-    timestamp: "Just now",
-    details: [
-      "Checklist verification",
-      "Emergency contacts",
-      "Local currency preparation",
     ],
   },
 ];
@@ -119,18 +75,6 @@ export default function TimelineProgress() {
     }
   };
 
-  // Simulate adding new timeline items
-  const addNewItem = () => {
-    if (items.length >= timelineData.length) return;
-
-    setIsGenerating(true);
-
-    setTimeout(() => {
-      setItems((prev) => [...prev, timelineData[prev.length]]);
-      setIsGenerating(false);
-    }, 1500);
-  };
-
   // Auto-scroll when items change
   useEffect(() => {
     if (items.length > 2) {
@@ -141,11 +85,18 @@ export default function TimelineProgress() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "completed":
-        return <Check className="w-4 h-4 text-[#101828]" />;
+        return <img src="/timeline/completed.svg" className="size-[10px]" />;
       case "in-progress":
-        return <Clock className="w-4 h-4 text-[#4a5565] animate-pulse" />;
+        return (
+          <img
+            src="/timeline/loading.svg"
+            className="size-[12px] animate-spin"
+          />
+        );
+      case "search":
+        return <img src="/timeline/search.svg" className="size-[12px]" />;
       default:
-        return <Circle className="w-4 h-4 text-[#99a1af]" />;
+        return <></>;
     }
   };
 
@@ -198,9 +149,6 @@ export default function TimelineProgress() {
                       <h3 className="font-semibold text-[#101828]">
                         {item.title}
                       </h3>
-                      <span className="text-xs text-[#99a1af]">
-                        {item.timestamp}
-                      </span>
                     </div>
 
                     <p className="text-[#6a7282] text-sm mb-2 leading-relaxed">
@@ -245,29 +193,6 @@ export default function TimelineProgress() {
 
         {/* Invisible element to scroll to */}
         <div ref={bottomRef} />
-      </div>
-
-      {/* Controls */}
-      <div className="mt-4 flex gap-2">
-        <button
-          onClick={addNewItem}
-          disabled={isGenerating || items.length >= timelineData.length}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {isGenerating ? "Generating..." : "Add Timeline Item"}
-        </button>
-
-        <button
-          onClick={() => setItems(timelineData.slice(0, 2))}
-          className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-        >
-          Reset Timeline
-        </button>
-      </div>
-
-      <div className="mt-4 text-sm text-gray-600">
-        <p>• Timeline automatically scrolls to show the most recent items</p>
-        <p>• Click "Add Timeline Item" to see the auto-scroll behavior</p>
       </div>
     </div>
   );

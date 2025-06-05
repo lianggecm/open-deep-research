@@ -7,7 +7,7 @@ import { ChevronDownIcon, ChevronUpIcon, SpinnerIcon } from "./icons";
 import { UIMessage } from "ai";
 import { UseChatHelpers } from "@ai-sdk/react";
 import { DeepResearchTool } from "./DeepResearchTool";
-import { Markdown } from "./Markdown";
+import { CustomMarkdown } from "./CustomMarkdown";
 import { Clipboard, Check } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -90,7 +90,7 @@ export function ReasoningMessagePart({
           >
             {part.details.map((detail, detailIndex) =>
               detail.type === "text" ? (
-                <Markdown key={detailIndex}>{detail.text}</Markdown>
+                <CustomMarkdown key={detailIndex}>{detail.text}</CustomMarkdown>
               ) : (
                 "<redacted>"
               )
@@ -111,7 +111,7 @@ interface TextMessagePartProps {
 export function TextMessagePart({ text }: TextMessagePartProps) {
   return (
     <div className="flex flex-col gap-4">
-      <Markdown>{text}</Markdown>
+      <CustomMarkdown>{text}</CustomMarkdown>
     </div>
   );
 }

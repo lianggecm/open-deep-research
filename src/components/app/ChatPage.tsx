@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 
 import { QuestionsPage } from "@/components/app/questions/QuestionsPage";
 import { ReportLoadingPage } from "./ReportLoadingPage";
+import { CustomMarkdown } from "../CustomMarkdown";
 
 export const ChatPage = ({
   chatId,
@@ -44,9 +45,25 @@ export const ChatPage = ({
         researchStartedAt={
           researchData.researchStartedAt || researchData.createdAt
         }
+        onComplete={() => {
+          router.refresh();
+        }}
       />
     );
   }
 
-  return <div className="flex flex-col size-full items-center">CIAO</div>;
+  return (
+    <div className="flex flex-col size-full pt-20 px-5">
+      {researchData.coverUrl && (
+        <div className="w-full h-[202px] md:h-[305px] relative overflow-hidden rounded-lg border border-[#cad5e2]">
+          <img
+            src={researchData.coverUrl}
+            className="w-full h-full object-cover rounded"
+            alt=""
+          />
+        </div>
+      )}
+      <CustomMarkdown>{researchData.report}</CustomMarkdown>
+    </div>
+  );
 };

@@ -23,7 +23,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { ResearchEventStreamEvents } from "@/app/api/research/route";
-import { Markdown } from "./Markdown";
+import { CustomMarkdown } from "./CustomMarkdown";
 import { getDomainFromUrl } from "@/lib/utils";
 
 interface ResearchProgressProps {
@@ -262,7 +262,7 @@ export default function ResearchProgress({
               <div>
                 <h4 className="font-semibold mb-1.5 text-sm">Research Plan</h4>
                 <div className="text-xs text-muted-foreground bg-muted rounded p-1 whitespace-pre-wrap max-h-52 overflow-y-auto">
-                  <Markdown>{planningCompleted.plan}</Markdown>
+                  <CustomMarkdown>{planningCompleted.plan}</CustomMarkdown>
                 </div>
               </div>
             )}
@@ -514,7 +514,9 @@ export default function ResearchProgress({
                 <h4 className="font-semibold mb-1.5 text-sm">Reasoning</h4>
                 <div className="text-xs text-muted-foreground whitespace-pre-wrap max-h-36 overflow-y-auto">
                   {truncateText(evaluationCompleted.reasoning, 500)}
-                  <Markdown>{evaluationCompleted.reasoning}</Markdown>
+                  <CustomMarkdown>
+                    {evaluationCompleted.reasoning}
+                  </CustomMarkdown>
                 </div>
               </div>
             )}
@@ -555,10 +557,10 @@ export default function ResearchProgress({
               {(reportGenerating?.partialReport || reportGenerated?.report) && (
                 <div className="space-y-1.5">
                   <div className="text-xs text-muted-foreground bg-muted rounded p-1 whitespace-pre-wrap max-h-52 overflow-y-auto">
-                    <Markdown>
+                    <CustomMarkdown>
                       {reportGenerated?.report ||
                         reportGenerating?.partialReport}
-                    </Markdown>
+                    </CustomMarkdown>
                   </div>
                   {!reportGenerated && reportGenerating && (
                     <Badge

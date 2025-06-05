@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
 export type ReportStepType = {
@@ -44,7 +45,10 @@ export const ReportSteps = ({
                   ? "/reportStep/loading.svg"
                   : "/reportStep/pending.svg"
               }
-              className="size-3"
+              className={cn(
+                "size-3",
+                step.status === "loading" ? "animate-spin" : ""
+              )}
               alt={`${step.status} icon`}
             />
             <p
