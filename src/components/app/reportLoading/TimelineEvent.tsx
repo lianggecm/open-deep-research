@@ -91,7 +91,12 @@ export const TimelineEvent = ({
         {webResults && (
           <div className="grid grid-cols-2 gap-3 mb-2">
             {webResults.map((result, idx) => (
-              <div className="flex justify-start items-center w-full overflow-hidden gap-3 px-4 py-3 rounded-lg bg-gray-50 border-[0.7px] border-gray-200">
+              <a
+                href={result.url}
+                target="_blank"
+                rel="noreferrer"
+                className="flex justify-start items-center w-full overflow-hidden gap-3 px-4 py-3 rounded-lg bg-gray-50 border-[0.7px] border-gray-200"
+              >
                 <div className="flex flex-col justify-start items-start  relative gap-1 overflow-hidden">
                   <p className="max-w-full truncate text-xs text-left text-[#4a5565]">
                     {result.title}
@@ -108,17 +113,12 @@ export const TimelineEvent = ({
                         {getDomainFromUrl(result.url)}
                       </p>
                     </div>
-                    <a
-                      href={result.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="p-2"
-                    >
+                    <div className="p-2">
                       <img src="/timeline/link.svg" alt="" className="size-3" />
-                    </a>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         )}

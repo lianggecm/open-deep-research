@@ -355,7 +355,7 @@ export const startResearchWorkflow = createWorkflow<
         throw new Error("Could not read final research state");
       }
 
-      const deepresearchDb = await db
+      await db
         .update(research)
         .set({
           report: finalReport,

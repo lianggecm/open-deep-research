@@ -18,7 +18,7 @@ export const QuestionsPage = ({
   );
 
   return (
-    <div className="px-5 py-5 h-full flex flex-col flex-1">
+    <div className="my-5 px-5 md:px-0 h-full flex flex-col flex-1 max-w-[671px] mx-auto">
       <Heading
         title="Answer some questions for a more accurate report"
         description="This is optional, you can skip this by clicking “Generate Report” or “Skip”."
@@ -45,7 +45,7 @@ export const QuestionsPage = ({
 
       <div className="w-full items-center flex flex-col gap-3 self-end justify-end flex-1 md:flex-row-reverse">
         <button
-          className="px-5 py-1.5 text-base font-medium text-left !text-[#6a7282] cursor-pointer"
+          className="px-5 py-1.5 text-base font-medium !text-[#6a7282] cursor-pointer border border-[#6a7282]/50 rounded w-full md:w-[165px] items-center justify-center"
           onClick={() => {
             onSkip();
           }}

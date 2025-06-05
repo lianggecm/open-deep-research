@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ResearchEventStreamEvents } from "@/app/api/research/route";
 import { TimelineEvent } from "./TimelineEvent";
 import { TimelineEventLoader } from "./TimelineEventLoader";
+import { CustomMarkdown } from "@/components/CustomMarkdown";
 
 export default function TimelineProgress({
   events,
@@ -77,114 +78,122 @@ export default function TimelineProgress({
     }
   }
 
+  if (renderableEvents.length <= 1) {
+    return null;
+  }
+
   return (
-    <div className="max-w-2xl mx-auto p-6">
+    <div className="max-w-2xl mx-auto px-6">
       <div
         ref={scrollContainerRef}
         className="overflow-y-auto rounded-lg bg-white"
       >
-        <div className="p-4">
-          <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute left-[9px] top-[1px] bottom-0 w-0.5 bg-[#D1D5DC]" />
+        <div className="relative">
+          {/* Timeline line */}
+          <div className="absolute left-[9px] top-[1px] bottom-0 w-0.5 bg-[#D1D5DC]" />
 
-            <AnimatePresence>
-              {renderableEvents
-                .map((event, index) => {
-                  const isLast = index === renderableEvents.length - 1;
+          <AnimatePresence>
+            {renderableEvents
+              .map((event, index) => {
+                const isLast = index === renderableEvents.length - 1;
 
-                  switch (event.type) {
-                    case "planning_started":
-                      return (
-                        <TimelineEvent
-                          key={index}
-                          type={event.type}
-                          isLast={isLast}
-                          title="Research Topic"
-                          description={event.topic}
-                        />
-                      );
+                switch (event.type) {
+                  case "planning_started":
+                    return (
+                      <TimelineEvent
+                        key={index}
+                        type={event.type}
+                        isLast={isLast}
+                        title="Research Topic"
+                        description={event.topic}
+                      />
+                    );
 
-                    case "planning_completed":
-                      return (
-                        <TimelineEvent
-                          key={index}
-                          type={event.type}
-                          isLast={isLast}
-                          title="Research Plan"
-                          description={event.plan}
-                        />
-                      );
+                  case "planning_completed":
+                    return (
+                      <TimelineEvent
+                        key={index}
+                        type={event.type}
+                        isLast={isLast}
+                        title="Research Plan"
+                        description={
+                          <CustomMarkdown>{event.plan || ""}</CustomMarkdown>
+                        }
+                      />
+                    );
 
-                    case "search_completed":
-                      return (
-                        <TimelineEvent
-                          key={index}
-                          type={event.type}
-                          isLast={isLast}
-                          title={
-                            <>
-                              <span className="text-sm font-light text-left text-[#6a7282]">
-                                Searched for
-                              </span>
-                              <span className="ml-1 text-sm text-left text-[#4a5565]">
-                                ‘{event.query}‘
-                              </span>
-                            </>
-                          }
-                          webResults={event.urls.map((url) => {
-                            return {
-                              url: url,
-                              title: url,
-                            };
-                          })}
-                        />
-                      );
+                  case "search_completed":
+                    return (
+                      <TimelineEvent
+                        key={index}
+                        type={event.type}
+                        isLast={isLast}
+                        title={
+                          <>
+                            <span className="text-sm font-light text-left text-[#6a7282]">
+                              Searched for
+                            </span>
+                            <span className="ml-1 text-sm text-left text-[#4a5565]">
+                              ‘{event.query}‘
+                            </span>
+                          </>
+                        }
+                        webResults={event.urls.map((url) => {
+                          return {
+                            url: url,
+                            title: url,
+                          };
+                        })}
+                      />
+                    );
 
-                    case "evaluation_completed":
-                      return (
-                        <TimelineEvent
-                          key={index}
-                          type={event.type}
-                          isLast={isLast}
-                          title="Evaluation Complete"
-                          description={event.reasoning?.slice(0, 100)}
-                        />
-                      );
+                  case "evaluation_completed":
+                    return (
+                      <TimelineEvent
+                        key={index}
+                        type={event.type}
+                        isLast={isLast}
+                        title="Evaluation Complete"
+                        description={
+                          <CustomMarkdown>
+                            {event.reasoning?.slice(0, 200) + "..." || ""}
+                          </CustomMarkdown>
+                        }
+                      />
+                    );
 
-                    case "report_started":
-                      return (
-                        <TimelineEvent
-                          key={index}
-                          type={event.type}
-                          isLast={isLast}
-                          title="Generating Report"
-                        />
-                      );
+                  case "report_started":
+                    return (
+                      <TimelineEvent
+                        key={index}
+                        type={event.type}
+                        isLast={isLast}
+                        title="Generating Report"
+                      />
+                    );
 
-                    case "report_generating":
-                      return (
-                        <TimelineEvent
-                          key={index}
-                          type={event.type}
-                          isLast={isLast}
-                          title="Writing report..."
-                          description={event.partialReport}
-                        />
-                      );
+                  case "report_generating":
+                    return (
+                      <TimelineEvent
+                        key={index}
+                        type={event.type}
+                        isLast={isLast}
+                        title="Writing report..."
+                        description={event.partialReport}
+                      />
+                    );
 
-                    default:
-                      return null;
-                  }
-                })
-                .filter(Boolean)}
-            </AnimatePresence>
+                  default:
+                    return null;
+                }
+              })
+              .filter(Boolean)}
+          </AnimatePresence>
 
-            <TimelineEventLoader />
+          <TimelineEventLoader />
 
-            {/* Invisible element to scroll to */}
-            <div ref={bottomRef} />
-          </div>
+          {/* Invisible element to scroll to */}
+          <div ref={bottomRef} />
         </div>
       </div>
     </div>
