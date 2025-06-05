@@ -9,6 +9,9 @@ import { MODEL_CONFIG, PROMPTS } from "@/deepresearch/config";
 import dedent from "dedent";
 import { togetheraiClient } from "@/deepresearch/apiClients";
 import z from "zod";
+import { Heading } from "@/components/Heading";
+import { AnswerInput } from "@/components/questions/AnswerInput";
+import { QuestionsPage } from "@/components/questions/QuestionsPage";
 
 export async function generateMetadata({
   params,
@@ -92,7 +95,7 @@ export default async function Page(props: {
   }
 
   if (!researchData.answers) {
-    return <div>Answering questions...</div>;
+    return <QuestionsPage questions={researchData.questions || []} />;
   }
 
   if (!researchData?.report) {
