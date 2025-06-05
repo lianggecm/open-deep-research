@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ResearchEventStreamEvents } from "@/app/api/research/route";
 import { TimelineEvent } from "./TimelineEvent";
+import { TimelineEventLoader } from "./TimelineEventLoader";
 
 export default function TimelineProgress({
   events,
@@ -80,7 +81,7 @@ export default function TimelineProgress({
     <div className="max-w-2xl mx-auto p-6">
       <div
         ref={scrollContainerRef}
-        className="max-h-96 overflow-y-auto rounded-lg bg-white"
+        className="overflow-y-auto rounded-lg bg-white"
       >
         <div className="p-4">
           <div className="relative">
@@ -178,6 +179,8 @@ export default function TimelineProgress({
                 })
                 .filter(Boolean)}
             </AnimatePresence>
+
+            <TimelineEventLoader />
 
             {/* Invisible element to scroll to */}
             <div ref={bottomRef} />
