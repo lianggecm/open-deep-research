@@ -2,6 +2,7 @@
 
 import { Heading } from "../Heading";
 import { ReportSteps } from "./reportLoading/ReportSteps";
+import TimelineProgress from "./reportLoading/TimelineProgress";
 
 export const ReportLoadingPage = ({
   researchTopic,
@@ -16,6 +17,8 @@ export const ReportLoadingPage = ({
       />
 
       <ReportSteps />
+
+      <TimelineProgress />
     </div>
   );
 };
