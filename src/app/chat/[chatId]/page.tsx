@@ -53,8 +53,6 @@ export default async function Page(props: {
   const { chatId } = await props.params; // get the chat ID from the URL
   const researchData = await getResearch(chatId); // load the chat
 
-  console.log("researchData", researchData, "chatId", chatId);
-
   // if we get chat without questions, generate questions with AI LLM and save to DB
   if (!researchData || !researchData.initialUserMessage) {
     return redirect("/");

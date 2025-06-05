@@ -4,7 +4,7 @@ type StepsType = {
   status: "pending" | "completed" | "loading";
 };
 
-export const ReportSteps = () => {
+export const ReportSteps = ({ onCancel }: { onCancel: () => void }) => {
   const steps: StepsType[] = [
     {
       id: "1",
@@ -33,7 +33,7 @@ export const ReportSteps = () => {
     },
   ];
   return (
-    <div className="flex flex-col relative overflow-hidden rounded-lg bg-white border-[0.7px] border-[#d1d5dc]">
+    <div className="flex flex-col relative overflow-hidden rounded-lg bg-white border-[0.7px] border-[#d1d5dc] md:min-w-[206px] h-fit">
       <div className="flex-shrink-0 h-[68px] p-4 flex flex-col justify-center border-b-[0.7px] border-[#d1d5dc]">
         <p className="text-base font-medium text-left text-[#101828]">
           Generating Report
@@ -73,7 +73,12 @@ export const ReportSteps = () => {
         ))}
       </div>
 
-      <button className="px-4 py-3 text-sm font-light text-left text-[#826a6a] cursor-pointer">
+      <button
+        onClick={() => {
+          onCancel();
+        }}
+        className="px-4 py-3 text-sm font-light text-left text-[#826a6a] cursor-pointer"
+      >
         Cancel search
       </button>
     </div>

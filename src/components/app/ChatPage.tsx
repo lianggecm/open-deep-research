@@ -14,8 +14,6 @@ export const ChatPage = ({
 }) => {
   const router = useRouter();
 
-  console.log("researchData", researchData, "chatId", chatId);
-
   // if we get chat without questions, generate questions with AI LLM and save to DB
   if (!researchData || !researchData.initialUserMessage) {
     router.replace("/");
@@ -31,7 +29,6 @@ export const ChatPage = ({
           router.refresh();
         }}
         onGenerate={(answers) => {
-          console.log("answers", answers);
           storeAnswers(chatId, answers);
           router.refresh();
         }}
@@ -41,7 +38,10 @@ export const ChatPage = ({
 
   if (!researchData?.report) {
     return (
-      <ReportLoadingPage researchTopic={researchData.initialUserMessage} />
+      <ReportLoadingPage
+        researchTopic={researchData.initialUserMessage}
+        chatId={chatId}
+      />
     );
   }
 

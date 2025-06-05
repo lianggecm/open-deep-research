@@ -20,8 +20,6 @@ export const createResearch = async ({
       initialUserMessage,
     })
     .returning();
-
-  console.log("result", result);
   return result.id;
 };
 
