@@ -1,6 +1,6 @@
 import { ResearchEventStreamEvents } from "@/app/api/research/route";
 import { FaviconImage } from "@/components/FaviconImage";
-import { getDomainFromUrl } from "@/lib/utils";
+import { getDomainFromUrl, cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
@@ -15,7 +15,7 @@ export const TimelineEvent = ({
   type: ResearchEventStreamEvents["type"];
   isLast: boolean;
   title: ReactNode;
-  description?: ReactNode;
+  description?: string;
   queries?: string[];
   webResults?: {
     url: string;
@@ -70,9 +70,18 @@ export const TimelineEvent = ({
         </div>
 
         {description && (
-          <p className="text-[#6a7282] text-sm font-light mb-2 leading-relaxed">
-            {description}
-          </p>
+          <div
+            className={cn(
+              "relative max-h-40 overflow-hidden",
+              description && description.length > 100
+                ? "after:content-[''] after:absolute after:inset-x-0 after:bottom-0 after:h-16 after:bg-gradient-to-b after:from-transparent after:to-white"
+                : ""
+            )}
+          >
+            <p className="text-[#6a7282] text-sm font-light mb-2 leading-relaxed bg-gradient-to-r from-[#6a7282] to-[#4a5565] bg-clip-text">
+              {description}
+            </p>
+          </div>
         )}
 
         {queries && (
@@ -92,7 +101,7 @@ export const TimelineEvent = ({
           <div className="grid grid-cols-2 gap-3 mb-2">
             {webResults.map((result, idx) => (
               <a
-                href={result.url}
+                href={result.url + idx}
                 target="_blank"
                 rel="noreferrer"
                 className="flex justify-start items-center w-full overflow-hidden gap-3 px-4 py-3 rounded-lg bg-gray-50 border-[0.7px] border-gray-200"

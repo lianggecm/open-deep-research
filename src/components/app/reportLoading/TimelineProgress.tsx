@@ -7,6 +7,49 @@ import { TimelineEvent } from "./TimelineEvent";
 import { TimelineEventLoader } from "./TimelineEventLoader";
 import { CustomMarkdown } from "@/components/CustomMarkdown";
 
+// Function to clean markdown to pure text
+function cleanMarkdownToText(markdownText: string | undefined): string {
+  if (!markdownText) {
+    return "";
+  }
+
+  let cleanText = markdownText;
+
+  // Remove headers
+  cleanText = cleanText.replace(/^#+\s/gm, "");
+
+  // Remove bold and italics
+  cleanText = cleanText.replace(/(\*\*|__)(.*?)\1/g, "$2");
+  cleanText = cleanText.replace(/(\*|_)(.*?)\1/g, "$2");
+
+  // Remove links, keeping only the link text
+  cleanText = cleanText.replace(/\[(.*?)\]\(.*?\)/g, "$1");
+
+  // Remove images, keeping only the alt text
+  cleanText = cleanText.replace(/!\[(.*?)\]\(.*?\)/g, "$1");
+
+  // Remove blockquotes
+  cleanText = cleanText.replace(/^>\s/gm, "");
+
+  // Remove list markers
+  cleanText = cleanText.replace(/^(\s*)[-*+]\s/gm, "$1");
+  cleanText = cleanText.replace(/^(\s*)\d+\.\s/gm, "$1");
+
+  // Remove horizontal rules
+  cleanText = cleanText.replace(/^-{3,}\s*$/gm, "");
+  cleanText = cleanText.replace(/^\*{3,}\s*$/gm, "");
+  cleanText = cleanText.replace(/^__{3,}\s*$/gm, "");
+
+  // Remove code blocks
+  cleanText = cleanText.replace(/```[\s\S]*?```/g, "");
+  cleanText = cleanText.replace(/`([^`]+)`/g, "$1");
+
+  // Remove extra whitespace and newlines
+  cleanText = cleanText.replace(/\s+/g, " ").trim();
+
+  return cleanText;
+}
+
 export default function TimelineProgress({
   events,
 }: {
@@ -83,7 +126,7 @@ export default function TimelineProgress({
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6">
+    <div className="max-w-2xl mx-auto px-6 pt-8 md:pt-0">
       <div
         ref={scrollContainerRef}
         className="overflow-y-auto rounded-lg bg-white"
@@ -116,9 +159,7 @@ export default function TimelineProgress({
                         type={event.type}
                         isLast={isLast}
                         title="Research Plan"
-                        description={
-                          <CustomMarkdown>{event.plan || ""}</CustomMarkdown>
-                        }
+                        description={cleanMarkdownToText(event.plan)}
                       />
                     );
 
@@ -155,9 +196,8 @@ export default function TimelineProgress({
                         isLast={isLast}
                         title="Evaluation Complete"
                         description={
-                          <CustomMarkdown>
-                            {event.reasoning?.slice(0, 200) + "..." || ""}
-                          </CustomMarkdown>
+                          cleanMarkdownToText(event.reasoning)?.slice(0, 200) +
+                            "..." || ""
                         }
                       />
                     );
@@ -179,7 +219,7 @@ export default function TimelineProgress({
                         type={event.type}
                         isLast={isLast}
                         title="Writing report..."
-                        description={event.partialReport}
+                        description={cleanMarkdownToText(event.partialReport)}
                       />
                     );
 
