@@ -2,10 +2,12 @@ export const AnswerInput = ({
   question,
   answer,
   setAnswer,
+  onEnter,
 }: {
   question: string;
   answer: string;
   setAnswer: (answer: string) => void;
+  onEnter: () => void;
 }) => {
   return (
     <div className="flex flex-col gap-3 w-full">
@@ -15,6 +17,11 @@ export const AnswerInput = ({
         type="text"
         placeholder="Answer here..."
         value={answer}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onEnter();
+          }
+        }}
         onChange={(e) => setAnswer(e.target.value)}
       ></input>
     </div>

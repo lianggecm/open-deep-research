@@ -36,6 +36,9 @@ export const QuestionsPage = ({
                 return newAnswers;
               });
             }}
+            onEnter={() => {
+              if (index === questions.length - 1) onGenerate(answers);
+            }}
           />
         ))}
       </div>
