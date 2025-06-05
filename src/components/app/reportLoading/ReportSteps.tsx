@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export type ReportStepType = {
   id: string;
@@ -8,14 +10,27 @@ export type ReportStepType = {
 };
 
 export const ReportSteps = ({
-  onCancel,
+  chatId,
   researchStartedAt,
   steps,
 }: {
-  onCancel: () => void;
+  chatId: string;
   researchStartedAt: Date;
   steps: ReportStepType[];
 }) => {
+  const router = useRouter();
+  const [isCanceling, setIsCanceling] = useState(false);
+
+  const onCancel = async () => {
+    setIsCanceling(true);
+    await fetch("/api/research/cancel", {
+      method: "POST",
+      body: JSON.stringify({ chatId: chatId }),
+    });
+    router.replace("/");
+    setIsCanceling(false);
+  };
+
   return (
     <div className="flex flex-col relative overflow-hidden rounded-lg bg-white border-[0.7px] border-[#d1d5dc] md:min-w-[206px] h-fit">
       <div className="flex-shrink-0 h-[68px] p-4 flex flex-col justify-center border-b-[0.7px] border-[#d1d5dc]">
@@ -63,12 +78,17 @@ export const ReportSteps = ({
       </div>
 
       <button
-        onClick={() => {
-          onCancel();
-        }}
+        disabled={isCanceling}
+        onClick={onCancel}
         className="px-4 py-3 text-sm font-light text-left text-[#826a6a] cursor-pointer"
       >
-        Cancel search
+        {isCanceling ? (
+          <>
+            <img src="loading.svg" className="size-5" />
+          </>
+        ) : (
+          <>Cancel search</>
+        )}
       </button>
     </div>
   );

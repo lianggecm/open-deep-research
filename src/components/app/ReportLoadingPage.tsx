@@ -154,7 +154,7 @@ export const ReportLoadingPage = ({
       <div className="flex flex-col gap-2 md:flex-row">
         <ReportSteps
           steps={steps}
-          onCancel={() => {}}
+          chatId={chatId}
           researchStartedAt={researchStartedAt}
         />
 
