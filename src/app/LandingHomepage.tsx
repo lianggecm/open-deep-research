@@ -21,7 +21,7 @@ export const LandingHomepage = () => {
           </div>
           <img
             src="/together.png"
-            className="w-[77.3px] h-fit mt-0.5"
+            className="w-[77.3px] h-[12.94px] mt-0.5 object-fill"
             alt="Together.ai logo"
           />
         </a>

@@ -43,7 +43,7 @@ export const QuestionsPage = ({
         ))}
       </div>
 
-      <div className="w-full items-center flex flex-col gap-3 self-end justify-end flex-1 md:flex-row-reverse">
+      <div className="w-full items-center flex flex-col gap-3 self-end justify-end flex-1 md:flex-row-reverse pb-8">
         <button
           className="px-5 py-1.5 text-base font-medium !text-[#6a7282] cursor-pointer border border-[#6a7282]/50 rounded w-full md:w-[165px] items-center justify-center"
           onClick={() => {

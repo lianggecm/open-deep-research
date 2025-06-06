@@ -47,6 +47,8 @@ export const ChatPage = ({
         }
         onComplete={() => {
           router.refresh();
+          // scroll to top of page
+          window.scrollTo(0, 0);
         }}
       />
     );
