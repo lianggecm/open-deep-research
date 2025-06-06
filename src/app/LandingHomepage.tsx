@@ -3,9 +3,14 @@ import { ChatInput } from "@/components/ChatInput";
 import { Footer } from "@/components/Footer";
 import { createResearchAndRedirect } from "@/db/action";
 import { useUser } from "@clerk/nextjs";
+import { useState } from "react";
+import LoadingChat from "./chat/[chatId]/loading";
 
 export const LandingHomepage = () => {
   const { isSignedIn, user, isLoaded } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
+
+  if (isLoading) return <LoadingChat />;
 
   return (
     <div className="flex flex-col size-full items-center h-screen justify-center relative md:bg-[url('/bg.svg')] md:bg-no-repeat md:bg-center md:bg-[size:auto_100%]">
@@ -36,8 +41,11 @@ export const LandingHomepage = () => {
           </p>
         </div>
         <ChatInput
-          disabled={!isLoaded}
+          disabled={!isLoaded || isLoading}
           append={(message) => {
+            setTimeout(() => {
+              setIsLoading(true);
+            }, 400);
             createResearchAndRedirect({
               clerkUserId: isSignedIn ? user.id : undefined,
               initialUserMessage: message.content,

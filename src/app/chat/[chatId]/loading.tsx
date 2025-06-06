@@ -1,7 +1,6 @@
 import React from "react";
-import Image from "next/image"; // Import Image component for Next.js
 
-const Loading = () => {
+const LoadingChat = () => {
   return (
     <div className="fixed top-16 inset-x-0 bottom-0 flex items-center justify-center">
       <img
@@ -15,4 +14,4 @@ const Loading = () => {
   );
 };
 
-export default Loading;
+export default LoadingChat;
