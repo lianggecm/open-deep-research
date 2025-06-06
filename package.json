@@ -23,6 +23,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@upstash/qstash": "^2.8.1",
+    "@upstash/ratelimit": "^2.0.5",
     "@upstash/redis": "^1.34.9",
     "@upstash/workflow": "^0.2.13",
     "ai": "^4.3.16",

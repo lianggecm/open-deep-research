@@ -1,0 +1,56 @@
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+const redis =
+  !!process.env.UPSTASH_REDIS_REST_URL && !!process.env.UPSTASH_REDIS_REST_TOKEN
+    ? new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      })
+    : undefined;
+
+const ratelimit = redis
+  ? new Ratelimit({
+      redis: redis,
+      limiter: Ratelimit.fixedWindow(5, "1440 m"),
+      analytics: true,
+    })
+  : undefined;
+
+export const limitResearch = async ({
+  clerkUserId,
+}: {
+  clerkUserId?: string;
+}) => {
+  if (!ratelimit || !clerkUserId) {
+    return {
+      remaining: 0,
+      limit: 5,
+    };
+  }
+
+  const result = await ratelimit.limit(clerkUserId);
+
+  return {
+    remaining: result.remaining,
+    limit: result.limit,
+    reset: result.reset,
+  };
+};
+
+export const getRemainingResearch = async ({
+  clerkUserId,
+}: {
+  clerkUserId?: string;
+}) => {
+  if (!ratelimit || !clerkUserId) {
+    return {
+      remaining: 5,
+      reset: null,
+    };
+  }
+
+  const result = await ratelimit.getRemaining(clerkUserId);
+
+  return result;
+};
