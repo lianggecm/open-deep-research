@@ -145,7 +145,7 @@ export const ReportLoadingPage = ({
   }, [streamEvents]);
 
   return (
-    <div className="px-5 py-5 h-full flex flex-col flex-1">
+    <div className="px-5 py-5 h-full flex flex-col flex-1 mx-auto max-w-[700px]">
       <Heading
         title={researchTopic}
         description="It takes a few minutes to gather sources, analyze data, and create your report."

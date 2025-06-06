@@ -18,7 +18,7 @@ export const QuestionsPage = ({
   );
 
   return (
-    <div className="my-5 px-5 md:px-0 h-full flex flex-col flex-1 max-w-[671px] mx-auto">
+    <div className="my-5 px-5 md:px-0 h-full flex flex-col flex-1 max-w-[700px] mx-auto">
       <Heading
         title="Answer some questions for a more accurate report"
         description="This is optional, you can skip this by clicking “Generate Report” or “Skip”."
