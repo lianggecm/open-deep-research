@@ -28,6 +28,7 @@ export const ReportSteps = ({
       body: JSON.stringify({ chatId: chatId }),
     });
     router.replace("/");
+    router.refresh();
     setIsCanceling(false);
   };
 

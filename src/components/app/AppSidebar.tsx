@@ -5,6 +5,8 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
+  SidebarMenuButton,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   SignedOut,
@@ -38,6 +40,7 @@ export function AppSidebar() {
   const pathname = usePathname();
   const [chats, setChats] = useState<Awaited<ReturnType<typeof getChats>>>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { setOpenMobile } = useSidebar();
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -52,43 +55,46 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="pt-20 md:pt-5">
+      <SidebarHeader className="pt-5">
         <Link className="flex flex-row items-center gap-2 pb-6" href="/">
           <div className="flex flex-row items-center gap-2">
             <div className=" text-zinc-800 dark:text-zinc-100">
               <img src="/logo.svg" alt="DeepSeek Research" className="size-6" />
             </div>
-            <div className="hidden md:block text-lg font-bold text-zinc-800 dark:text-zinc-100">
+            <div className="text-lg font-bold text-zinc-800 dark:text-zinc-100">
               DeepSeek Research
             </div>
           </div>
         </Link>
-        <button
-          onClick={() => {
-            router.push("/");
-          }}
-          className="flex justify-center items-center w-full h-10 relative gap-1.5 px-4 py-1.5 rounded bg-[#dce8ff] border border-[#072d77] cursor-pointer"
-        >
-          <svg
-            width={11}
-            height={12}
-            viewBox="0 0 11 12"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="flex-grow-0 flex-shrink-0"
-            preserveAspectRatio="none"
+        <SidebarMenuButton asChild>
+          <button
+            onClick={() => {
+              setOpenMobile(false);
+              router.push("/");
+            }}
+            className="flex justify-center items-center w-full h-10 relative gap-1.5 px-4 py-1.5 rounded bg-[#dce8ff] border border-[#072d77] cursor-pointer"
           >
-            <path
-              d="M5.5 1V11M10.5 6H0.5"
-              stroke="#072D77"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <p className="flex-grow-0 flex-shrink-0 text-base font-medium text-left text-[#072d77]">
-            New Report
-          </p>
-        </button>
+            <svg
+              width={11}
+              height={12}
+              viewBox="0 0 11 12"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="flex-grow-0 flex-shrink-0"
+              preserveAspectRatio="none"
+            >
+              <path
+                d="M5.5 1V11M10.5 6H0.5"
+                stroke="#072D77"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <p className="flex-grow-0 flex-shrink-0 text-base font-medium text-left text-[#072d77]">
+              New Report
+            </p>
+          </button>
+        </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
         <div className="flex flex-col gap-3 px-5 mt-2">
@@ -98,17 +104,19 @@ export function AppSidebar() {
             </p>
           ) : (
             chats.map((chat) => (
-              <Link
-                key={chat.id}
-                href={`/chat/${chat.id}`}
-                className={`text-base text-left  ${
-                  pathname === `/chat/${chat.id}`
-                    ? "font-medium text-[#1e2939]"
-                    : "text-[#4a5565]"
-                }`}
-              >
-                {chat.topic}
-              </Link>
+              <SidebarMenuButton asChild key={chat.id}>
+                <Link
+                  onClick={() => setOpenMobile(false)}
+                  href={`/chat/${chat.id}`}
+                  className={`text-base text-left  ${
+                    pathname === `/chat/${chat.id}`
+                      ? "font-medium text-[#1e2939]"
+                      : "text-[#4a5565]"
+                  }`}
+                >
+                  {chat.topic}
+                </Link>
+              </SidebarMenuButton>
             ))
           )}
           {chats.length === 0 && !isLoading && (
