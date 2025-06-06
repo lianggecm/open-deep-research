@@ -43,7 +43,7 @@ export const ReportSteps = ({
   };
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg bg-white border-[0.7px] border-[#d1d5dc] md:min-w-[206px] h-fit sticky z-10 top-5">
+    <div className="flex flex-col overflow-hidden rounded-lg bg-white border-[0.7px] border-[#d1d5dc] md:min-w-[206px] h-fit md:sticky z-[20] md:top-5">
       <div className="flex-shrink-0 h-[68px] p-4 flex flex-col justify-center border-b-[0.7px] border-[#d1d5dc]">
         <p className="text-base font-medium text-left text-[#101828]">
           Generating Report

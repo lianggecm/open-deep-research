@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { Fragment, useEffect, useMemo, useRef } from "react";
 import { AnimatePresence } from "framer-motion";
 import { ResearchEventStreamEvents } from "@/app/api/research/route";
 import { TimelineEvent } from "./TimelineEvent";
@@ -56,7 +56,7 @@ export default function TimelineProgress({
     >();
     for (const event of filteredEvents) {
       if (event.type === "content_processing") {
-        map.set(event.query, {
+        map.set(event.url, {
           url: event.url,
           title: event.title,
           content: event.content || "",
@@ -100,13 +100,20 @@ export default function TimelineProgress({
 
                   case "planning_completed":
                     return (
-                      <TimelineEvent
-                        key={index}
-                        type={event.type}
-                        isLast={isLast}
-                        title="Research Plan"
-                        description={cleanMarkdownToText(event.plan)}
-                      />
+                      <Fragment key={index}>
+                        <TimelineEvent
+                          type={event.type}
+                          isLast={false}
+                          title="Research Plan"
+                          description={cleanMarkdownToText(event.plan)}
+                        />
+                        <TimelineEvent
+                          type={event.type}
+                          isLast={isLast}
+                          title="Generated Search Queries"
+                          queries={event.queries}
+                        />
+                      </Fragment>
                     );
 
                   case "search_completed":
@@ -139,16 +146,26 @@ export default function TimelineProgress({
 
                   case "evaluation_completed":
                     return (
-                      <TimelineEvent
-                        key={index}
-                        type={event.type}
-                        isLast={isLast}
-                        title="Evaluation Complete"
-                        description={
-                          cleanMarkdownToText(event.reasoning)?.slice(0, 400) +
-                            "..." || ""
-                        }
-                      />
+                      <Fragment key={index}>
+                        <TimelineEvent
+                          type={event.type}
+                          isLast={false}
+                          title="Evaluation Complete"
+                          description={
+                            cleanMarkdownToText(event.reasoning)?.slice(
+                              0,
+                              400
+                            ) + "..." || ""
+                          }
+                        />
+                        <TimelineEvent
+                          key={index}
+                          type={event.type}
+                          isLast={isLast}
+                          title="Additional Search Queries"
+                          queries={event.additionalQueries}
+                        />
+                      </Fragment>
                     );
 
                   case "report_generating":

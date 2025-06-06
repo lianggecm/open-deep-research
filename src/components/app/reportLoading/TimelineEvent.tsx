@@ -53,7 +53,7 @@ export const TimelineEvent = ({
         duration: 0.5,
         delay: isLast ? 0.2 : 0,
       }}
-      className="relative flex gap-3 pb-8 last:pb-0"
+      className="relative flex gap-3 pb-6 last:pb-0"
     >
       {/* Status indicator */}
       <div className="flex flex-shrink-0 relative z-10 size-5 min-w-[20px] bg-[#F3F4F6] rounded-full border border-[#101828]flex items-center justify-center">
@@ -65,7 +65,7 @@ export const TimelineEvent = ({
 
       {/* Content */}
       <div className="flex-1 min-w-0 pl-3">
-        <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2 mb-2">
           <h3 className="text-sm text-[#101828] font-medium">{title}</h3>
         </div>
 
