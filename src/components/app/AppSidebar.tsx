@@ -116,9 +116,13 @@ export function AppSidebar() {
           </p>
 
           {isLoading ? (
-            <p className="text-base text-left text-[#4a5565]">
-              Loading chats...
-            </p>
+            <>
+              {[...Array(5)].map((_, index) => (
+                <div key={index} className="p-2 h-8">
+                  <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+              ))}
+            </>
           ) : (
             chats.map((chat) => {
               const isActive = pathname === `/chat/${chat.id}`;
@@ -127,11 +131,11 @@ export function AppSidebar() {
                   <Link
                     onClick={() => setOpenMobile(false)}
                     href={`/chat/${chat.id}`}
-                    className={`text-base text-left  ${
-                      isActive ? "font-medium text-[#1e2939]" : "text-[#4a5565]"
+                    className={`text-base text-left overflow-hidden ${
+                      isActive ? " text-[#1e2939]" : "text-[#4a5565]"
                     }`}
                   >
-                    {chat.topic}
+                    <span className="truncate">{chat.topic}</span>
                   </Link>
                 </SidebarMenuButton>
               );

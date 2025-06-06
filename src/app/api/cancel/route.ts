@@ -32,9 +32,12 @@ export async function POST(request: NextRequest) {
   // also delete from redis
   await cleanupSession(chatId);
 
-  await workflow.cancel({
-    ids: chatId,
-  });
-
+  try {
+    await workflow.cancel({
+      ids: chatId,
+    });
+  } catch (e) {
+    console.error("failed to cancel workflow run", e);
+  }
   return new Response("canceled workflow run!");
 }
