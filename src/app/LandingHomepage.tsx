@@ -8,7 +8,7 @@ export const LandingHomepage = () => {
   const { isSignedIn, user, isLoaded } = useUser();
 
   return (
-    <div className="flex flex-col size-full items-center h-screen justify-center">
+    <div className="flex flex-col size-full items-center h-screen justify-center relative md:bg-[url('/bg.svg')] md:bg-no-repeat md:bg-center md:bg-[size:auto_100%]">
       <div className="px-4 md:px-0 pb-4 pt-8 flex flex-col items-center w-full max-w-3xl justify-center gap-4">
         <a
           href="https://togetherai.link/"
