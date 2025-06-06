@@ -5,13 +5,30 @@ import Exa from "exa-js";
 import { unstable_cache } from "next/cache";
 import { SearchResult } from "./schemas";
 
+const APP_NAME_HELICONE = "deepresearch";
+
 export const togetheraiClient = createTogetherAI({
   apiKey: process.env.TOGETHER_API_KEY ?? "",
+  baseURL: "https://together.helicone.ai/v1",
+  headers: {
+    "Helicone-Auth": `Bearer ${process.env.HELICONE_API_KEY}`,
+    "Helicone-Property-AppName": APP_NAME_HELICONE,
+  },
 });
 
-export const togetherai = new Together({
-  apiKey: process.env.TOGETHER_API_KEY ?? "",
-});
+const options: ConstructorParameters<typeof Together>[0] = {
+  apiKey: process.env.TOGETHER_API_KEY,
+};
+
+if (process.env.HELICONE_API_KEY) {
+  options.baseURL = "https://together.helicone.ai/v1";
+  options.defaultHeaders = {
+    "Helicone-Auth": `Bearer ${process.env.HELICONE_API_KEY}`,
+    "Helicone-Property-Appname": APP_NAME_HELICONE,
+  };
+}
+
+export const togetherai = new Together(options);
 
 const exa = new Exa(process.env.EXA_API_KEY);
 

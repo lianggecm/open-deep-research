@@ -111,6 +111,10 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <div className="flex flex-col gap-3 px-5 mt-2">
+          <p className="text-xs font-medium text-left text-[#99a1af]">
+            Your reports
+          </p>
+
           {isLoading ? (
             <p className="text-base text-left text-[#4a5565]">
               Loading chats...
