@@ -1,7 +1,6 @@
 import { cn } from "@/lib/utils";
-import { formatDistanceToNow } from "date-fns";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export type ReportStepType = {
   id: string;
@@ -20,6 +19,17 @@ export const ReportSteps = ({
 }) => {
   const router = useRouter();
   const [isCanceling, setIsCanceling] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setElapsedSeconds(
+        Math.floor((Date.now() - researchStartedAt.getTime()) / 1000)
+      );
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [researchStartedAt]);
 
   const onCancel = async () => {
     setIsCanceling(true);
@@ -33,7 +43,7 @@ export const ReportSteps = ({
   };
 
   return (
-    <div className="flex flex-col relative overflow-hidden rounded-lg bg-white border-[0.7px] border-[#d1d5dc] md:min-w-[206px] h-fit">
+    <div className="flex flex-col overflow-hidden rounded-lg bg-white border-[0.7px] border-[#d1d5dc] md:min-w-[206px] h-fit sticky z-10 top-5">
       <div className="flex-shrink-0 h-[68px] p-4 flex flex-col justify-center border-b-[0.7px] border-[#d1d5dc]">
         <p className="text-base font-medium text-left text-[#101828]">
           Generating Report
@@ -43,7 +53,9 @@ export const ReportSteps = ({
             Time elapsed:
           </span>
           <span className="text-sm text-left text-[#6a7282] ml-1">
-            {formatDistanceToNow(researchStartedAt, { addSuffix: true })}
+            {elapsedSeconds < 120
+              ? `${elapsedSeconds}s ago`
+              : `${Math.floor(elapsedSeconds / 60)}m ago`}
           </span>
         </p>
       </div>

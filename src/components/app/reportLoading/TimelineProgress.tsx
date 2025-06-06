@@ -45,6 +45,27 @@ export default function TimelineProgress({
     });
   }, [events]);
 
+  const mapOfUrlsToContentProcessing = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        url: string;
+        title: string;
+        content: string;
+      }
+    >();
+    for (const event of filteredEvents) {
+      if (event.type === "content_processing") {
+        map.set(event.query, {
+          url: event.url,
+          title: event.title,
+          content: event.content || "",
+        });
+      }
+    }
+    return map;
+  }, [filteredEvents]);
+
   if (filteredEvents.length <= 1) {
     return null;
   }
@@ -107,7 +128,10 @@ export default function TimelineProgress({
                         webResults={event.urls.map((url) => {
                           return {
                             url: url,
-                            title: url,
+                            title: mapOfUrlsToContentProcessing.has(url)
+                              ? mapOfUrlsToContentProcessing.get(url)?.title ||
+                                ""
+                              : "Loading...",
                           };
                         })}
                       />

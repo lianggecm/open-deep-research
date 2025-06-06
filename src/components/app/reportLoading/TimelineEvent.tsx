@@ -98,10 +98,10 @@ export const TimelineEvent = ({
         )}
 
         {webResults && (
-          <div className="grid grid-cols-2 gap-3 mb-2">
+          <div className="flex flex-col md:grid grid-cols-2 gap-3 mb-2">
             {webResults.map((result, idx) => (
               <a
-                href={result.url + idx}
+                href={result.url + result.title + "-" + idx}
                 target="_blank"
                 rel="noreferrer"
                 className="flex justify-start items-center w-full overflow-hidden gap-3 px-4 py-3 rounded-lg bg-gray-50 border-[0.7px] border-gray-200"
