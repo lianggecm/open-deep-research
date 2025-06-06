@@ -113,12 +113,14 @@ const markdownComponents: Partial<Components> = {
   },
   table: ({ children, ...props }) => {
     return (
-      <table
-        className="w-full text-sm text-left border-collapse my-4 rounded-lg overflow-hidden"
-        {...props}
-      >
-        {children}
-      </table>
+      <div className="w-full overflow-auto">
+        <table
+          className="w-full text-sm text-left border-collapse my-4 rounded-lg overflow-hidden"
+          {...props}
+        >
+          {children}
+        </table>
+      </div>
     );
   },
   thead: ({ children, ...props }) => {
