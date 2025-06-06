@@ -126,7 +126,7 @@ export default function TimelineProgress({
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 pt-8 md:pt-0">
+    <div className="max-w-2xl mx-auto px-6 pt-8 md:pt-0 w-full">
       <div
         ref={scrollContainerRef}
         className="overflow-y-auto rounded-lg bg-white"
@@ -137,6 +137,7 @@ export default function TimelineProgress({
 
           <AnimatePresence>
             {renderableEvents
+
               .map((event, index) => {
                 const isLast = index === renderableEvents.length - 1;
 
@@ -196,7 +197,7 @@ export default function TimelineProgress({
                         isLast={isLast}
                         title="Evaluation Complete"
                         description={
-                          cleanMarkdownToText(event.reasoning)?.slice(0, 200) +
+                          cleanMarkdownToText(event.reasoning)?.slice(0, 400) +
                             "..." || ""
                         }
                       />

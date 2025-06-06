@@ -40,39 +40,52 @@ export function AppSidebar() {
   const pathname = usePathname();
   const [chats, setChats] = useState<Awaited<ReturnType<typeof getChats>>>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { setOpenMobile } = useSidebar();
+  const { setOpenMobile, toggleSidebar } = useSidebar();
 
   useEffect(() => {
     const fetchChats = async () => {
-      setIsLoading(true);
       const chatsData = await getChats();
       setChats(chatsData);
       setIsLoading(false);
     };
 
     fetchChats();
-  }, []);
+  }, [pathname]);
 
   return (
     <Sidebar>
-      <SidebarHeader className="pt-5">
-        <Link className="flex flex-row items-center gap-2 pb-6" href="/">
-          <div className="flex flex-row items-center gap-2">
-            <div className=" text-zinc-800 dark:text-zinc-100">
-              <img src="/logo.svg" alt="DeepSeek Research" className="size-6" />
+      <SidebarHeader className="pt-5 px-5">
+        <div className="flex flex-row justify-between items-center pb-6">
+          <Link className="flex flex-row items-center gap-2" href="/">
+            <div className="flex flex-row items-center gap-2">
+              <div className=" text-zinc-800 dark:text-zinc-100">
+                <img
+                  src="/logo.svg"
+                  alt="DeepSeek Research"
+                  className="size-6"
+                />
+              </div>
+              <div className="text-lg font-bold text-zinc-800 dark:text-zinc-100">
+                DeepSeek Research
+              </div>
             </div>
-            <div className="text-lg font-bold text-zinc-800 dark:text-zinc-100">
-              DeepSeek Research
-            </div>
-          </div>
-        </Link>
+          </Link>
+          <button
+            className="p-1 cursor-pointer md:hidden"
+            onClick={() => {
+              toggleSidebar();
+            }}
+          >
+            <img src="/menu.svg" className="size-5" />
+          </button>
+        </div>
         <SidebarMenuButton asChild>
           <button
             onClick={() => {
               setOpenMobile(false);
               router.push("/");
             }}
-            className="flex justify-center items-center w-full h-10 relative gap-1.5 px-4 py-1.5 rounded bg-[#dce8ff] border border-[#072d77] cursor-pointer"
+            className="flex justify-center items-center w-full h-10 relative gap-1.5 px-4 py-1.5 rounded !bg-[#dce8ff] border border-[#072d77] cursor-pointer "
           >
             <svg
               width={11}
@@ -103,21 +116,22 @@ export function AppSidebar() {
               Loading chats...
             </p>
           ) : (
-            chats.map((chat) => (
-              <SidebarMenuButton asChild key={chat.id}>
-                <Link
-                  onClick={() => setOpenMobile(false)}
-                  href={`/chat/${chat.id}`}
-                  className={`text-base text-left  ${
-                    pathname === `/chat/${chat.id}`
-                      ? "font-medium text-[#1e2939]"
-                      : "text-[#4a5565]"
-                  }`}
-                >
-                  {chat.topic}
-                </Link>
-              </SidebarMenuButton>
-            ))
+            chats.map((chat) => {
+              const isActive = pathname === `/chat/${chat.id}`;
+              return (
+                <SidebarMenuButton isActive={isActive} asChild key={chat.id}>
+                  <Link
+                    onClick={() => setOpenMobile(false)}
+                    href={`/chat/${chat.id}`}
+                    className={`text-base text-left  ${
+                      isActive ? "font-medium text-[#1e2939]" : "text-[#4a5565]"
+                    }`}
+                  >
+                    {chat.topic}
+                  </Link>
+                </SidebarMenuButton>
+              );
+            })
           )}
           {chats.length === 0 && !isLoading && (
             <p className="text-base text-left text-[#4a5565]">No chats yet.</p>
@@ -127,7 +141,7 @@ export function AppSidebar() {
         <SidebarGroup />
       </SidebarContent>
       <SidebarFooter>
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex flex-row items-center gap-2 px-2">
           <SignedOut>
             <SignInButton>
               <Button variant="secondary" className="text-xs border">

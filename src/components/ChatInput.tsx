@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import cn from "classnames";
 import { ArrowUpIcon, StopIcon } from "./icons";
@@ -20,6 +20,15 @@ export const ChatInput = ({
   isGeneratingResponse: boolean;
 }) => {
   const [input, setInput] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 400);
+    }
+  }, []);
 
   return (
     <div
@@ -27,11 +36,11 @@ export const ChatInput = ({
       style={{ boxShadow: "0px 1px 13px -6px rgba(0,0,0,0.2)" }}
     >
       <textarea
+        ref={textareaRef}
         className="mb-12 resize-none w-full min-h-12 outline-none bg-transparent placeholder:text-zinc-400"
         placeholder="Type in your prompt"
         value={input}
         disabled={disabled}
-        autoFocus
         onChange={(event) => {
           setInput(event.currentTarget.value);
         }}
