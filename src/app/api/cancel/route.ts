@@ -9,15 +9,15 @@ export async function POST(request: NextRequest) {
   const { chatId } = await request.json();
   console.log("cancel workflow with run ID: ", chatId);
 
-  await workflow.cancel({
-    ids: chatId,
-  });
-
   // delete this from the db
   await db.delete(research).where(eq(research.id, chatId));
 
   // also delete from redis
   await cleanupSession(chatId);
+
+  await workflow.cancel({
+    ids: chatId,
+  });
 
   return new Response("canceled workflow run!");
 }

@@ -23,7 +23,7 @@ export const ReportSteps = ({
 
   const onCancel = async () => {
     setIsCanceling(true);
-    await fetch("/api/research/cancel", {
+    await fetch("/api/cancel", {
       method: "POST",
       body: JSON.stringify({ chatId: chatId }),
     });
