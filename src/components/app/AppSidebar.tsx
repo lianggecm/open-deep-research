@@ -52,7 +52,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="pt-20">
+      <SidebarHeader className="pt-20 md:pt-5">
         <Link className="flex flex-row items-center gap-2 pb-6" href="/">
           <div className="flex flex-row items-center gap-2">
             <div className=" text-zinc-800 dark:text-zinc-100">
@@ -91,7 +91,7 @@ export function AppSidebar() {
         </button>
       </SidebarHeader>
       <SidebarContent>
-        <div className="flex flex-col gap-3 px-5">
+        <div className="flex flex-col gap-3 px-5 mt-2">
           {isLoading ? (
             <p className="text-base text-left text-[#4a5565]">
               Loading chats...

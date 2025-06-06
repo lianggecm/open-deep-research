@@ -82,13 +82,7 @@ export const ReportSteps = ({
         onClick={onCancel}
         className="px-4 py-3 text-sm font-light text-left text-[#826a6a] cursor-pointer"
       >
-        {isCanceling ? (
-          <>
-            <img src="loading.svg" className="size-5" />
-          </>
-        ) : (
-          <>Cancel search</>
-        )}
+        {isCanceling ? <>Cancelling search...</> : <>Cancel search</>}
       </button>
     </div>
   );
