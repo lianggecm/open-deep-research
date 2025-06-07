@@ -14,6 +14,7 @@ import {
   SignUpButton,
   SignedIn,
   UserButton,
+  useUser,
 } from "@clerk/nextjs";
 import { Button } from "../ui/button";
 import Link from "next/link";
@@ -41,8 +42,13 @@ export function AppSidebar() {
   const [chats, setChats] = useState<Awaited<ReturnType<typeof getChats>>>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { setOpenMobile, toggleSidebar } = useSidebar();
+  const { isSignedIn, isLoaded } = useUser();
+
+  const isUserLoggedIn = isLoaded && isSignedIn;
 
   useEffect(() => {
+    if (!isUserLoggedIn) return;
+
     const fetchChats = async () => {
       const chatsData = await getChats();
       setChats(chatsData);
@@ -50,7 +56,11 @@ export function AppSidebar() {
     };
 
     fetchChats();
-  }, [pathname]);
+  }, [pathname, isUserLoggedIn]);
+
+  if (!isUserLoggedIn) {
+    return <></>;
+  }
 
   return (
     <Sidebar>
@@ -150,16 +160,6 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <div className="flex flex-row items-center gap-2 px-2">
-          <SignedOut>
-            <SignInButton>
-              <Button variant="secondary" className="text-xs border">
-                Log in
-              </Button>
-            </SignInButton>
-            <SignUpButton>
-              <Button className="text-xs">Sign up</Button>
-            </SignUpButton>
-          </SignedOut>
           <SignedIn>
             <UserButton showName />
           </SignedIn>

@@ -2,9 +2,10 @@
 import { ChatInput } from "@/components/ChatInput";
 import { Footer } from "@/components/Footer";
 import { createResearchAndRedirect } from "@/db/action";
-import { useUser } from "@clerk/nextjs";
+import { SignedOut, SignInButton, SignUpButton, useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import LoadingChat from "./chat/[chatId]/loading";
+import { Button } from "@/components/ui/button";
 
 export const LandingHomepage = () => {
   const { isSignedIn, user, isLoaded } = useUser();
@@ -40,20 +41,35 @@ export const LandingHomepage = () => {
             question into a meaningful report
           </p>
         </div>
-        <ChatInput
-          disabled={!isLoaded || isLoading}
-          append={(message) => {
-            setTimeout(() => {
-              setIsLoading(true);
-            }, 400);
-            createResearchAndRedirect({
-              clerkUserId: isSignedIn ? user.id : undefined,
-              initialUserMessage: message.content,
-            });
-          }}
-          stop={() => {}}
-          isGeneratingResponse={false}
-        />
+        {!isSignedIn ? (
+          <SignedOut>
+            <div className="flex flex-row gap-2">
+              <SignInButton>
+                <Button variant="secondary" className="text-xs border">
+                  Log in
+                </Button>
+              </SignInButton>
+              <SignUpButton>
+                <Button className="text-xs">Sign up</Button>
+              </SignUpButton>
+            </div>
+          </SignedOut>
+        ) : (
+          <ChatInput
+            disabled={!isLoaded || isLoading}
+            append={(message) => {
+              setTimeout(() => {
+                setIsLoading(true);
+              }, 400);
+              createResearchAndRedirect({
+                clerkUserId: isSignedIn ? user.id : undefined,
+                initialUserMessage: message.content,
+              });
+            }}
+            stop={() => {}}
+            isGeneratingResponse={false}
+          />
+        )}
 
         <Footer />
       </div>
