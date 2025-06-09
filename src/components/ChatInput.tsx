@@ -1,13 +1,10 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { toast } from "sonner";
 import cn from "classnames";
-import { ArrowUpIcon, StopIcon } from "./icons";
+import { ArrowUpIcon } from "./icons";
 
 export const ChatInput = ({
   append,
-  stop,
-  isGeneratingResponse,
   disabled,
 }: {
   disabled?: boolean;
@@ -16,10 +13,13 @@ export const ChatInput = ({
     content: string;
     createdAt: Date;
   }) => void;
-  stop: () => void;
-  isGeneratingResponse: boolean;
 }) => {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("chatInput") || "";
+    }
+    return "";
+  });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -36,6 +36,9 @@ export const ChatInput = ({
     if (textarea) {
       textarea.style.height = "auto";
       textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chatInput", input);
     }
   }, [input]);
 
@@ -61,11 +64,6 @@ export const ChatInput = ({
               return;
             }
 
-            if (isGeneratingResponse) {
-              toast.error("Please wait for the model to finish its response!");
-              return;
-            }
-
             append({
               role: "user",
               content: input.trimEnd(),
@@ -73,6 +71,9 @@ export const ChatInput = ({
             });
 
             setInput("");
+            if (typeof window !== "undefined") {
+              localStorage.removeItem("chatInput");
+            }
           }
         }}
       />
@@ -87,24 +88,18 @@ export const ChatInput = ({
               return;
             }
 
-            if (isGeneratingResponse) {
-              stop();
-            } else {
-              append({
-                role: "user",
-                content: input.trimEnd(),
-                createdAt: new Date(),
-              });
-            }
-
+            append({
+              role: "user",
+              content: input.trimEnd(),
+              createdAt: new Date(),
+            });
             setInput("");
+            if (typeof window !== "undefined") {
+              localStorage.removeItem("chatInput");
+            }
           }}
         >
-          {isGeneratingResponse ? (
-            <StopIcon size={12} />
-          ) : (
-            <ArrowUpIcon size={12} />
-          )}
+          <ArrowUpIcon size={12} />
         </button>
       </div>
     </div>

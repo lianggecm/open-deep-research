@@ -58,16 +58,12 @@ export const LandingHomepage = () => {
           <ChatInput
             disabled={!isLoaded || isLoading}
             append={(message) => {
-              setTimeout(() => {
-                setIsLoading(true);
-              }, 400);
+              setIsLoading(true);
               createResearchAndRedirect({
                 clerkUserId: isSignedIn ? user.id : undefined,
                 initialUserMessage: message.content,
               });
             }}
-            stop={() => {}}
-            isGeneratingResponse={false}
           />
         )}
 
