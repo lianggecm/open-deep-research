@@ -8,10 +8,11 @@ import { FaviconImage } from "./FaviconImage";
 
 const markdownComponents: Partial<Components> = {
   p: ({ children }) => (
-    <p className="text-base font-light text-left text-[#0f172b] leading-6 pb-3">
+    <p className="text-base font-light text-left text-[#0f172b] leading-6 pb-4">
       {children}
     </p>
   ),
+  hr: ({ children }) => <hr className="pb-4" />,
   pre: ({ children }) => <>{children}</>,
   img: ({ children, ...props }) => {
     return <img className="max-w-full rounded-lg" {...props} />;
@@ -71,14 +72,20 @@ const markdownComponents: Partial<Components> = {
   },
   h1: ({ children, ...props }) => {
     return (
-      <h1 className="text-[28px] text-left text-[#0f172b] mb-2" {...props}>
+      <h1
+        className="text-[28px] font-medium text-left text-[#0f172b] mb-2"
+        {...props}
+      >
         {children}
       </h1>
     );
   },
   h2: ({ children, ...props }) => {
     return (
-      <h2 className="text-2xl text-left text-[#0f172b] mb-2" {...props}>
+      <h2
+        className="text-2xl text-left font-medium text-[#0f172b] mb-2"
+        {...props}
+      >
         {children}
       </h2>
     );

@@ -1,6 +1,7 @@
 "use client";
 import { getResearch, skipQuestions, storeAnswers } from "@/db/action";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { QuestionsPage } from "@/components/app/questions/QuestionsPage";
 import { ReportLoadingPage } from "./ReportLoadingPage";
@@ -60,7 +61,7 @@ export const ChatPage = ({
         <button
           onClick={() => {
             // copy to clipboard
-            alert("Copied link to clipboard");
+            toast.success("Copied to clipboard!");
             navigator.clipboard.writeText(window.location.href);
           }}
           className="cursor-pointer flex flex-col justify-center items-center overflow-hidden gap-2.5 px-3 py-1.5 rounded border-[0.5px] border-[#cad5e2]"
@@ -75,7 +76,7 @@ export const ChatPage = ({
         </button>
         <button
           onClick={() => {
-            alert("TODO - download as PDF");
+            toast.success("PDF generation TODO!");
             // download as PDF
             // window.open(`/api/pdf?url=${window.location.href}`, "_blank");
           }}

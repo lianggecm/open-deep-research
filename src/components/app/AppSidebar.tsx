@@ -142,7 +142,9 @@ export function AppSidebar() {
                     onClick={() => setOpenMobile(false)}
                     href={`/chat/${chat.id}`}
                     className={`text-base text-left overflow-hidden ${
-                      isActive ? " text-[#1e2939]" : "text-[#4a5565]"
+                      isActive
+                        ? " text-[#1e2939] !font-medium"
+                        : "text-[#4a5565]"
                     }`}
                   >
                     <span className="truncate">{chat.topic}</span>
