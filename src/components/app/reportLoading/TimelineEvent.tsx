@@ -103,7 +103,7 @@ export const TimelineEvent = ({
               <WebResultCard
                 key={result.url + "-" + idx}
                 result={result}
-                idx={idx}
+                id={result.url + "-" + idx}
               />
             ))}
           </div>

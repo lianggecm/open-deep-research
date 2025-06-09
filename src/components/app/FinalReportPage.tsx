@@ -74,7 +74,7 @@ export const FinalReportPage = ({
                 <WebResultCard
                   key={result.url + "-" + idx}
                   result={result}
-                  idx={idx}
+                  id={result.url}
                 />
               ))}
             </div>

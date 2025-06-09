@@ -4,14 +4,14 @@ import React from "react";
 
 export const WebResultCard = ({
   result,
-  idx,
+  id,
 }: {
   result: { url: string; title: string };
-  idx: number;
+  id: string;
 }) => {
   return (
     <a
-      key={result.url + "-" + idx}
+      key={id}
       href={result.url}
       target="_blank"
       rel="noreferrer"
