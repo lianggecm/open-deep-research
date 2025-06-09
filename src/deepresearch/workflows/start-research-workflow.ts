@@ -77,10 +77,8 @@ const generateResearchQueries = async (
     )}`
   );
 
-  const queries = parsedPlan.object.queries.slice(
-    0,
-    RESEARCH_CONFIG.maxQueries
-  );
+  const dedupedQueries = Array.from(new Set(parsedPlan.object.queries));
+  const queries = dedupedQueries.slice(0, RESEARCH_CONFIG.maxQueries);
 
   return {
     queries,

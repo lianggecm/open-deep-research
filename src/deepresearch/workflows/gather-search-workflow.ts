@@ -241,10 +241,12 @@ const evaluateResearchCompleteness = async ({
     schema: researchPlanSchema,
   });
 
-  const additionalQueries = parsedEvaluation.object.queries.slice(
-    0,
-    RESEARCH_CONFIG.maxQueries
+  const existingQueriesSet = new Set(queries);
+  const newQueries = parsedEvaluation.object.queries.filter(
+    (query) => !existingQueriesSet.has(query)
   );
+
+  const additionalQueries = newQueries.slice(0, RESEARCH_CONFIG.maxQueries);
 
   return {
     additionalQueries,
