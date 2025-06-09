@@ -71,7 +71,7 @@ const markdownComponents: Partial<Components> = {
   },
   h1: ({ children, ...props }) => {
     return (
-      <h1 className="text-[28px] text-left text-[#0f172b] mt-6 mb-2" {...props}>
+      <h1 className="text-[28px] text-left text-[#0f172b] mb-2" {...props}>
         {children}
       </h1>
     );
