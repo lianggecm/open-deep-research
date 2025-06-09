@@ -9,7 +9,7 @@ export const Heading = ({
     <div className="flex flex-col gap-2 w-full pt-[60px]">
       <p
         title={title}
-        className="w-full text-[28px] md:text-[30px] font-medium text-left text-[#101828] truncate"
+        className="w-full text-[32px] font-medium text-left text-[#101828] overflow-hidden"
       >
         {title}
       </p>
