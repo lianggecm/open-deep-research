@@ -90,7 +90,7 @@ const createMarkdownComponents = (
   h1: ({ children, ...props }) => {
     return (
       <h1
-        className="text-[28px] font-medium text-left text-[#0f172b] mb-2"
+        className="text-[28px] md:text-[40px] font-medium text-left text-[#0f172b] mb-2"
         {...props}
       >
         {children}
@@ -100,7 +100,7 @@ const createMarkdownComponents = (
   h2: ({ children, ...props }) => {
     return (
       <h2
-        className="text-2xl text-left font-medium text-[#0f172b] mb-2"
+        className="text-2xl md:text-[28px] text-left font-medium text-[#0f172b] mb-2"
         {...props}
       >
         {children}
@@ -109,7 +109,10 @@ const createMarkdownComponents = (
   },
   h3: ({ children, ...props }) => {
     return (
-      <h3 className="text-xl text-left text-[#0f172b] mb-2" {...props}>
+      <h3
+        className="text-[18px] md:text-xl text-left text-[#0f172b] mb-2"
+        {...props}
+      >
         {children}
       </h3>
     );

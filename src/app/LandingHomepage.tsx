@@ -33,7 +33,7 @@ export const LandingHomepage = () => {
         </a>
 
         <div className="flex flex-col gap-4 w-full mb-14">
-          <p className="text-[32px] font-medium text-center text-[#1e2939]">
+          <p className="text-[32px] md:text-[40px] font-medium text-center text-[#1e2939]">
             Reports with DeepSeek
           </p>
           <p className="mx-auto max-w-[364px] text-base text-center text-[#6a7282]">
