@@ -44,8 +44,18 @@ export const ChatInput = ({
 
   return (
     <div
-      className="p-3 relative overflow-hidden rounded-lg max-w-[640px] mx-auto w-full bg-white flex"
-      style={{ boxShadow: "0px 1px 13px -6px rgba(0,0,0,0.2)" }}
+      className="p-3 relative overflow-hidden rounded-lg max-w-[640px] mx-auto w-full flex"
+      style={{
+        border: "1px solid transparent",
+        borderRadius: "8px",
+        background: `
+          linear-gradient(white, white) padding-box,
+          radial-gradient(circle at center, #072D77, #D1D5DC) border-box
+        `,
+        backgroundOrigin: "border-box",
+        backgroundRepeat: "no-repeat",
+        boxShadow: "0px 1px 13px -6px rgba(0,0,0,0.2)",
+      }}
     >
       <textarea
         ref={textareaRef}
