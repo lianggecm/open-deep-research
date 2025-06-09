@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 import { CustomMarkdown } from "../CustomMarkdown";
 import { WebResultCard } from "./reportLoading/WebResultCard";
+import { CitationNumber } from "./citations/CitationNumber";
 
 export const FinalReportPage = ({
   researchData,
@@ -13,8 +14,6 @@ export const FinalReportPage = ({
   if (!researchData || !researchData.report) {
     return <></>;
   }
-
-  console.log(researchData.sources?.map((source) => source.url));
 
   return (
     <div className="flex flex-col gap-5 size-full pt-20 md:pt-5 px-5">
@@ -63,19 +62,22 @@ export const FinalReportPage = ({
       )}
       <div className="flex flex-col-reverse xl:flex-row gap-6 ">
         <div className="max-w-[600px]">
-          <CustomMarkdown>{researchData.report}</CustomMarkdown>
+          <CustomMarkdown sources={researchData.sources || []}>
+            {researchData.report}
+          </CustomMarkdown>
           {researchData.sources && researchData.sources?.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-4">
               <h3 className="text-lg font-medium text-[#101828] col-span-full mb-2">
-                We found {researchData.sources.length} sources for this
-                research:
+                We used {researchData.sources.length} sources for this research:
               </h3>
               {researchData.sources.map((result, idx) => (
                 <WebResultCard
                   key={result.url + "-" + idx}
                   result={result}
                   id={result.url}
-                />
+                >
+                  <CitationNumber num={idx + 1} />
+                </WebResultCard>
               ))}
             </div>
           )}

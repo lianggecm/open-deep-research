@@ -5,14 +5,22 @@ import { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import { FaviconImage } from "./FaviconImage";
+import { CitationTooltip } from "./app/citations/CitationTooltip";
 
-const markdownComponents: Partial<Components> = {
+interface CustomMarkdownProps {
+  children: string;
+  sources?: Array<{ url: string; title: string }>;
+}
+
+const createMarkdownComponents = (
+  sources?: Array<{ url: string; title: string }>
+): Partial<Components> => ({
   p: ({ children }) => (
     <p className="text-base font-light text-left text-[#0f172b] leading-6 pb-4">
       {children}
     </p>
   ),
-  hr: ({ children }) => <hr className="pb-4" />,
+  hr: ({}) => <hr className="pb-4" />,
   pre: ({ children }) => <>{children}</>,
   img: ({ children, ...props }) => {
     return <img className="max-w-full rounded-lg" {...props} />;
@@ -46,16 +54,16 @@ const markdownComponents: Partial<Components> = {
     );
   },
   a: ({ children, ...props }) => {
-    if (children?.toString() === "INLINE_CITATION") {
-      return (
-        <a
-          href={props.href}
-          className="text-blue-500 hover:underline"
-          {...props}
-        >
-          <FaviconImage url={props.href || ""} />
-        </a>
+    if (children?.toString() === "INLINE_CITATION" && sources) {
+      const normalizedHref = props.href?.replace(/\/+$/, "");
+      const sourceIndex = sources.findIndex(
+        (source) => source.url.replace(/\/+$/, "") === normalizedHref
       );
+      if (sourceIndex !== -1) {
+        return (
+          <CitationTooltip index={sourceIndex} source={sources[sourceIndex]} />
+        );
+      }
     }
 
     return (
@@ -161,16 +169,17 @@ const markdownComponents: Partial<Components> = {
       </tr>
     );
   },
-};
+});
 
-export const CustomMarkdown: React.FC<{
-  children: string;
-  className?: string;
-  style?: React.CSSProperties;
-}> = ({ children, className = "", style }) => {
+export const CustomMarkdown: React.FC<CustomMarkdownProps> = ({
+  children,
+  sources,
+}) => {
+  const components = createMarkdownComponents(sources);
+
   // TODO: Consider sanitizing HTML output for security if user input is rendered
   return (
-    <ReactMarkdown components={markdownComponents} remarkPlugins={[remarkGfm]}>
+    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
       {children}
     </ReactMarkdown>
   );
