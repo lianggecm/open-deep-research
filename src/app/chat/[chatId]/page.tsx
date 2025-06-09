@@ -31,7 +31,7 @@ export async function generateMetadata({
     return redirect("/");
   }
 
-  const topic = researchData.researchTopic || researchData.initialUserMessage;
+  const topic = researchData.initialUserMessage;
 
   const title = `${topic} | DeepSeek Research`;
   const description = `Discover the research on "${topic}" ${researchData.status} | DeepSeek Research`;
