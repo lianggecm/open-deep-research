@@ -117,6 +117,7 @@ const generateResearchAnswer = async ({
         content: `Research Topic: ${topic}\n\nSearch Results:\n${formattedSearchResults}`,
       },
     ],
+    maxTokens: RESEARCH_CONFIG.maxTokens,
   });
 
   let index = 0;
@@ -361,6 +362,11 @@ export const startResearchWorkflow = createWorkflow<
           report: finalReport,
           coverUrl: coverImage,
           status: "completed",
+          completedAt: new Date(),
+          sources: finalState.searchResults.map((result) => ({
+            url: result.link,
+            title: result.title,
+          })),
         })
         .where(eq(research.id, sessionId))
         .returning();
