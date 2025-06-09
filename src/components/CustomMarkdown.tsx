@@ -64,6 +64,15 @@ const createMarkdownComponents = (
           <CitationTooltip index={sourceIndex} source={sources[sourceIndex]} />
         );
       }
+      return (
+        <a
+          href={props.href}
+          className="text-blue-500 hover:underline"
+          {...props}
+        >
+          <FaviconImage url={props.href || ""} />
+        </a>
+      );
     }
 
     return (
