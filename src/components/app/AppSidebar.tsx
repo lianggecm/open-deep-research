@@ -75,7 +75,7 @@ export function AppSidebar() {
                   className="size-6"
                 />
               </div>
-              <div className="text-lg font-bold text-zinc-800 dark:text-zinc-100">
+              <div className="text-lg font-bold text-zinc-800 dark:text-zinc-100 tracking-tighter">
                 DeepSeek Research
               </div>
             </div>
@@ -120,7 +120,7 @@ export function AppSidebar() {
         </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
-        <div className="flex flex-col gap-3 px-5 mt-2">
+        <div className="flex flex-col gap-3 px-5 mt-5">
           <div className="text-xs font-medium text-left text-[#99a1af]">
             Your reports
           </div>
