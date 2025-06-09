@@ -34,7 +34,11 @@ export async function generateMetadata({
   const topic = researchData.initialUserMessage;
 
   const title = `${topic} | DeepSeek Research`;
-  const description = `Discover the research on "${topic}" ${researchData.status} | DeepSeek Research`;
+  const description = `Discover the research on "${topic}" generated using ${
+    researchData.sources && researchData.sources?.length > 0
+      ? researchData.sources.length
+      : "multiple"
+  } sources on DeepSeek Research`;
 
   return {
     title: title,
