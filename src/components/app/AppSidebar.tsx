@@ -161,9 +161,18 @@ export function AppSidebar() {
         <SidebarGroup />
       </SidebarContent>
       <SidebarFooter>
-        <div className="flex flex-row items-center gap-2 px-2">
+        <div className="flex flex-row items-center gap-2 px-5">
           <SignedIn>
-            <UserButton showName />
+            <UserButton
+              appearance={{
+                elements: {
+                  userButtonBox: {
+                    flexDirection: "row-reverse",
+                  },
+                },
+              }}
+              showName
+            />
           </SignedIn>
         </div>
       </SidebarFooter>

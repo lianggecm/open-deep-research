@@ -78,7 +78,7 @@ export default function TimelineProgress({
       >
         <div className="relative">
           {/* Timeline line */}
-          <div className="absolute left-[9px] top-[1px] bottom-0 w-0.5 bg-[#D1D5DC]" />
+          <div className="absolute left-[9px] top-[1px] bottom-0 w-[1px] bg-[#D1D5DC]" />
 
           <AnimatePresence>
             {filteredEvents
