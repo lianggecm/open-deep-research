@@ -30,6 +30,15 @@ export const ChatInput = ({
     }
   }, []);
 
+  // Auto-resize textarea
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [input]);
+
   return (
     <div
       className="p-3 relative overflow-hidden rounded-lg max-w-[640px] mx-auto w-full bg-white flex"
@@ -37,8 +46,8 @@ export const ChatInput = ({
     >
       <textarea
         ref={textareaRef}
-        className="mb-12 resize-none w-full min-h-12 outline-none bg-transparent placeholder:text-zinc-400"
-        placeholder="Type in your prompt"
+        className="mb-12 resize-none w-full min-h-12 outline-none bg-transparent placeholder:text-zinc-400 max-h-[240px] overflow-y-auto"
+        placeholder="Type your message (Enter to send, Shift+Enter for new line)"
         value={input}
         disabled={disabled}
         onChange={(event) => {
@@ -54,7 +63,6 @@ export const ChatInput = ({
 
             if (isGeneratingResponse) {
               toast.error("Please wait for the model to finish its response!");
-
               return;
             }
 
