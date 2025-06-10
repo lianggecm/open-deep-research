@@ -5,17 +5,31 @@ import { research } from "@/db/schema";
 import { StartResearchPayload } from "@/deepresearch/workflows/start-research-workflow";
 import { workflow } from "@/lib/clients";
 import { eq } from "drizzle-orm";
+import { getRemainingResearch } from "@/lib/limits";
 
 export const startResearch = async ({ chatId }: { chatId: string }) => {
   console.log("startResearch", chatId);
+
+  const researchData = await getResearch(chatId);
+
+  if (!researchData || !researchData.clerkUserId) {
+    throw new Error("Research with clerk user not found");
+  }
+
+  const { remaining } = await getRemainingResearch({
+    clerkUserId: researchData?.clerkUserId,
+  });
+
+  if (remaining <= 0) {
+    throw new Error("No remaining researches");
+  }
+
   // Get the base URL for the workflow
   const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : "http://localhost:3000";
 
   const workflowUrl = `${baseUrl}/api/workflows/nested-research/start-research`;
-
-  const researchData = await getResearch(chatId);
 
   const researchTopic = `${researchData?.initialUserMessage} ${
     researchData?.answers && researchData?.answers?.length > 0
@@ -53,9 +67,7 @@ export const startResearch = async ({ chatId }: { chatId: string }) => {
 
   // await qstash.publishJSON({
   //   url: "http://localhost:3000/api/cancel",
-  //   body: {
-  //     id: workflowRunId,
-  //   },
+  //   body: { id: workflowRunId, },
   //   delay: 10,
   // });
 

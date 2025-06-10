@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Heading } from "../../Heading";
 import { AnswerInput } from "./AnswerInput";
 import { TooltipUsage } from "../tooltip/TooltipUsage";
+import { useAuth } from "@clerk/nextjs";
 
 export const QuestionsPage = ({
   questions,
@@ -12,13 +13,14 @@ export const QuestionsPage = ({
 }: {
   questions: string[];
   onSkip: () => void;
-  onGenerate: (questions: string[]) => void;
+  onGenerate: (questions: string[], userId: string) => void;
 }) => {
   const [answers, setAnswers] = useState<string[]>(
     Array(questions.length).fill("")
   );
   const [remainingResearches, setRemainingResearches] = useState(0);
   const [resetTime, setResetTime] = useState<string | null>(null);
+  const { userId } = useAuth();
 
   useEffect(() => {
     const fetchLimits = async () => {
@@ -31,8 +33,23 @@ export const QuestionsPage = ({
         console.error("Failed to fetch limits:", error);
       }
     };
-    fetchLimits();
-  }, []);
+
+    if (userId) {
+      fetchLimits();
+    }
+
+    const handleFocus = () => {
+      if (userId) {
+        fetchLimits();
+      }
+    };
+
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [userId]);
 
   return (
     <div className="my-5 px-5 h-full flex flex-col flex-1 max-w-[700px] mx-auto w-full">
@@ -54,7 +71,9 @@ export const QuestionsPage = ({
               });
             }}
             onEnter={() => {
-              if (index === questions.length - 1) onGenerate(answers);
+              if (index === questions.length - 1 && userId) {
+                onGenerate(answers, userId);
+              }
             }}
           />
         ))}
@@ -73,8 +92,11 @@ export const QuestionsPage = ({
           <button
             className="flex flex-col justify-between items-center w-full md:w-[165px] h-[38px] overflow-hidden px-5 py-1.5 rounded bg-[#072d77] border border-[#072d77] cursor-pointer"
             onClick={() => {
-              onGenerate(answers);
+              if (userId) {
+                onGenerate(answers, userId);
+              }
             }}
+            disabled={remainingResearches <= 0}
           >
             <div className="flex justify-start items-center flex-grow-0 flex-shrink-0 relative gap-1.5">
               <p className="flex-grow-0 flex-shrink-0 text-base font-medium text-left text-white">
