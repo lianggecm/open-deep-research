@@ -18,8 +18,8 @@ export const FinalReportPage = ({
   }
 
   return (
-    <div className="flex flex-col gap-5 size-full pt-20 md:pt-5 px-5">
-      <div className="flex flex-row gap-2 xl:px-4 items-start justify-center md:justify-end print:hidden">
+    <div className="flex flex-col size-full pt-20 md:pt-5 mx-auto max-w-[886px]">
+      <div className="flex flex-row gap-2 xl:px-4 items-start justify-center md:justify-end print:hidden mb-5">
         <button
           onClick={() => {
             // copy to clipboard
@@ -45,36 +45,39 @@ export const FinalReportPage = ({
         <a href="https://together.ai/">Together AI</a>
       </div>
 
-      {researchData.coverUrl && (
-        <div className="w-full h-[202px] md:h-[305px] relative overflow-hidden rounded-lg border border-[#cad5e2]">
-          <img
-            src={researchData.coverUrl}
-            className="w-full h-full object-cover rounded"
-            alt=""
-          />
-        </div>
-      )}
-      <div className="flex flex-col-reverse xl:flex-row gap-6 ">
-        <div className="max-w-[600px]">
-          <CustomMarkdown sources={researchData.sources || []}>
-            {researchData.report}
-          </CustomMarkdown>
-          {researchData.sources && researchData.sources?.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-4">
-              <h3 className="text-lg font-medium text-[#101828] col-span-full mb-2">
-                We used {researchData.sources.length} sources for this research:
-              </h3>
-              {researchData.sources.map((result, idx) => (
-                <WebResultCard
-                  key={result.url + "-" + idx}
-                  result={result}
-                  id={result.url}
-                >
-                  <CitationNumber num={idx + 1} />
-                </WebResultCard>
-              ))}
-            </div>
-          )}
+      <div className="border border-[#E2E8F0] rounded-lg pb-4 mb-6">
+        {researchData.coverUrl && (
+          <div className="w-full h-[202px] md:h-[305px] relative overflow-hidden rounded-lg">
+            <img
+              src={researchData.coverUrl}
+              className="w-full h-full object-cover rounded"
+              alt=""
+            />
+          </div>
+        )}
+        <div className="flex flex-col-reverse xl:flex-row gap-6 px-5 pt-3">
+          <div className="max-w-[600px]">
+            <CustomMarkdown sources={researchData.sources || []}>
+              {researchData.report}
+            </CustomMarkdown>
+            {researchData.sources && researchData.sources?.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+                <h3 className="text-lg font-medium text-[#101828] col-span-full mb-2">
+                  We used {researchData.sources.length} sources for this
+                  research:
+                </h3>
+                {researchData.sources.map((result, idx) => (
+                  <WebResultCard
+                    key={result.url + "-" + idx}
+                    result={result}
+                    id={result.url}
+                  >
+                    <CitationNumber num={idx + 1} />
+                  </WebResultCard>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
