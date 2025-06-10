@@ -5,6 +5,7 @@ import { Heading } from "../Heading";
 import { ReportSteps, ReportStepType } from "./reportLoading/ReportSteps";
 import TimelineProgress from "./reportLoading/TimelineProgress";
 import { ResearchEventStreamEvents } from "@/app/api/research/route";
+import { ReportBody } from "./ReportBody";
 
 export const ReportLoadingPage = ({
   researchTopic,
@@ -48,6 +49,7 @@ export const ReportLoadingPage = ({
     },
   ]);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isWritingReport, setIsWritingReport] = useState(false);
 
   const onResearchEnd = () => {
     setIsStreaming(false);
@@ -141,8 +143,33 @@ export const ReportLoadingPage = ({
         }
       });
       setSteps(newSteps);
+
+      // Update the new state based on the "writing_report" step status
+      setIsWritingReport(newSteps[4].status === "loading");
     }
   }, [streamEvents]);
+
+  // extract from streamEvents the coverUrl event to get url
+  const coverUrl = streamEvents.find(
+    (event) => event.type === "cover_generation_completed"
+  )?.coverImage;
+
+  const report = streamEvents
+    .filter((event) => event.type === "report_generating")
+    .sort((a, b) => b.timestamp - a.timestamp)[0]?.partialReport;
+
+  if (coverUrl && report)
+    return (
+      <div className="flex flex-col size-full pt-20 md:pt-5 mx-auto max-w-[886px] relative">
+        <ReportBody
+          researchData={{
+            researchTopic,
+            coverUrl: coverUrl,
+            report: report,
+          }}
+        />
+      </div>
+    );
 
   return (
     <div className="px-5 py-5 h-full flex flex-col flex-1 mx-auto max-w-[700px] w-full">
