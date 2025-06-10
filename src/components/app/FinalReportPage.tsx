@@ -1,10 +1,12 @@
 "use client";
 import { getResearch } from "@/db/action";
 import { toast } from "sonner";
+import React from "react";
 
 import { CustomMarkdown } from "../CustomMarkdown";
 import { WebResultCard } from "./reportLoading/WebResultCard";
 import { CitationNumber } from "./citations/CitationNumber";
+import { DownloadPdfButton } from "./DownloadPdfButton";
 
 export const FinalReportPage = ({
   researchData,
@@ -17,7 +19,7 @@ export const FinalReportPage = ({
 
   return (
     <div className="flex flex-col gap-5 size-full pt-20 md:pt-5 px-5">
-      <div className="flex flex-row gap-2 xl:px-4 items-start justify-center md:justify-end">
+      <div className="flex flex-row gap-2 xl:px-4 items-start justify-center md:justify-end print:hidden">
         <button
           onClick={() => {
             // copy to clipboard
@@ -34,21 +36,7 @@ export const FinalReportPage = ({
             </p>
           </div>
         </button>
-        <button
-          onClick={() => {
-            toast.success("PDF generation TODO!");
-            // download as PDF
-            // window.open(`/api/pdf?url=${window.location.href}`, "_blank");
-          }}
-          className="cursor-pointer flex flex-col justify-center items-center overflow-hidden  gap-2.5 px-3 py-1.5 rounded bg-[#072d77] border border-[#072d77]"
-        >
-          <div className="flex justify-start items-center self-stretch relative gap-1.5">
-            <img src="/download.svg" alt="" className="size-4" />
-            <p className="flex-grow-0 flex-shrink-0 text-sm text-left text-white">
-              Download as PDF
-            </p>
-          </div>
-        </button>
+        <DownloadPdfButton fileName={researchData.researchTopic ?? undefined} />
       </div>
 
       {researchData.coverUrl && (
@@ -81,6 +69,12 @@ export const FinalReportPage = ({
               ))}
             </div>
           )}
+
+          <div className="print:block hidden text-xs text-zinc-400 leading-5 mx-auto">
+            Powered by{" "}
+            <a href="https://deepresearch-app.vercel.app/">Deepseek Research</a>{" "}
+            & <a href="https://together.ai/">Together AI</a>
+          </div>
         </div>
       </div>
     </div>

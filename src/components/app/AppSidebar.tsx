@@ -63,7 +63,7 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar>
+    <Sidebar className="print:hidden">
       <SidebarHeader className="pt-5 px-5">
         <div className="flex flex-row justify-between items-center pb-6">
           <Link className="flex flex-row items-center gap-2" href="/">
