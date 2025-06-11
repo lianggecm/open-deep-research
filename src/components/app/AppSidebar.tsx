@@ -138,7 +138,7 @@ export function AppSidebar() {
                     }`}
                   >
                     <span className="truncate">
-                      {chat.title || chat.researchTopic}
+                      {chat.title || chat.initialUserMessage}
                     </span>
                   </Link>
                 </SidebarMenuButton>
