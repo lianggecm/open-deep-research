@@ -21,16 +21,33 @@ const ratelimit =
       })
     : undefined;
 
+// Whitelist of users with unlimited reports
+const unlimitedUsers = [
+  "user_2yHc1OHZXTGhAfnxxWTlU5Eu6wc",
+  "user_2xp4SMtYXT9nnZ6sdpzcreUdpV7",
+];
+
+const DEFAULT_LIMIT = 5;
+const DEFAULT_RESET = null;
+
+const fallbackResult = {
+  remaining: DEFAULT_LIMIT,
+  limit: DEFAULT_LIMIT,
+  reset: DEFAULT_RESET,
+};
+
 export const limitResearch = async ({
   clerkUserId,
 }: {
   clerkUserId?: string;
 }) => {
-  if (!ratelimit || !clerkUserId) {
-    return {
-      remaining: 5,
-      limit: 5,
-    };
+  // Unlimited for whitelisted users
+  if (
+    (clerkUserId && unlimitedUsers.includes(clerkUserId)) ||
+    !ratelimit ||
+    !clerkUserId
+  ) {
+    return fallbackResult;
   }
 
   const result = await ratelimit.limit(clerkUserId);
@@ -47,11 +64,13 @@ export const getRemainingResearch = async ({
 }: {
   clerkUserId?: string;
 }) => {
-  if (!ratelimit || !clerkUserId) {
-    return {
-      remaining: 5,
-      reset: null,
-    };
+  // Unlimited for whitelisted users
+  if (
+    (clerkUserId && unlimitedUsers.includes(clerkUserId)) ||
+    !ratelimit ||
+    !clerkUserId
+  ) {
+    return fallbackResult;
   }
 
   try {
@@ -60,9 +79,6 @@ export const getRemainingResearch = async ({
     return result;
   } catch (e) {
     console.log(e);
-    return {
-      remaining: 5,
-      reset: null,
-    };
+    return fallbackResult;
   }
 };
