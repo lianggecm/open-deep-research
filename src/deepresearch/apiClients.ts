@@ -1,6 +1,6 @@
 import { createTogetherAI } from "@ai-sdk/togetherai";
 import Together from "together-ai";
-import Exa from "exa-js";
+import FirecrawlApp, { SearchResponse } from "@mendable/firecrawl-js";
 
 import { unstable_cache } from "next/cache";
 import { SearchResult } from "./schemas";
@@ -30,45 +30,34 @@ if (process.env.HELICONE_API_KEY) {
 
 export const togetherai = new Together(options);
 
-const exa = new Exa(process.env.EXA_API_KEY);
+const app = new FirecrawlApp({ apiKey: process.env.FIRECRAWL_API_KEY });
 
 type SearchResults = {
   results: SearchResult[];
 };
 
-export const searchOnExa = async ({
+export const searchOnWeb = async ({
   query,
 }: {
   query: string;
 }): Promise<SearchResults> => {
   try {
-    const search = await unstable_cache(
-      async () => {
-        return await exa.searchAndContents(query, {
-          type: "keyword",
-          text: true,
-          numResults: 5,
-        });
+    // Perform a basic search using Firecrawl
+    const searchResult: SearchResponse = await app.search(query, {
+      limit: 5,
+      scrapeOptions: {
+        formats: ["markdown"],
       },
-      [`exa-search-${query}`],
-      {
-        revalidate: 3600, // Cache for 1 hour
-        tags: ["exa-search"],
-      }
-    )();
-
-    const results = search.results.map((result) => {
-      return {
-        title: result.title || "",
-        link: result.url,
-        content: result.text,
-      };
     });
 
-    return {
-      results,
-    };
+    const results = searchResult.data.map((result) => ({
+      title: result.title || "",
+      link: result.url || "",
+      content: result.markdown || "",
+    }));
+
+    return { results };
   } catch (e) {
-    throw new Error(`Exa web search API error: ${e}`);
+    throw new Error(`Firecrawl web search API error: ${e}`);
   }
 };

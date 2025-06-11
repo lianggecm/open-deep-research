@@ -7,7 +7,7 @@ import { createWorkflow } from "@upstash/workflow/nextjs";
 import { stateStorage, streamStorage } from "../storage";
 import { WorkflowContext } from "@upstash/workflow";
 import { generateText, generateObject } from "ai";
-import { searchOnExa, togetheraiClient } from "../apiClients";
+import { searchOnWeb, togetheraiClient } from "../apiClients";
 import { MODEL_CONFIG, PROMPTS, RESEARCH_CONFIG } from "../config";
 import {
   researchPlanSchema,
@@ -72,7 +72,7 @@ const webSearch = async ({
     console.log(`⚠️ Truncated query to 400 characters: ${query}`);
   }
 
-  const searchResults = await searchOnExa({ query });
+  const searchResults = await searchOnWeb({ query });
   console.log(
     `📊 Web Search Responded with ${searchResults.results.length} results`
   );
