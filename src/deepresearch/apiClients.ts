@@ -126,6 +126,8 @@ export const searchOnWeb = async ({
       scrapeResponse = await app.scrapeUrl(searchResult.url, {
         formats: ["markdown"],
         timeout: 15000,
+        // 12 hours
+        maxAge: 12 * 60 * 60 * 1000,
       });
       if (scrapeResponse.error) {
         throw scrapeResponse.error;
