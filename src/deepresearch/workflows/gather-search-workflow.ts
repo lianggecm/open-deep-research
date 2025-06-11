@@ -207,7 +207,9 @@ const evaluateResearchCompleteness = async ({
   const formattedResults = results
     .map(
       (result) =>
-        `- ${result.title}\n${result.summary || result.content}\n---\n`
+        `- ${result.title}\n${
+          result.summary || result.content.slice(0, 1000)
+        }\n---\n`
     )
     .join("\n");
 

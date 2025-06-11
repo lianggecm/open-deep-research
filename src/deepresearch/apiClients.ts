@@ -1,6 +1,7 @@
 import { createTogetherAI } from "@ai-sdk/togetherai";
 import Together from "together-ai";
-import FirecrawlApp, { SearchResponse } from "@mendable/firecrawl-js";
+import FirecrawlApp from "@mendable/firecrawl-js";
+import { z } from "zod";
 
 import { unstable_cache } from "next/cache";
 import { SearchResult } from "./schemas";
@@ -41,23 +42,118 @@ export const searchOnWeb = async ({
 }: {
   query: string;
 }): Promise<SearchResults> => {
-  try {
-    // Perform a basic search using Firecrawl
-    const searchResult: SearchResponse = await app.search(query, {
-      limit: 5,
-      scrapeOptions: {
-        formats: ["markdown"],
-      },
-    });
+  // 1. Call Brave Search API for web results
+  const res = await fetch(
+    `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(
+      query
+    )}&count=5&result_filter=web`,
+    {
+      headers: {
+        Accept: "application/json",
+        "Accept-Encoding": "gzip",
+        "X-Subscription-Token": process.env.BRAVE_API_KEY || "",
+      } as HeadersInit,
+    }
+  );
+  const responseJson = await res.json();
+  const parsedResponseJson = z
+    .object({
+      web: z.object({
+        results: z.array(
+          z.object({
+            url: z.string(),
+            title: z.string(),
+            meta_url: z.object({
+              favicon: z.string(),
+            }),
+            extra_snippets: z.array(z.string()).default([]),
+            thumbnail: z
+              .object({
+                original: z.string(),
+              })
+              .optional(),
+          })
+        ),
+      }),
+    })
+    .parse(responseJson);
 
-    const results = searchResult.data.map((result) => ({
-      title: result.title || "",
-      link: result.url || "",
-      content: result.markdown || "",
-    }));
+  const parsedResults = parsedResponseJson.web.results.map((r) => ({
+    title: r.title,
+    url: r.url,
+    favicon: r.meta_url.favicon,
+    extraSnippets: r.extra_snippets,
+    thumbnail: r.thumbnail?.original,
+  }));
 
-    return { results };
-  } catch (e) {
-    throw new Error(`Firecrawl web search API error: ${e}`);
+  // 2. Validate and type results
+  const searchResultSchema = z.object({
+    title: z.string(),
+    url: z.string(),
+    favicon: z.string(),
+    extraSnippets: z.array(z.string()).default([]),
+    thumbnail: z.string().optional(),
+  });
+  type SearchResult = z.infer<typeof searchResultSchema>;
+  const schema = z.array(searchResultSchema);
+  const searchResults = schema.parse(parsedResults);
+
+  // 3. Markdown stripping helper
+  function stripUrlsFromMarkdown(markdown: string): string {
+    let result = markdown;
+    result = result.replace(
+      /!\[([^\]]*)\]\((https?:\/\/[^\s)]+)(?:\s+"[^"]*")?\)/g,
+      "$1"
+    );
+    result = result.replace(
+      /\[([^\]]*)\]\((https?:\/\/[^\s)]+)(?:\s+"[^"]*")?\)/g,
+      "$1"
+    );
+    result = result.replace(
+      /^\[[^\]]+\]:\s*https?:\/\/[^\s]+(?:\s+"[^"]*")?$/gm,
+      ""
+    );
+    result = result.replace(/<(https?:\/\/[^>]+)>/g, "");
+    result = result.replace(/https?:\/\/[^\s]+/g, "");
+    return result.trim();
   }
+
+  // 4. Scrape each result with Firecrawl
+  async function scrapeSearchResult(searchResult: SearchResult) {
+    let scrapedText = "";
+    let scrapeResponse: Awaited<ReturnType<typeof app.scrapeUrl>> | undefined;
+    try {
+      scrapeResponse = await app.scrapeUrl(searchResult.url, {
+        formats: ["markdown"],
+        timeout: 10000,
+      });
+      if (scrapeResponse.error) {
+        throw scrapeResponse.error;
+      }
+      if (scrapeResponse.success) {
+        const rawText = scrapeResponse.markdown ?? "";
+        scrapedText = stripUrlsFromMarkdown(rawText).substring(0, 80000);
+      }
+    } catch {
+      // ignore individual scrape errors
+    }
+    return {
+      title: searchResult.title,
+      link: searchResult.url,
+      content: scrapedText,
+    };
+  }
+
+  const resultsSettled = await Promise.allSettled(
+    searchResults.map(scrapeSearchResult)
+  );
+  const results = resultsSettled
+    .filter((r) => r.status === "fulfilled")
+    .map((r) => (r as PromiseFulfilledResult<any>).value)
+    .filter((r) => r.content !== "");
+
+  if (results.length === 0) {
+    return { results: [] };
+  }
+  return { results };
 };

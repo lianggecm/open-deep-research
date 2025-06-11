@@ -50,7 +50,15 @@ export const getRemainingResearch = async ({
     };
   }
 
-  const result = await ratelimit.getRemaining(clerkUserId);
+  try {
+    const result = await ratelimit.getRemaining(clerkUserId);
 
-  return result;
+    return result;
+  } catch (e) {
+    console.log(e);
+    return {
+      remaining: 5,
+      reset: null,
+    };
+  }
 };
