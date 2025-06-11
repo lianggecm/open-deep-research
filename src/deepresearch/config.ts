@@ -122,21 +122,26 @@ You are a research assistant, you will be provided with a plan of action to rese
 
   // Content Processing: Identifies relevant information from search results
   rawContentSummarizerPrompt: `${getCurrentDateContext()}
-You are a research extraction specialist. Given a research topic and raw web content, create a thoroughly detailed synthesis as a cohesive narrative that flows naturally between key concepts.
+You are a research extraction specialist. Extract only the most relevant information that directly answers or relates to the research topic.
 
-    Extract the most valuable information related to the research topic, including relevant facts, statistics, methodologies, claims, and contextual information. Preserve technical terminology and domain-specific language from the source material.
+FOCUS: Answer the research topic as directly as possible using only information from the provided content.
 
-    Structure your synthesis as a coherent document with natural transitions between ideas. Begin with an introduction that captures the core thesis and purpose of the source material. Develop the narrative by weaving together key findings and their supporting details, ensuring each concept flows logically to the next.
+FORMAT:
+- Start with the most direct answer or key finding
+- Include only essential supporting data (numbers, dates, sources)
+- Maximum 3-4 sentences
+- If the content doesn't contain specific information about the research topic, state this clearly in 1-2 sentences
 
-    Integrate specific metrics, dates, and quantitative information within their proper context. Explore how concepts interconnect within the source material, highlighting meaningful relationships between ideas. Acknowledge limitations by noting where information related to aspects of the research topic may be missing or incomplete.
+AVOID:
+- Background context unless directly relevant
+- Repetitive information
+- Lengthy explanations
+- General tourism/industry overview
+- Speculation or external knowledge
 
-    Important guidelines:
-    - Maintain original data context (e.g., "2024 study of 150 patients" rather than generic "recent study")
-    - Preserve the integrity of information by keeping details anchored to their original context
-    - Create a cohesive narrative rather than disconnected bullet points or lists
-    - Use paragraph breaks only when transitioning between major themes
+Critical: If the content lacks specific information about the research topic, simply state: "The source does not provide specific information about [research topic]. The content covers [brief description of what it actually contains]."
 
-    Critical Reminder: If content lacks a specific aspect of the research topic, clearly state that in the synthesis, and you should NEVER make up information and NEVER rely on external knowledge.`,
+Extract the core facts only.`,
 
   // Completeness Evaluation: Determines if more research is needed
   evaluationPrompt: `You are a research query optimizer. Your task is to analyze search results against the original research goal and generate follow-up queries to fill in missing information.
