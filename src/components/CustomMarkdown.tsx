@@ -88,8 +88,17 @@ const createMarkdownComponents = (
     );
   },
   h1: ({ children, ...props }) => {
+    const text =
+      typeof children === "string"
+        ? children
+        : React.Children.toArray(children).join("");
+    const anchor = text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
     return (
       <h1
+        id={anchor}
         className="text-[28px] md:text-[40px] font-medium text-left text-[#0f172b] mb-2"
         {...props}
       >
@@ -98,8 +107,17 @@ const createMarkdownComponents = (
     );
   },
   h2: ({ children, ...props }) => {
+    const text =
+      typeof children === "string"
+        ? children
+        : React.Children.toArray(children).join("");
+    const anchor = text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
     return (
       <h2
+        id={anchor}
         className="text-2xl md:text-[28px] text-left font-medium text-[#0f172b] mb-2"
         {...props}
       >
@@ -108,8 +126,17 @@ const createMarkdownComponents = (
     );
   },
   h3: ({ children, ...props }) => {
+    const text =
+      typeof children === "string"
+        ? children
+        : React.Children.toArray(children).join("");
+    const anchor = text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
     return (
       <h3
+        id={anchor}
         className="text-[18px] md:text-xl text-left text-[#0f172b] mb-2"
         {...props}
       >

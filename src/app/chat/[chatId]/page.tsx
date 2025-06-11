@@ -10,6 +10,7 @@ import dedent from "dedent";
 import { togetheraiClient } from "@/deepresearch/apiClients";
 import z from "zod";
 import { ChatPage } from "@/components/app/ChatPage";
+import { extractMarkdownHeadings } from "@/lib/utils";
 
 export async function generateMetadata({
   params,
@@ -31,7 +32,7 @@ export async function generateMetadata({
     return redirect("/");
   }
 
-  const topic = researchData.initialUserMessage;
+  const topic = researchData.title || researchData.initialUserMessage;
 
   const title = `${topic} | DeepSeek Research`;
   const description = `Discover the research on "${topic}" generated using ${

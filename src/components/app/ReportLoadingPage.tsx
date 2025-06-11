@@ -49,7 +49,6 @@ export const ReportLoadingPage = ({
     },
   ]);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [isWritingReport, setIsWritingReport] = useState(false);
 
   const onResearchEnd = () => {
     setIsStreaming(false);
@@ -143,9 +142,6 @@ export const ReportLoadingPage = ({
         }
       });
       setSteps(newSteps);
-
-      // Update the new state based on the "writing_report" step status
-      setIsWritingReport(newSteps[4].status === "loading");
     }
   }, [streamEvents]);
 

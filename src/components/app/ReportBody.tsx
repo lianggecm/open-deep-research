@@ -4,6 +4,8 @@ import React from "react";
 import { CustomMarkdown } from "../CustomMarkdown";
 import { WebResultCard } from "./reportLoading/WebResultCard";
 import { CitationNumber } from "./citations/CitationNumber";
+import { extractMarkdownHeadings } from "@/lib/utils";
+import { TableOfContents } from "./TableOfContents";
 
 export const ReportBody = ({
   researchData,
@@ -36,6 +38,7 @@ export const ReportBody = ({
         </div>
       )}
       <div className="flex flex-col-reverse xl:flex-row gap-6 px-5 pt-3">
+        {/* Main Content */}
         <div className="max-w-[600px]">
           <CustomMarkdown sources={researchData.sources || []}>
             {researchData.report}
@@ -57,6 +60,9 @@ export const ReportBody = ({
             </div>
           )}
         </div>
+
+        {/* Table of Contents */}
+        <TableOfContents markdown={researchData.report || ""} />
       </div>
     </div>
   );

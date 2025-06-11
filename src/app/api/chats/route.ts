@@ -1,8 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/db";
-import { research } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { getChats } from "@/lib/getChats";
 
 export async function GET() {
   const { userId } = await auth();
@@ -11,14 +9,7 @@ export async function GET() {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  const chats = await db
-    .select({
-      id: research.id,
-      topic: research.initialUserMessage,
-    })
-    .from(research)
-    .orderBy(desc(research.createdAt))
-    .where(eq(research.clerkUserId, userId));
+  const chats = await getChats(userId);
 
   return NextResponse.json(chats);
 }

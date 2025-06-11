@@ -34,8 +34,9 @@ export const research = pgTable("chats", {
 
   researchStartedAt: timestamp(),
   status: deepresearchStautsEnum().notNull().default("questions"),
+  title: varchar(), // title of the research extracted from the report markdown
   report: varchar(), // markdown of the report
-  completedAt: timestamp(),
+  completedAt: timestamp(), // timestamp when the research is completed
   coverUrl: varchar(), // url of the cover image generated with flux
 
   sources: jsonb().$type<

@@ -29,6 +29,7 @@ import { awsS3Client } from "@/lib/clients";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getResearch } from "@/db/action";
 import { limitResearch } from "@/lib/limits";
+import { extractMarkdownHeadings } from "@/lib/utils";
 
 const MAX_BUDGET = 3;
 
@@ -379,12 +380,18 @@ export const startResearchWorkflow = createWorkflow<
         throw new Error("Could not read final research state");
       }
 
+      const headings = extractMarkdownHeadings(finalReport);
+
+      const headingOne =
+        headings && headings.find((heading) => heading.level === 1);
+
       await db
         .update(research)
         .set({
           report: finalReport,
           coverUrl: coverImage,
           status: "completed",
+          title: headingOne?.text,
           completedAt: new Date(),
           sources: finalState.searchResults.map((result) => ({
             url: result.link,

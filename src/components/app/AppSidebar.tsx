@@ -8,25 +8,15 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
-import { Button } from "../ui/button";
+import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getChats } from "@/lib/getChats";
 
-type Chat = {
-  id: string;
-  topic: string;
-};
+type Chat = Awaited<ReturnType<typeof getChats>>[number];
 
-async function getChats(): Promise<Chat[]> {
+async function fetchChats(): Promise<Chat[]> {
   const res = await fetch("/api/chats");
   if (!res.ok) {
     // Handle error, maybe throw or return empty array
@@ -39,7 +29,7 @@ async function getChats(): Promise<Chat[]> {
 export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
-  const [chats, setChats] = useState<Awaited<ReturnType<typeof getChats>>>([]);
+  const [chats, setChats] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { setOpenMobile, toggleSidebar } = useSidebar();
   const { isSignedIn, isLoaded } = useUser();
@@ -49,13 +39,13 @@ export function AppSidebar() {
   useEffect(() => {
     if (!isUserLoggedIn) return;
 
-    const fetchChats = async () => {
-      const chatsData = await getChats();
+    const fetchAndSetChats = async () => {
+      const chatsData = await fetchChats();
       setChats(chatsData);
       setIsLoading(false);
     };
 
-    fetchChats();
+    fetchAndSetChats();
   }, [pathname, isUserLoggedIn]);
 
   if (!isUserLoggedIn) {
@@ -147,7 +137,9 @@ export function AppSidebar() {
                         : "text-[#4a5565]"
                     }`}
                   >
-                    <span className="truncate">{chat.topic}</span>
+                    <span className="truncate">
+                      {chat.title || chat.researchTopic}
+                    </span>
                   </Link>
                 </SidebarMenuButton>
               );

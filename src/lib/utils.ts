@@ -55,3 +55,23 @@ export function cleanMarkdownToText(markdownText: string | undefined): string {
 
   return cleanText;
 }
+
+/**
+ * Extracts all headings (h1, h2, h3) from markdown text.
+ * Returns an array of objects: { level: number, text: string }
+ */
+export function extractMarkdownHeadings(
+  markdownText: string
+): Array<{ level: number; text: string }> {
+  if (!markdownText) return [];
+  const headingRegex = /^(#{1,3})\s+(.+)$/gm;
+  const headings: Array<{ level: number; text: string }> = [];
+  let match;
+  while ((match = headingRegex.exec(markdownText)) !== null) {
+    const level = match[1].length;
+    if (level >= 1 && level <= 3) {
+      headings.push({ level, text: match[2].trim() });
+    }
+  }
+  return headings;
+}
