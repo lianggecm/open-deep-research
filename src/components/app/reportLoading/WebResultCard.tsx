@@ -29,7 +29,7 @@ export const WebResultCard = ({
         </div>
         <div className="flex justify-start items-center  relative gap-1">
           <div className="flex justify-start items-center  relative gap-1.5">
-            <div className=" w-3.5 h-3.5 relative overflow-hidden rounded bg-gray-100">
+            <div className="max-w-3.5 min-w-3.5 h-3.5 relative overflow-hidden rounded bg-gray-100">
               <FaviconImage
                 url={result.url}
                 className="w-2.5 h-2.5 absolute left-px top-px object-none"
