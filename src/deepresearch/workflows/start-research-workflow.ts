@@ -55,23 +55,24 @@ const generateResearchQueries = async (
     ],
   });
 
-  const parsedPlan = await generateObject({
-    model: togetheraiClient(MODEL_CONFIG.jsonModel),
-    messages: [
-      { role: "system", content: PROMPTS.planParsingPrompt },
-      { role: "user", content: `Research Topic: ${topic}` },
-    ],
-    schema: researchPlanSchema,
-  });
-
-  // Generate a one-paragraph summary of the plan
-  const planSummary = await generateText({
-    model: togetheraiClient(MODEL_CONFIG.summaryModel),
-    messages: [
-      { role: "system", content: PROMPTS.planSummaryPrompt },
-      { role: "user", content: initialSearchEvaluation.text },
-    ],
-  });
+  // Run plan parsing and summary generation in parallel
+  const [parsedPlan, planSummary] = await Promise.all([
+    generateObject({
+      model: togetheraiClient(MODEL_CONFIG.jsonModel),
+      messages: [
+        { role: "system", content: PROMPTS.planParsingPrompt },
+        { role: "user", content: `Research Topic: ${topic}` },
+      ],
+      schema: researchPlanSchema,
+    }),
+    generateText({
+      model: togetheraiClient(MODEL_CONFIG.summaryModel),
+      messages: [
+        { role: "system", content: PROMPTS.planSummaryPrompt },
+        { role: "user", content: initialSearchEvaluation.text },
+      ],
+    }),
+  ]);
 
   console.log(
     `📋 Research queries generated: \n - ${parsedPlan.object.queries.join(

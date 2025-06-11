@@ -235,20 +235,29 @@ const evaluateResearchCompleteness = async ({
       },
     ],
   });
-
   console.log(`📝 Evaluation:\n\n ${evaluation.text}`);
 
-  const parsedEvaluation = await generateObject({
-    model: togetheraiClient(MODEL_CONFIG.jsonModel),
-    messages: [
-      { role: "system", content: PROMPTS.evaluationParsingPrompt },
-      {
-        role: "user",
-        content: `Evaluation to be parsed: ${evaluation.text}`,
-      },
-    ],
-    schema: researchPlanSchema,
-  });
+  // Run evaluation summary and parsing in parallel
+  const [evaluationSummary, parsedEvaluation] = await Promise.all([
+    generateText({
+      model: togetheraiClient(MODEL_CONFIG.summaryModel),
+      messages: [
+        { role: "system", content: PROMPTS.planSummaryPrompt },
+        { role: "user", content: evaluation.text },
+      ],
+    }),
+    generateObject({
+      model: togetheraiClient(MODEL_CONFIG.jsonModel),
+      messages: [
+        { role: "system", content: PROMPTS.evaluationParsingPrompt },
+        {
+          role: "user",
+          content: `Evaluation to be parsed: ${evaluation.text}`,
+        },
+      ],
+      schema: researchPlanSchema,
+    }),
+  ]);
 
   const existingQueriesSet = new Set(queries);
   const newQueries = parsedEvaluation.object.queries.filter(
@@ -259,7 +268,7 @@ const evaluateResearchCompleteness = async ({
 
   return {
     additionalQueries,
-    reasoning: evaluation.text,
+    reasoning: evaluationSummary.text,
   };
 };
 

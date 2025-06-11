@@ -139,8 +139,7 @@ You are a research extraction specialist. Given a research topic and raw web con
     Critical Reminder: If content lacks a specific aspect of the research topic, clearly state that in the synthesis, and you should NEVER make up information and NEVER rely on external knowledge.`,
 
   // Completeness Evaluation: Determines if more research is needed
-  evaluationPrompt: `${getCurrentDateContext()}
-    You are a research query optimizer. Your task is to analyze search results against the original research goal and generate follow-up queries to fill in missing information.
+  evaluationPrompt: `You are a research query optimizer. Your task is to analyze search results against the original research goal and generate follow-up queries to fill in missing information.
 
     PROCESS:
     1. Identify ALL information explicitly requested in the original research goal
