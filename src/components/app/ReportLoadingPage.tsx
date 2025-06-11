@@ -156,7 +156,7 @@ export const ReportLoadingPage = ({
 
   if (coverUrl && report)
     return (
-      <div className="flex flex-col size-full pt-20 md:pt-5 mx-auto max-w-[886px] relative">
+      <div className="flex flex-col size-full pt-20 md:pt-5 mx-auto max-w-[886px] relative px-5">
         <ReportBody
           researchData={{
             researchTopic,
@@ -164,6 +164,24 @@ export const ReportLoadingPage = ({
             report: report,
           }}
         />
+        <div className="flex justify-center items-center mt-10 mb-16">
+          <div className="bg-white/80 rounded-2xl shadow-lg px-8 py-10 flex flex-col items-center w-full max-w-md border border-gray-100">
+            <div className="flex items-center gap-2 mb-4">
+              {/* Animated dots spinner */}
+              <span className="inline-block w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+              <span className="inline-block w-2 h-2 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+              <span className="inline-block w-2 h-2 bg-blue-300 rounded-full animate-bounce"></span>
+            </div>
+            <p className="text-lg font-medium text-gray-700 text-center mb-2">
+              AI is{" "}
+              <span className="inline-block">writing your final report</span>
+              <span className="inline-block animate-pulse">...</span>
+            </p>
+            <p className="text-sm text-gray-500 text-center mt-1">
+              The text will appear here soon.
+            </p>
+          </div>
+        </div>
       </div>
     );
 

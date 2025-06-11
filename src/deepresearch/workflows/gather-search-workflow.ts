@@ -32,13 +32,20 @@ const summarizeContent = async ({
 }): Promise<string> => {
   console.log(`📝 Summarizing content from URL: ${result.link}`);
 
+  // Use a higher threshold for very long content (around 128K characters)
+  const isContentVeryLong = result.content.length > 100000;
+
+  const model = isContentVeryLong
+    ? togetheraiClient(MODEL_CONFIG.summaryModelLongPages)
+    : togetheraiClient(MODEL_CONFIG.summaryModel);
+
   const response = await generateText({
-    model: togetheraiClient(MODEL_CONFIG.summaryModel),
+    model,
     messages: [
       { role: "system", content: PROMPTS.rawContentSummarizerPrompt },
       {
         role: "user",
-        content: `<Raw Content>${result.content}</Raw Content>\n\n<Research Topic>${query}</Research Topic>`,
+        content: `<Research Topic>${query}</Research Topic>\n\n<Raw Content>${result.content}</Raw Content>`,
       },
     ],
   });

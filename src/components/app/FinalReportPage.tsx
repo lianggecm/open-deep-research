@@ -3,9 +3,6 @@ import { getResearch } from "@/db/action";
 import { toast } from "sonner";
 import React from "react";
 
-import { CustomMarkdown } from "../CustomMarkdown";
-import { WebResultCard } from "./reportLoading/WebResultCard";
-import { CitationNumber } from "./citations/CitationNumber";
 import { DownloadPdfButton } from "./DownloadPdfButton";
 import { ReportBody } from "./ReportBody";
 
@@ -19,7 +16,7 @@ export const FinalReportPage = ({
   }
 
   return (
-    <div className="flex flex-col size-full pt-20 md:pt-5 mx-auto max-w-[886px]">
+    <div className="flex flex-col size-full pt-20 md:pt-5 mx-auto max-w-[886px] px-5">
       <div className="flex flex-row gap-2 xl:px-4 items-start justify-center md:justify-end print:hidden mb-5">
         <button
           onClick={() => {
