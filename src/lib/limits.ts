@@ -9,13 +9,16 @@ const redis =
       })
     : undefined;
 
-const ratelimit = redis
-  ? new Ratelimit({
-      redis: redis,
-      limiter: Ratelimit.fixedWindow(5, "1440 m"),
-      analytics: true,
-    })
-  : undefined;
+const isLocal = process.env.NODE_ENV !== "production";
+
+const ratelimit =
+  !isLocal && redis
+    ? new Ratelimit({
+        redis: redis,
+        limiter: Ratelimit.fixedWindow(5, "1440 m"),
+        analytics: true,
+      })
+    : undefined;
 
 export const limitResearch = async ({
   clerkUserId,
@@ -24,7 +27,7 @@ export const limitResearch = async ({
 }) => {
   if (!ratelimit || !clerkUserId) {
     return {
-      remaining: 0,
+      remaining: 5,
       limit: 5,
     };
   }

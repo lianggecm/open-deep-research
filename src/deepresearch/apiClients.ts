@@ -125,17 +125,18 @@ export const searchOnWeb = async ({
     try {
       scrapeResponse = await app.scrapeUrl(searchResult.url, {
         formats: ["markdown"],
-        timeout: 10000,
+        timeout: 15000,
       });
       if (scrapeResponse.error) {
         throw scrapeResponse.error;
       }
       if (scrapeResponse.success) {
         const rawText = scrapeResponse.markdown ?? "";
-        scrapedText = stripUrlsFromMarkdown(rawText).substring(0, 80000);
+        scrapedText = stripUrlsFromMarkdown(rawText).substring(0, 80_000);
       }
-    } catch {
+    } catch (e) {
       // ignore individual scrape errors
+      console.error("Error scraping", searchResult.url, " with error", e);
     }
     return {
       title: searchResult.title,
@@ -147,6 +148,7 @@ export const searchOnWeb = async ({
   const resultsSettled = await Promise.allSettled(
     searchResults.map(scrapeSearchResult)
   );
+
   const results = resultsSettled
     .filter((r) => r.status === "fulfilled")
     .map((r) => (r as PromiseFulfilledResult<any>).value)
