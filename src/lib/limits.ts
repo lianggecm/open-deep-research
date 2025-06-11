@@ -11,11 +11,12 @@ const redis =
 
 const isLocal = process.env.NODE_ENV !== "production";
 
+// 1 per day
 const ratelimit =
   !isLocal && redis
     ? new Ratelimit({
         redis: redis,
-        limiter: Ratelimit.fixedWindow(5, "1440 m"),
+        limiter: Ratelimit.fixedWindow(1, "1440 m"),
         analytics: true,
       })
     : undefined;
