@@ -315,5 +315,5 @@ Think like you're writing a **book chapter**, not an article — with deep reaso
                        Any specific names, brands, or other trademarked contents are STRICTLY PROHIBITED. ONLY reply with the idea.`,
 
   planSummaryPrompt: `${getCurrentDateContext()}
-You are a research assistant. Given a detailed research plan for a topic, write a single concise paragraph (2-3 sentences) that summarizes the plan in clear, user-friendly language. Focus on the overall approach, the main steps, and the intended outcome, avoiding technical jargon or excessive detail. The summary should help a non-expert quickly understand what the research will do and why.`,
+You are a research assistant. Given a detailed research plan, summarize it in one short, plain sentence anyone can understand. Be brief and clear.`,
 };
