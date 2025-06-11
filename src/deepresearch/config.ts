@@ -8,9 +8,9 @@
 // Model Selection
 // Specialized models for different stages of the research pipeline
 export const MODEL_CONFIG = {
-  planningModel: "Qwen/Qwen2.5-72B-Instruct-Turbo", // Used for research planning and evaluation
+  planningModel: "Qwen/Qwen2.5-72B-Instruct-Turbo", // Used for research planning and evaluation // 32k context window
   jsonModel: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", // Used for structured data parsing
-  summaryModel: "meta-llama/Llama-3.3-70B-Instruct-Turbo", // Used for web content summarization
+  summaryModel: "meta-llama/Llama-3.3-70B-Instruct-Turbo", // Used for web content summarization // 128k context window
   summaryModelLongPages: "meta-llama/Llama-4-Scout-17B-16E-Instruct", // Used for web content summarization of long pages
   answerModel: "deepseek-ai/DeepSeek-V3", // Used for final answer synthesis
 };
