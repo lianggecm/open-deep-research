@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { cn, extractMarkdownHeadings } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const TableOfContents = ({ markdown }: { markdown: string }) => {
   const headings = extractMarkdownHeadings(markdown).filter(
@@ -57,17 +58,32 @@ export const TableOfContents = ({ markdown }: { markdown: string }) => {
             .replace(/(^-|-$)/g, "");
           const isActive = currentHash === `#${anchor}`;
           return (
-            <li
+            <motion.li
               key={idx}
+              layout
               className={cn(
-                "border-l-2 ml-[-1px] border-transparent relative z-10 bg-white",
-                isActive ? "border-[#0f172b]" : ""
+                "border-l-2 ml-[-1px] border-transparent relative z-10 bg-white"
               )}
+              initial={false}
+              animate={
+                isActive
+                  ? { backgroundColor: "#fff" }
+                  : { backgroundColor: "#fff" }
+              }
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
             >
+              {isActive && (
+                <motion.div
+                  layoutId="toc-active-border"
+                  className="absolute left-[-1px] top-0 h-full w-0.5 bg-[#0f172b] rounded"
+                  style={{ zIndex: 20 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
               <a
                 href={`#${anchor}`}
                 className={cn(
-                  "block pl-3",
+                  "block pl-3 transition-colors duration-300",
                   isActive
                     ? "text-sm font-medium text-left text-[#0f172b]"
                     : "text-sm font-light text-left text-[#62748e]"
@@ -75,7 +91,7 @@ export const TableOfContents = ({ markdown }: { markdown: string }) => {
               >
                 {heading.text}
               </a>
-            </li>
+            </motion.li>
           );
         })}
       </ul>
