@@ -153,6 +153,26 @@ export function AppSidebar() {
         <SidebarGroup />
       </SidebarContent>
       <SidebarFooter>
+        <div className="flex flex-col gap-3 w-full px-4 pb-2 border-t border-t-[#E5E7EB] pt-5">
+          <p className="text-sm text-[#4a5565]">Add your Together API key</p>
+          <div className="flex flex-col gap-1 rounded border border-[#d1d5dc] bg-white p-3">
+            <input
+              type="password"
+              placeholder="Together API key"
+              className="text-sm text-[#4a5565] outline-none placeholder-[#d1d5dc] bg-transparent border-none focus:ring-0 p-0"
+            />
+          </div>
+
+          <p className="text-xs font-light text-left">
+            <span className="text-[#99a1af]">Don't have an API key? </span>
+            <a
+              href="https://togetherai.link/"
+              className="text-[#6a7282] underline underline-offset-2"
+            >
+              Get one for free.
+            </a>
+          </p>
+        </div>
         <div className="flex flex-row items-center gap-2 px-5">
           <SignedIn>
             <UserButton
