@@ -48,10 +48,6 @@ export function AppSidebar() {
     fetchAndSetChats();
   }, [pathname, isUserLoggedIn]);
 
-  if (!isUserLoggedIn) {
-    return <></>;
-  }
-
   return (
     <Sidebar className="print:hidden">
       <SidebarHeader className="pt-5 px-5">
