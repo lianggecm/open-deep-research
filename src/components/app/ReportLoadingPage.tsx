@@ -6,6 +6,7 @@ import { ReportSteps, ReportStepType } from "./reportLoading/ReportSteps";
 import TimelineProgress from "./reportLoading/TimelineProgress";
 import { ResearchEventStreamEvents } from "@/app/api/research/route";
 import { ReportBody } from "./ReportBody";
+import { StreamingReportBody } from "./reportLoading/StreamingReportBody";
 
 export const ReportLoadingPage = ({
   researchTopic,
@@ -157,12 +158,10 @@ export const ReportLoadingPage = ({
   if (coverUrl && report)
     return (
       <div className="flex flex-col size-full pt-20 md:pt-5 mx-auto max-w-[886px] relative px-5">
-        <ReportBody
-          researchData={{
-            researchTopic,
-            coverUrl: coverUrl,
-            report: report,
-          }}
+        <StreamingReportBody
+          researchTopic={researchTopic}
+          coverUrl={coverUrl}
+          report={report}
         />
         <div className="flex justify-center items-center mt-10 mb-16">
           <div className="bg-white/80 rounded-2xl shadow-lg px-8 py-10 flex flex-col items-center w-full max-w-md border border-gray-100">
