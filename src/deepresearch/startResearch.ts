@@ -7,7 +7,13 @@ import { workflow } from "@/lib/clients";
 import { eq } from "drizzle-orm";
 import { getRemainingResearch } from "@/lib/limits";
 
-export const startResearch = async ({ chatId }: { chatId: string }) => {
+export const startResearch = async ({
+  chatId,
+  togetherApiKey,
+}: {
+  chatId: string;
+  togetherApiKey?: string;
+}) => {
   console.log("startResearch", chatId);
 
   const researchData = await getResearch(chatId);
@@ -55,6 +61,7 @@ export const startResearch = async ({ chatId }: { chatId: string }) => {
   const payload: StartResearchPayload = {
     topic: researchTopic,
     sessionId: chatId,
+    togetherApiKey,
   };
 
   // generate researchTopic by joining strings with:initialUserMessage + questions+answers the complete researchTopic to use in the research

@@ -17,6 +17,33 @@ export const togetheraiClient = createTogetherAI({
   },
 });
 
+// Dynamic TogetherAI client for client-side use
+export function togetheraiClientWithKey(apiKey: string) {
+  return createTogetherAI({
+    apiKey: apiKey || process.env.TOGETHER_API_KEY || "",
+    baseURL: "https://together.helicone.ai/v1",
+    headers: {
+      "Helicone-Auth": `Bearer ${process.env.HELICONE_API_KEY}`,
+      "Helicone-Property-AppName": APP_NAME_HELICONE,
+    },
+  });
+}
+
+export function togetheraiWithKey(apiKey: string) {
+  const options: ConstructorParameters<typeof Together>[0] = {
+    apiKey: apiKey || process.env.TOGETHER_API_KEY,
+  };
+
+  if (process.env.HELICONE_API_KEY) {
+    options.baseURL = "https://together.helicone.ai/v1";
+    options.defaultHeaders = {
+      "Helicone-Auth": `Bearer ${process.env.HELICONE_API_KEY}`,
+      "Helicone-Property-Appname": APP_NAME_HELICONE,
+    };
+  }
+  return new Together(options);
+}
+
 const options: ConstructorParameters<typeof Together>[0] = {
   apiKey: process.env.TOGETHER_API_KEY,
 };

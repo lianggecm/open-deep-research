@@ -7,7 +7,11 @@ import { createWorkflow } from "@upstash/workflow/nextjs";
 import { stateStorage, streamStorage } from "../storage";
 import { WorkflowContext } from "@upstash/workflow";
 import { generateText, generateObject } from "ai";
-import { searchOnWeb, togetheraiClient } from "../apiClients";
+import {
+  searchOnWeb,
+  togetheraiClient,
+  togetheraiClientWithKey,
+} from "../apiClients";
 import { MODEL_CONFIG, PROMPTS, RESEARCH_CONFIG } from "../config";
 import {
   researchPlanSchema,
@@ -26,9 +30,11 @@ import {
 const summarizeContent = async ({
   result,
   query,
+  togetherApiKey,
 }: {
   result: SearchResult;
   query: string;
+  togetherApiKey?: string;
 }): Promise<string> => {
   console.log(`📝 Summarizing content from URL: ${result.link}`);
 
@@ -36,8 +42,10 @@ const summarizeContent = async ({
   const isContentVeryLong = result.content.length > 100000;
 
   const model = isContentVeryLong
-    ? togetheraiClient(MODEL_CONFIG.summaryModelLongPages)
-    : togetheraiClient(MODEL_CONFIG.summaryModel);
+    ? togetheraiClientWithKey(togetherApiKey || "")(
+        MODEL_CONFIG.summaryModelLongPages
+      )
+    : togetheraiClientWithKey(togetherApiKey || "")(MODEL_CONFIG.summaryModel);
 
   const response = await generateText({
     model,
@@ -58,12 +66,14 @@ const webSearch = async ({
   query,
   sessionId,
   iteration,
+  togetherApiKey,
 }: {
   query: string;
   sessionId: string;
   iteration: number;
+  togetherApiKey?: string;
 }): Promise<SearchResult[]> => {
-  console.log(`🔎 Perform web search with query: ${query}`);
+  console.log(`�� Perform web search with query: ${query}`);
 
   // Emit search started event
   await streamStorage.addEvent(sessionId, {
@@ -114,7 +124,7 @@ const webSearch = async ({
     } satisfies ContentProcessingEvent);
 
     // Create a task for summarization
-    const task = summarizeContent({ result, query });
+    const task = summarizeContent({ result, query, togetherApiKey });
     summarizationTasks.push(task);
     resultInfo.push(result);
   }
@@ -154,16 +164,19 @@ const performSearch = async ({
   queries,
   sessionId,
   iteration,
+  togetherApiKey,
 }: {
   queries: string[];
   sessionId: string;
   iteration: number;
+  togetherApiKey?: string;
 }): Promise<SearchResult[]> => {
   const tasks = queries.map(async (query) => {
     return await webSearch({
       query,
       sessionId,
       iteration,
+      togetherApiKey,
     });
   });
 
@@ -196,10 +209,12 @@ const evaluateResearchCompleteness = async ({
   topic,
   results,
   queries,
+  togetherApiKey,
 }: {
   topic: string;
   results: SearchResult[];
   queries: string[];
+  togetherApiKey?: string;
 }): Promise<{
   additionalQueries: string[];
   reasoning: string;
@@ -226,7 +241,9 @@ const evaluateResearchCompleteness = async ({
   `;
 
   const evaluation = await generateText({
-    model: togetheraiClient(MODEL_CONFIG.planningModel),
+    model: togetheraiClientWithKey(togetherApiKey || "")(
+      MODEL_CONFIG.planningModel
+    ),
     messages: [
       { role: "system", content: PROMPTS.evaluationPrompt },
       {
@@ -240,14 +257,18 @@ const evaluateResearchCompleteness = async ({
   // Run evaluation summary and parsing in parallel
   const [evaluationSummary, parsedEvaluation] = await Promise.all([
     generateText({
-      model: togetheraiClient(MODEL_CONFIG.summaryModel),
+      model: togetheraiClientWithKey(togetherApiKey || "")(
+        MODEL_CONFIG.summaryModel
+      ),
       messages: [
         { role: "system", content: PROMPTS.planSummaryPrompt },
         { role: "user", content: evaluation.text },
       ],
     }),
     generateObject({
-      model: togetheraiClient(MODEL_CONFIG.jsonModel),
+      model: togetheraiClientWithKey(togetherApiKey || "")(
+        MODEL_CONFIG.jsonModel
+      ),
       messages: [
         { role: "system", content: PROMPTS.evaluationParsingPrompt },
         {
@@ -280,6 +301,7 @@ export type GatherSearchPayload = {
   budget: number;
   iteration: number;
   sessionId: string;
+  togetherApiKey?: string;
 };
 
 // Nested workflow that handles iterative search and research gathering
@@ -290,8 +312,15 @@ export const gatherSearchQueriesWorkflow = createWorkflow<
   async (
     context: WorkflowContext<GatherSearchPayload>
   ): Promise<SearchResult[]> => {
-    const { topic, queries, existingResults, budget, iteration, sessionId } =
-      context.requestPayload;
+    const {
+      topic,
+      queries,
+      existingResults,
+      budget,
+      iteration,
+      sessionId,
+      togetherApiKey,
+    } = context.requestPayload;
 
     // Step 1: Perform web searches for current queries using local search function
     const newSearchResults = await context.run(
@@ -306,6 +335,7 @@ export const gatherSearchQueriesWorkflow = createWorkflow<
           queries,
           sessionId,
           iteration,
+          togetherApiKey,
         });
 
         console.log(`📊 Found ${searchResults.length} new results`);
@@ -354,6 +384,7 @@ export const gatherSearchQueriesWorkflow = createWorkflow<
               topic,
               results: allResults,
               queries: currentState.allQueries,
+              togetherApiKey,
             });
 
           const needsMore = additionalQueries.length > 0;
@@ -409,6 +440,7 @@ export const gatherSearchQueriesWorkflow = createWorkflow<
           budget: budget - 1,
           iteration: iteration + 1,
           sessionId,
+          togetherApiKey,
         },
       });
 

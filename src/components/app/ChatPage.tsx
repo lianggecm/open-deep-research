@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { QuestionsPage } from "@/components/app/questions/QuestionsPage";
 import { ReportLoadingPage } from "./ReportLoadingPage";
 import { FinalReportPage } from "./FinalReportPage";
+import { useTogetherApiKey } from "./AppSidebar";
 
 export const ChatPage = ({
   chatId,
@@ -14,6 +15,7 @@ export const ChatPage = ({
   researchData: Awaited<ReturnType<typeof getResearch>>;
 }) => {
   const router = useRouter();
+  const togetherApiKey = useTogetherApiKey();
 
   // if we get chat without questions, generate questions with AI LLM and save to DB
   if (!researchData || !researchData.initialUserMessage) {
@@ -26,11 +28,14 @@ export const ChatPage = ({
       <QuestionsPage
         questions={researchData.questions || []}
         onSkip={() => {
-          skipQuestions(chatId);
+          skipQuestions({
+            chatId,
+            togetherApiKey,
+          });
           router.refresh();
         }}
         onGenerate={(answers) => {
-          storeAnswers(chatId, answers);
+          storeAnswers({ chatId, answers, togetherApiKey });
           router.refresh();
         }}
       />
