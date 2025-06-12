@@ -15,6 +15,9 @@ const figtree = Figtree({
 export const metadata: Metadata = {
   title: "DeepSeek Research",
   description: "Let AI do research for you",
+  openGraph: {
+    images: ["https://deepresearch-app.vercel.app/og.jpg"],
+  },
 };
 
 export default function RootLayout({
