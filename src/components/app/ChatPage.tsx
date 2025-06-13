@@ -14,8 +14,8 @@ export const ChatPage = ({
   chatId: string;
   researchData: Awaited<ReturnType<typeof getResearch>>;
 }) => {
-  const router = useRouter();
   const togetherApiKey = useTogetherApiKey();
+  const router = useRouter();
 
   // if we get chat without questions, generate questions with AI LLM and save to DB
   if (!researchData || !researchData.initialUserMessage) {

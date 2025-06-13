@@ -21,6 +21,16 @@ const ratelimit =
       })
     : undefined;
 
+// 15 per day for people bringing their own API key
+const byokRateLimit =
+  !isLocal && redis
+    ? new Ratelimit({
+        redis: redis,
+        limiter: Ratelimit.fixedWindow(15, "1440 m"),
+        analytics: true,
+      })
+    : undefined;
+
 // Whitelist of users with unlimited reports
 const unlimitedUsers = [
   "user_2yHc1OHZXTGhAfnxxWTlU5Eu6wc",
@@ -29,6 +39,7 @@ const unlimitedUsers = [
 
 const DEFAULT_LIMIT = 5;
 const DEFAULT_RESET = null;
+const BYOK_PREFIX = "byok-";
 
 const fallbackResult = {
   remaining: DEFAULT_LIMIT,
@@ -38,19 +49,24 @@ const fallbackResult = {
 
 export const limitResearch = async ({
   clerkUserId,
+  isBringingKey,
 }: {
   clerkUserId?: string;
+  isBringingKey?: boolean;
 }) => {
   // Unlimited for whitelisted users
   if (
     (clerkUserId && unlimitedUsers.includes(clerkUserId)) ||
     !ratelimit ||
+    !byokRateLimit ||
     !clerkUserId
   ) {
     return fallbackResult;
   }
 
-  const result = await ratelimit.limit(clerkUserId);
+  const result = isBringingKey
+    ? await byokRateLimit.limit(BYOK_PREFIX + clerkUserId)
+    : await ratelimit.limit(clerkUserId);
 
   return {
     remaining: result.remaining,
@@ -61,20 +77,25 @@ export const limitResearch = async ({
 
 export const getRemainingResearch = async ({
   clerkUserId,
+  isBringingKey,
 }: {
   clerkUserId?: string;
+  isBringingKey?: boolean;
 }) => {
   // Unlimited for whitelisted users
   if (
     (clerkUserId && unlimitedUsers.includes(clerkUserId)) ||
     !ratelimit ||
+    !byokRateLimit ||
     !clerkUserId
   ) {
     return fallbackResult;
   }
 
   try {
-    const result = await ratelimit.getRemaining(clerkUserId);
+    const result = isBringingKey
+      ? await byokRateLimit.getRemaining(BYOK_PREFIX + clerkUserId)
+      : await ratelimit.getRemaining(clerkUserId);
 
     return result;
   } catch (e) {

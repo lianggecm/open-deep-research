@@ -184,6 +184,7 @@ export const startResearchWorkflow = createWorkflow<
 
       const { remaining } = await limitResearch({
         clerkUserId: researchData?.clerkUserId,
+        isBringingKey: !!togetherApiKey,
       });
 
       if (!togetherApiKey && remaining <= 0) {

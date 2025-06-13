@@ -3,16 +3,16 @@ import { db } from "@/db";
 import { getResearch } from "@/db/action";
 import { research } from "@/db/schema";
 import { StartResearchPayload } from "@/deepresearch/workflows/start-research-workflow";
-import { workflow } from "@/lib/clients";
+import { qstash, workflow } from "@/lib/clients";
 import { eq } from "drizzle-orm";
 import { getRemainingResearch } from "@/lib/limits";
 
 export const startResearch = async ({
   chatId,
-  togetherApiKey,
+  personalTogetherApiKey,
 }: {
   chatId: string;
-  togetherApiKey?: string;
+  personalTogetherApiKey?: string;
 }) => {
   console.log("startResearch", chatId);
 
@@ -24,9 +24,10 @@ export const startResearch = async ({
 
   const { remaining } = await getRemainingResearch({
     clerkUserId: researchData?.clerkUserId,
+    isBringingKey: !!personalTogetherApiKey,
   });
 
-  if (!togetherApiKey && remaining <= 0) {
+  if (remaining <= 0) {
     throw new Error("No remaining researches");
   }
 
@@ -61,7 +62,7 @@ export const startResearch = async ({
   const payload: StartResearchPayload = {
     topic: researchTopic,
     sessionId: chatId,
-    togetherApiKey,
+    togetherApiKey: personalTogetherApiKey,
   };
 
   // generate researchTopic by joining strings with:initialUserMessage + questions+answers the complete researchTopic to use in the research
@@ -72,11 +73,13 @@ export const startResearch = async ({
     retries: 3, // Optional retries for the initial request
   });
 
-  // await qstash.publishJSON({
-  //   url: "http://localhost:3000/api/cancel",
-  //   body: { id: workflowRunId, },
-  //   delay: 10,
-  // });
+  // Schedule a cancel request to the cancel endpoint after 15 minutes
+  await qstash.publishJSON({
+    url: `${baseUrl}/api/cancel`,
+    body: { id: workflowRunId },
+    // delay of 15 minutes
+    delay: 15 * 60 * 1000,
+  });
 
   console.log(
     "Started research with ID:",

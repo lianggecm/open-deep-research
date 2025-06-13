@@ -68,7 +68,7 @@ export const skipQuestions = async ({
       answers: [],
     })
     .where(eq(research.id, chatId));
-  await startResearch({ chatId, togetherApiKey });
+  await startResearch({ chatId, personalTogetherApiKey: togetherApiKey });
 };
 
 export const storeAnswers = async ({
@@ -86,5 +86,5 @@ export const storeAnswers = async ({
       answers: answers,
     })
     .where(eq(research.id, chatId));
-  await startResearch({ chatId, togetherApiKey });
+  await startResearch({ chatId, personalTogetherApiKey: togetherApiKey });
 };

@@ -5,6 +5,7 @@ import { Heading } from "../../Heading";
 import { AnswerInput } from "./AnswerInput";
 import { TooltipUsage } from "../tooltip/TooltipUsage";
 import { useAuth } from "@clerk/nextjs";
+import { useTogetherApiKey } from "../AppSidebar";
 
 export const QuestionsPage = ({
   questions,
@@ -15,6 +16,7 @@ export const QuestionsPage = ({
   onSkip: () => void;
   onGenerate: (questions: string[], userId: string) => void;
 }) => {
+  const apiKey = useTogetherApiKey();
   const [answers, setAnswers] = useState<string[]>(
     Array(questions.length).fill("")
   );
@@ -25,7 +27,15 @@ export const QuestionsPage = ({
   useEffect(() => {
     const fetchLimits = async () => {
       try {
-        const response = await fetch("/api/user/limits");
+        const response = await fetch("/api/user/limits", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            isBringingKey: !!apiKey,
+          }),
+        });
         const data = await response.json();
         setRemainingResearches(data.remaining);
         setResetTime(data.reset);
@@ -49,7 +59,7 @@ export const QuestionsPage = ({
     return () => {
       window.removeEventListener("focus", handleFocus);
     };
-  }, [userId]);
+  }, [userId, apiKey]);
 
   return (
     <div className="my-5 px-5 h-full flex flex-col flex-1 max-w-[700px] mx-auto w-full">
