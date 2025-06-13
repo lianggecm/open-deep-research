@@ -41,6 +41,7 @@
     "lucide-react": "^0.503.0",
     "nanoid": "^5.1.5",
     "next": "15.3.2",
+    "next-plausible": "^3.12.4",
     "puppeteer-core": "^24.10.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
