@@ -1,8 +1,24 @@
 export const Footer = () => {
   return (
-    <div className="text-xs text-zinc-400 leading-5 mx-auto">
-      Powered By <span className="font-semibold">DeepSeek R1</span> &{" "}
-      <span className="font-semibold">DeepSeek V3</span> on Together AI
+    <div className="text-xs text-zinc-400 leading-5 mx-auto absolute bottom-4">
+      Powered By{" "}
+      <a
+        target="_blank"
+        rel="noreferrer"
+        href="https://www.together.ai/models/deepseek-v3"
+        className="font-semibold"
+      >
+        DeepSeek V3
+      </a>{" "}
+      on
+      <a
+        target="_blank"
+        rel="noreferrer"
+        href="https://togetherai.link"
+        className="font-semibold"
+      >
+        Together AI
+      </a>
     </div>
   );
 };
