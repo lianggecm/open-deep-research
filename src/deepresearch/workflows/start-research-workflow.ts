@@ -186,7 +186,7 @@ export const startResearchWorkflow = createWorkflow<
         clerkUserId: researchData?.clerkUserId,
       });
 
-      if (remaining <= 0) {
+      if (!togetherApiKey && remaining <= 0) {
         await streamStorage.addEvent(sessionId, {
           type: "error",
           message: "No remaining researches",

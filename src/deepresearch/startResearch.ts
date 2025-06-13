@@ -26,7 +26,7 @@ export const startResearch = async ({
     clerkUserId: researchData?.clerkUserId,
   });
 
-  if (remaining <= 0) {
+  if (!togetherApiKey && remaining <= 0) {
     throw new Error("No remaining researches");
   }
 
