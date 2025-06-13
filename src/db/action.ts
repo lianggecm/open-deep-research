@@ -55,22 +55,36 @@ export async function createResearchAndRedirect({
   redirect(`/chat/${id}`);
 }
 
-export const skipQuestions = async (chatId: string) => {
+export const skipQuestions = async ({
+  chatId,
+  togetherApiKey,
+}: {
+  chatId: string;
+  togetherApiKey?: string;
+}) => {
   await db
     .update(research)
     .set({
       answers: [],
     })
     .where(eq(research.id, chatId));
-  await startResearch({ chatId });
+  await startResearch({ chatId, togetherApiKey });
 };
 
-export const storeAnswers = async (chatId: string, answers: string[]) => {
+export const storeAnswers = async ({
+  chatId,
+  answers,
+  togetherApiKey,
+}: {
+  chatId: string;
+  answers: string[];
+  togetherApiKey?: string;
+}) => {
   await db
     .update(research)
     .set({
       answers: answers,
     })
     .where(eq(research.id, chatId));
-  await startResearch({ chatId });
+  await startResearch({ chatId, togetherApiKey });
 };

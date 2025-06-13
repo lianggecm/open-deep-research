@@ -9,7 +9,12 @@ import { gatherSearchQueriesWorkflow } from "./gather-search-workflow";
 import { WorkflowContext } from "@upstash/workflow";
 import { generateText, generateObject, streamText } from "ai";
 import { MODEL_CONFIG, PROMPTS, RESEARCH_CONFIG } from "../config";
-import { togetherai, togetheraiClient } from "../apiClients";
+import {
+  togetherai,
+  togetheraiClient,
+  togetheraiClientWithKey,
+  togetheraiWithKey,
+} from "../apiClients";
 import {
   researchPlanSchema,
   ResearchState,
@@ -37,18 +42,22 @@ const MAX_BUDGET = 3;
 export type StartResearchPayload = {
   topic: string;
   sessionId: string;
+  togetherApiKey?: string;
 };
 
 // Helper function to generate research queries
 const generateResearchQueries = async (
-  topic: string
+  topic: string,
+  togetherApiKey?: string
 ): Promise<{
   queries: string[];
   plan: string;
   summarisedPlan: string;
 }> => {
   const initialSearchEvaluation = await generateText({
-    model: togetheraiClient(MODEL_CONFIG.planningModel),
+    model: togetheraiClientWithKey(togetherApiKey || "")(
+      MODEL_CONFIG.planningModel
+    ),
     messages: [
       { role: "system", content: PROMPTS.planningPrompt },
       { role: "user", content: `Research Topic: ${topic}` },
@@ -58,7 +67,9 @@ const generateResearchQueries = async (
   // Run plan parsing and summary generation in parallel
   const [parsedPlan, planSummary] = await Promise.all([
     generateObject({
-      model: togetheraiClient(MODEL_CONFIG.jsonModel),
+      model: togetheraiClientWithKey(togetherApiKey || "")(
+        MODEL_CONFIG.jsonModel
+      ),
       messages: [
         { role: "system", content: PROMPTS.planParsingPrompt },
         { role: "user", content: `Research Topic: ${topic}` },
@@ -66,7 +77,9 @@ const generateResearchQueries = async (
       schema: researchPlanSchema,
     }),
     generateText({
-      model: togetheraiClient(MODEL_CONFIG.summaryModel),
+      model: togetheraiClientWithKey(togetherApiKey || "")(
+        MODEL_CONFIG.summaryModel
+      ),
       messages: [
         { role: "system", content: PROMPTS.planSummaryPrompt },
         { role: "user", content: initialSearchEvaluation.text },
@@ -95,10 +108,12 @@ const generateResearchAnswer = async ({
   topic,
   results,
   sessionId,
+  togetherApiKey,
 }: {
   topic: string;
   results: SearchResult[];
   sessionId: string;
+  togetherApiKey?: string;
 }): Promise<string> => {
   const formattedSearchResults = results
     .map(
@@ -110,7 +125,9 @@ const generateResearchAnswer = async ({
   let fullReport = "";
 
   const { textStream } = await streamText({
-    model: togetheraiClient(MODEL_CONFIG.answerModel),
+    model: togetheraiClientWithKey(togetherApiKey || "")(
+      MODEL_CONFIG.answerModel
+    ),
     messages: [
       { role: "system", content: PROMPTS.answerPrompt },
       {
@@ -143,7 +160,7 @@ export const startResearchWorkflow = createWorkflow<
   StartResearchPayload,
   string
 >(async (context: WorkflowContext<StartResearchPayload>) => {
-  const { topic, sessionId } = context.requestPayload;
+  const { topic, sessionId, togetherApiKey } = context.requestPayload;
 
   // Step 1: Generate initial research plan using LLM
   const initialQueries = await context.run(
@@ -169,7 +186,7 @@ export const startResearchWorkflow = createWorkflow<
         clerkUserId: researchData?.clerkUserId,
       });
 
-      if (remaining <= 0) {
+      if (!togetherApiKey && remaining <= 0) {
         await streamStorage.addEvent(sessionId, {
           type: "error",
           message: "No remaining researches",
@@ -189,7 +206,8 @@ export const startResearchWorkflow = createWorkflow<
       try {
         // Generate queries using local LLM function
         const { queries, plan, summarisedPlan } = await generateResearchQueries(
-          topic
+          topic,
+          togetherApiKey
         );
 
         // Emit queries generated event
@@ -274,7 +292,9 @@ export const startResearchWorkflow = createWorkflow<
         timestamp: Date.now(),
       });
 
-      const generatedImage = await togetherai.images.create({
+      const generatedImage = await togetheraiWithKey(
+        togetherApiKey || ""
+      ).images.create({
         prompt: imageGenerationPrompt.text,
         model: "black-forest-labs/FLUX.1-schnell",
         width: 1024,
@@ -342,6 +362,7 @@ export const startResearchWorkflow = createWorkflow<
         topic,
         results: finalState.searchResults,
         sessionId,
+        togetherApiKey,
       });
 
       // Emit report generated event

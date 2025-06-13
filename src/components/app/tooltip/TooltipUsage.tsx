@@ -6,6 +6,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { intervalToDuration, formatDuration } from "date-fns";
+import { useTogetherApiKey } from "@/components/app/AppSidebar";
 
 export const TooltipUsage = ({
   remainingResearches,
@@ -14,6 +15,12 @@ export const TooltipUsage = ({
   remainingResearches: number;
   resetTime: string | null;
 }) => {
+  const customApiKey = useTogetherApiKey();
+
+  if (customApiKey) {
+    return null;
+  }
+
   if (!resetTime) {
     return null;
   }

@@ -6,6 +6,7 @@ import { SignedOut, SignInButton, SignUpButton, useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import LoadingChat from "./chat/[chatId]/loading";
 import { Button } from "@/components/ui/button";
+import { useTogetherApiKey } from "@/components/app/AppSidebar";
 
 export const LandingHomepage = () => {
   const { isSignedIn, user, isLoaded } = useUser();
