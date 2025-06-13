@@ -6,7 +6,7 @@ import { Toaster } from 'sonner';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app/AppSidebar';
 import { Header } from '@/components/Header';
-import { PlausibleProvider } from 'next-plausible';
+import PlausibleProvider from 'next-plausible';
 
 const figtree = Figtree({
   variable: '--font-figtree',
