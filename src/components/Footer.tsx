@@ -10,7 +10,7 @@ export const Footer = () => {
       >
         DeepSeek V3
       </a>{" "}
-      on
+      on{" "}
       <a
         target="_blank"
         rel="noreferrer"
