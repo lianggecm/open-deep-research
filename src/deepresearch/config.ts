@@ -8,11 +8,11 @@
 // Model Selection
 // Specialized models for different stages of the research pipeline
 export const MODEL_CONFIG = {
-  planningModel: "Qwen/Qwen2.5-72B-Instruct-Turbo", // Used for research planning and evaluation // 32k context window
-  jsonModel: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", // Used for structured data parsing
-  summaryModel: "meta-llama/Llama-3.3-70B-Instruct-Turbo", // Used for web content summarization // 128k context window
-  summaryModelLongPages: "meta-llama/Llama-4-Scout-17B-16E-Instruct", // Used for web content summarization of long pages
-  answerModel: "deepseek-ai/DeepSeek-V3", // Used for final answer synthesis
+  planningModel: 'Qwen/Qwen2.5-72B-Instruct-Turbo', // Used for research planning and evaluation // 32k context window
+  jsonModel: 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo', // Used for structured data parsing
+  summaryModel: 'meta-llama/Llama-3.3-70B-Instruct-Turbo', // Used for web content summarization // 128k context window
+  summaryModelLongPages: 'meta-llama/Llama-4-Scout-17B-16E-Instruct', // Used for web content summarization of long pages
+  answerModel: 'deepseek-ai/DeepSeek-V3', // Used for final answer synthesis
 };
 
 // Resource Allocation
@@ -33,11 +33,11 @@ export const getCurrentDateContext = () => {
   const year = now.getFullYear();
   const month = now.getMonth() + 1; // JavaScript months are 0-indexed
   const day = now.getDate();
-  const monthName = now.toLocaleString("default", { month: "long" });
+  const monthName = now.toLocaleString('default', { month: 'long' });
 
-  return `Current date is ${year}-${month.toString().padStart(2, "0")}-${day
+  return `Current date is ${year}-${month.toString().padStart(2, '0')}-${day
     .toString()
-    .padStart(2, "0")} (${monthName} ${day}, ${year}).
+    .padStart(2, '0')} (${monthName} ${day}, ${year}).
 When searching for recent information, prioritize results from the current year (${year}) and month (${monthName} ${year}).
 For queries about recent developments, include the current year (${year}) in your search terms.
 When ranking search results, consider recency as a factor - newer information is generally more relevant for current topics.`;
@@ -253,51 +253,51 @@ Using **ONLY the provided sources**, produce a Markdown document (at least 5 pag
 
 ## Abstract
 
-[Paragraph 1...]  
+[Paragraph 1...]
 
-[Paragraph 2...]  
+[Paragraph 2...]
 
 ## Introduction
 
-[Opening paragraph with background...]  
+[Opening paragraph with background...]
 
-[Paragraph 2 expanding context...]  
+[Paragraph 2 expanding context...]
 
-[Paragraph 3 outlining the structure...]  
+[Paragraph 3 outlining the structure...]
 
 ## [Primary Theme]
 
-[Paragraph 1 of analysis with inline citations like this: According to a recent study [INLINE_CITATION](https://source1.com)...]  
+[Paragraph 1 of analysis with inline citations like this: According to a recent study [INLINE_CITATION](https://source1.com)...]
 
-[Paragraph 2 comparing perspectives [INLINE_CITATION](https://source2.com)...]  
+[Paragraph 2 comparing perspectives [INLINE_CITATION](https://source2.com)...]
 
-[Paragraph 3 discussing patterns or contradictions [INLINE_CITATION](https://source3.com)...]  
+[Paragraph 3 discussing patterns or contradictions [INLINE_CITATION](https://source3.com)...]
 
 ### [Subtheme]
 
-[Detailed exploration in paragraph form...]  
+[Detailed exploration in paragraph form...]
 
-[Follow-up paragraph...]  
+[Follow-up paragraph...]
 
-[Third paragraph if necessary...]  
+[Third paragraph if necessary...]
 
 ### [Subtheme Where Table or Chart is Helpful]
 
-*Table X: Comparative Metrics on [Topic] [INLINE_CITATION](https://source4.com)*  
+*Table X: Comparative Metrics on [Topic] [INLINE_CITATION](https://source4.com)*
 
-| Comparison Aspect | Source A [INLINE_CITATION](https://sourceA.com) | Source B [INLINE_CITATION](https://sourceB.com) |  
-|-------------------|--------------------------------|--------------------------------|  
-| Key Metric        | xx%                            | xx%                            |  
+| Comparison Aspect | Source A [INLINE_CITATION](https://sourceA.com) | Source B [INLINE_CITATION](https://sourceB.com) |
+|-------------------|--------------------------------|--------------------------------|
+| Key Metric        | xx%                            | xx%                            |
 
 [Paragraph analysis interpreting the table content...]
 
 ## Conclusion
 
-[Synthesized findings and implications [INLINE_CITATION](https://source5.com)...]  
+[Synthesized findings and implications [INLINE_CITATION](https://source5.com)...]
 
-[Discussion of limitations...]  
+[Discussion of limitations...]
 
-[Recommendations for future work...]  
+[Recommendations for future work...]
 
 [Final summary paragraph...]
 
@@ -310,13 +310,16 @@ Think like you're writing a **book chapter**, not an article — with deep reaso
 
 `,
 
-  dataVisualizerPrompt: `You are a creative desinger. You will be provided with a research topic, and you need to
-                       come up with an idea that will help your colleague create a cool figure that will engage the reader.
-                   
-                       You need to return a descriptive phrase for the drawing.
-                       The goal is not to address the topic, but to create a figure that will be interesting and engaging.
-                   
-                       Any specific names, brands, or other trademarked contents are STRICTLY PROHIBITED. ONLY reply with the idea.`,
+  dataVisualizerPrompt: `You are an expert graphic designer and visual storyteller. I’m preparing a research report on a topic that will be specified by the user.
+
+Please generate a detailed image-generation prompt that I can plug directly into Flux to produce a polished, professional cover photo for this research report.
+
+Requirements:
+- A clean, minimal layout
+- Main visual element(s) should symbolize the core of the research
+- No text in the image, just a nice clean professional visual
+
+Output only the Flux-ready prompt—no explanations.`,
 
   planSummaryPrompt: `${getCurrentDateContext()}
 You are a research assistant. Given a detailed research plan, summarize it in one short, plain sentence anyone can understand. Be brief and clear.`,

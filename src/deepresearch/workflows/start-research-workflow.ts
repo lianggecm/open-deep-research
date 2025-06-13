@@ -297,10 +297,10 @@ export const startResearchWorkflow = createWorkflow<
         togetherApiKey || ""
       ).images.create({
         prompt: imageGenerationPrompt.text,
-        model: "black-forest-labs/FLUX.1-schnell",
+        model: "black-forest-labs/FLUX.1-dev",
         width: 1024,
         height: 768,
-        steps: 12,
+        steps: 30,
       });
 
       const fluxImageUrl = generatedImage.data[0].url;
