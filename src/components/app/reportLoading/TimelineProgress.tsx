@@ -144,34 +144,6 @@ export default function TimelineProgress({
                       />
                     );
 
-                  case "content_processing":
-                    // don't return this if another event with content_summarized is present
-                    const contentProcessingEvent = filteredEvents.find(
-                      (e) =>
-                        e.type === "content_summarized" && e.url === event.url
-                    );
-
-                    if (contentProcessingEvent) {
-                      return null;
-                    }
-                    return (
-                      <TimelineEvent
-                        key={index}
-                        type={event.type}
-                        isLast={isLast}
-                        title={
-                          <>
-                            <span className="text-sm font-light text-left text-[#6a7282]">
-                              Summarizing
-                            </span>
-                            <span className="ml-1 text-sm text-left text-[#4a5565]">
-                              ‘{event.title}‘...
-                            </span>
-                          </>
-                        }
-                      />
-                    );
-
                   case "content_summarized":
                     return (
                       <TimelineEvent
@@ -188,7 +160,6 @@ export default function TimelineProgress({
                             </span>
                           </>
                         }
-                        description={event.summaryFirstHundredChars}
                       />
                     );
 
