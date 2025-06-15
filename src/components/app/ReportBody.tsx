@@ -27,7 +27,7 @@ export const ReportBody = ({
   }
 
   return (
-    <div className="border border-[#E2E8F0] rounded-lg pb-4 mb-6">
+    <div className="border border-[#E2E8F0] rounded-lg pb-4 mb-6 print:border-none">
       {researchData.coverUrl && (
         <div className="w-full h-[202px] md:h-[305px] relative overflow-hidden rounded-lg">
           <img

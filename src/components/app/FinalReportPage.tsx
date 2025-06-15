@@ -37,10 +37,17 @@ export const FinalReportPage = ({
         <DownloadPdfButton fileName={researchData.researchTopic ?? undefined} />
       </div>
 
-      <div className="print:block hidden text-lg text-zinc-400 leading-5 mx-auto text-center">
-        Powered by{" "}
-        <a href="https://deepresearch-app.vercel.app/">Deepseek Research</a> &{" "}
-        <a href="https://together.ai/">Together AI</a>
+      <div className="print:block hidden text-lg text-zinc-400 leading-5 mx-auto text-center mb-5">
+        <a href="/" className="flex flex-row items-center gap-2">
+          <div className="flex flex-row items-center gap-2">
+            <div className=" text-zinc-800 dark:text-zinc-100">
+              <img src="/logo.svg" alt="DeepSeek Research" className="size-6" />
+            </div>
+            <div className="text-lg font-bold text-zinc-800 dark:text-zinc-100">
+              DeepSeek Research
+            </div>
+          </div>
+        </a>
       </div>
 
       <ReportBody researchData={researchData} />
