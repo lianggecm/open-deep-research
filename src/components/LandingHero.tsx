@@ -32,7 +32,7 @@ export const LandingHero = () => {
           "flex flex-col gap-4 w-full"
         )}
       >
-        <p className="text-[32px] md:text-[40px] font-medium text-center text-[#1e2939]">
+        <p className="text-[32px] md:text-[40px] font-medium text-center text-[#1e2939] font-serif">
           {!isAuthenticated ? (
             <>Reports with DeepSeek</>
           ) : (

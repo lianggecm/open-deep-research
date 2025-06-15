@@ -1,6 +1,6 @@
 export const Footer = () => {
   return (
-    <div className="text-xs text-zinc-400 leading-5 mx-auto absolute bottom-4">
+    <div className="text-xs text-zinc-400 leading-5 mx-auto">
       Powered By{" "}
       <a
         target="_blank"

@@ -8,6 +8,7 @@ import LoadingChat from "./chat/[chatId]/loading";
 import { Button } from "@/components/ui/button";
 import { useTogetherApiKey } from "@/components/app/AppSidebar";
 import { LandingHero } from "@/components/LandingHero";
+import { LandingCard } from "@/components/LandingCard";
 
 export const LandingHomepage = () => {
   const { isSignedIn, user, isLoaded } = useUser();
@@ -35,6 +36,28 @@ export const LandingHomepage = () => {
               <p className="text-xs text-center text-[#99a1af]">
                 No credit cards!
               </p>
+            </div>
+            <div className="max-w-[760px] min-h-[258px] w-fit md:w-full relative overflow-hidden rounded-xl bg-[#f2f6ff] border border-gray-200 px-7 py-5 flex flex-col gap-4 mb-12">
+              <p className="text-base text-center md:text-left text-[#364153] font-serif">
+                How it works:
+              </p>
+              <div className="flex flex-col md:flex-row gap-3 items-center">
+                <LandingCard
+                  imageSrc="/cards/question.jpg"
+                  title="Ask your question"
+                  description="Type any topic or problem into the prompt box."
+                />
+                <LandingCard
+                  imageSrc="/cards/search.jpg"
+                  title="We Research & Refine"
+                  description="DeepSeek scans vetted sources and extracts the signal."
+                />
+                <LandingCard
+                  imageSrc="/cards/report.jpg"
+                  title="Get an Actionable Brief"
+                  description="Receive a concise, referenced report you can save or share."
+                />
+              </div>
             </div>
           </SignedOut>
         ) : (
