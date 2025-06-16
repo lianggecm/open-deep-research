@@ -325,7 +325,7 @@ export const startResearchWorkflow = createWorkflow<
 
   // Step 4: Generate final comprehensive report using LLM
   const finalReportPromise = context.run("generate-final-report", async () => {
-    console.log(`✨ Generating final report...`);
+    console.log(`✨ Generating final report for ${sessionId}`);
 
     try {
       // Read final state from Redis
