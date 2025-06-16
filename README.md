@@ -1,4 +1,4 @@
-<a href="https://deepresearch-app.vercel.app/">
+<a href="https://www.deepseekresearch.io/">
 <img alt="DeepSeek" src="./public/og.jpg">
 </a>
 

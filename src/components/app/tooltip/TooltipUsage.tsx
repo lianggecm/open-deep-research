@@ -31,28 +31,42 @@ export const TooltipUsage = ({
       <PopoverContent className="!p-0 !border-0 !bg-transparent !w-fit">
         <div className="mb-2 w-[235px] overflow-hidden rounded bg-gray-50 border border-[#d1d5dc] z-10 p-3">
           <p className="text-sm text-left text-[#1e2939]">
-            <span className="text-sm text-left text-[#1e2939]">
-              Your credits will be reset in{" "}
-            </span>
-            <span className="text-sm font-bold text-left text-[#1e2939]">
-              {formatDuration(
-                intervalToDuration({
-                  start: new Date(),
-                  end: new Date(resetTime),
-                }),
-                {
-                  format: ["hours", "minutes"],
-                  zero: true,
-                  delimiter: " ",
-                  locale: {
-                    formatDistance: (token, count) => {
-                      if (token === "xHours") return `${count} hr`;
-                      if (token === "xMinutes") return `${count} min`;
-                      return "";
+            <span className="whitespace-nowrap">
+              Credits will reset in{" "}
+              <span className="text-sm font-bold text-left text-[#1e2939]">
+                {formatDuration(
+                  intervalToDuration({
+                    start: new Date(),
+                    end: new Date(resetTime),
+                  }),
+                  {
+                    format: ["hours", "minutes"],
+                    zero: true,
+                    delimiter: ":",
+                    locale: {
+                      formatDistance: (token, count) => {
+                        if (token === "xHours") return `${count}h`;
+                        if (token === "xMinutes") return `${count}m`;
+                        return "";
+                      },
                     },
-                  },
-                }
-              )}
+                  }
+                )}
+              </span>
+              .
+            </span>
+            <br />
+            <span className="">
+              Enter your{" "}
+              <a
+                href="https://togetherai.link/"
+                target="_blank"
+                rel="noreferrer"
+                className="underline"
+              >
+                Together API key
+              </a>{" "}
+              for infinite uses!
             </span>
           </p>
         </div>
