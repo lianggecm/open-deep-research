@@ -42,6 +42,7 @@ const DEFAULT_RESET = null;
 const BYOK_PREFIX = "byok-";
 
 const fallbackResult = {
+  success: true,
   remaining: DEFAULT_LIMIT,
   limit: DEFAULT_LIMIT,
   reset: DEFAULT_RESET,
@@ -69,6 +70,7 @@ export const limitResearch = async ({
     : await ratelimit.limit(clerkUserId);
 
   return {
+    success: result.success,
     remaining: result.remaining,
     limit: result.limit,
     reset: result.reset,
