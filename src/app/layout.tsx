@@ -39,7 +39,7 @@ export default function RootLayout({
             className={`${figtree.variable} flex min-h-full flex-col antialiased`}
           >
             <Header />
-            <Toaster position="top-center" />
+            <Toaster position="top-center" richColors />
             {children}
           </body>
         </html>

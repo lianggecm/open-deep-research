@@ -2,11 +2,9 @@
 import { ChatInput } from "@/components/ChatInput";
 import { Footer } from "@/components/Footer";
 import { createResearchAndRedirect } from "@/db/action";
-import { SignedOut, SignInButton, SignUpButton, useUser } from "@clerk/nextjs";
+import { SignedOut, SignInButton, useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import LoadingChat from "./chat/[chatId]/loading";
-import { Button } from "@/components/ui/button";
-import { useTogetherApiKey } from "@/components/app/AppSidebar";
 import { LandingHero } from "@/components/LandingHero";
 import { LandingCard } from "@/components/LandingCard";
 

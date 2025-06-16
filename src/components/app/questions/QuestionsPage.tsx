@@ -5,9 +5,9 @@ import { Heading } from "../../Heading";
 import { AnswerInput } from "./AnswerInput";
 import { TooltipUsage } from "../tooltip/TooltipUsage";
 import { useAuth } from "@clerk/nextjs";
-import { useTogetherApiKey } from "../AppSidebar";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTogetherApiKey } from "../ApiKeyControls";
 
 export const QuestionsPage = ({
   questions,
