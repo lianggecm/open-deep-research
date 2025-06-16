@@ -5,7 +5,7 @@ import { research } from "@/db/schema";
 import { StartResearchPayload } from "@/deepresearch/workflows/start-research-workflow";
 import { qstash, workflow } from "@/lib/clients";
 import { eq } from "drizzle-orm";
-import { getRemainingResearch } from "@/lib/limits";
+import { limitResearch } from "@/lib/limits";
 
 export const startResearch = async ({
   chatId,
@@ -22,12 +22,12 @@ export const startResearch = async ({
     throw new Error("Research with clerk user not found");
   }
 
-  const { remaining } = await getRemainingResearch({
+  const { success } = await limitResearch({
     clerkUserId: researchData?.clerkUserId,
     isBringingKey: !!personalTogetherApiKey,
   });
 
-  if (remaining <= 0) {
+  if (!success) {
     throw new Error("No remaining researches");
   }
 

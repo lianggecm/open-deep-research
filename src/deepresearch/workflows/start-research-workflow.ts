@@ -33,7 +33,6 @@ import { eq } from "drizzle-orm";
 import { awsS3Client } from "@/lib/clients";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getResearch } from "@/db/action";
-import { limitResearch } from "@/lib/limits";
 import { extractMarkdownHeadings } from "@/lib/utils";
 
 const MAX_BUDGET = 3;
@@ -180,21 +179,6 @@ export const startResearchWorkflow = createWorkflow<
           timestamp: Date.now(),
         } satisfies ErrorEvent);
         throw new Error("Research with clerk user not found");
-      }
-
-      const { remaining } = await limitResearch({
-        clerkUserId: researchData?.clerkUserId,
-        isBringingKey: !!togetherApiKey,
-      });
-
-      if (!togetherApiKey && remaining <= 0) {
-        await streamStorage.addEvent(sessionId, {
-          type: "error",
-          message: "No remaining researches",
-          step: "generate-initial-plan",
-          timestamp: Date.now(),
-        } satisfies ErrorEvent);
-        throw new Error("No remaining researches");
       }
 
       // Emit planning started event

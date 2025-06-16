@@ -6,15 +6,15 @@ import { AnswerInput } from "./AnswerInput";
 import { TooltipUsage } from "../tooltip/TooltipUsage";
 import { useAuth } from "@clerk/nextjs";
 import { useTogetherApiKey } from "../AppSidebar";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export const QuestionsPage = ({
   questions,
-  onSkip,
-  onGenerate,
+  chatId,
 }: {
   questions: string[];
-  onSkip: () => void;
-  onGenerate: (questions: string[], userId: string) => void;
+  chatId: string;
 }) => {
   const apiKey = useTogetherApiKey();
   const [answers, setAnswers] = useState<string[]>(
@@ -23,6 +23,35 @@ export const QuestionsPage = ({
   const [remainingResearches, setRemainingResearches] = useState(0);
   const [resetTime, setResetTime] = useState<string | null>(null);
   const { userId } = useAuth();
+  const router = useRouter();
+
+  const onSaveAnswers = async (answersToSave: string[]) => {
+    try {
+      const response = await fetch("/api/storeAnswers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chatId,
+          answers: answersToSave,
+          togetherApiKey: apiKey,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Your search will start shortly!");
+        router.refresh();
+      } else {
+        toast.error(data.message || "Failed to process your request.");
+      }
+    } catch (error) {
+      console.error("Error processing request:", error);
+      toast.error("An unexpected error occurred.");
+    }
+  };
 
   useEffect(() => {
     const fetchLimits = async () => {
@@ -82,7 +111,7 @@ export const QuestionsPage = ({
             }}
             onEnter={() => {
               if (index === questions.length - 1 && userId) {
-                onGenerate(answers, userId);
+                onSaveAnswers(answers);
               }
             }}
           />
@@ -91,19 +120,21 @@ export const QuestionsPage = ({
 
       <div className="w-full items-start flex flex-col gap-3 self-end justify-end flex-1 md:flex-auto  md:mt-[200px] md:flex-row-reverse pb-8">
         <button
-          className="px-5 py-1.5 text-base font-medium !text-[#6a7282] cursor-pointer border border-[#6a7282]/50 rounded w-full md:w-[165px] items-center justify-center"
+          className="px-5 py-1.5 text-base font-medium !text-[#6a7282] cursor-pointer border border-[#6a7282]/50 rounded w-full md:w-[165px] items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => {
-            onSkip();
+            onSaveAnswers([]); // Pass an empty array to skip questions
           }}
+          disabled={remainingResearches <= 0}
         >
           Skip
         </button>
+
         <div className="flex flex-col gap-2 w-full md:w-fit">
           <button
-            className="flex flex-col justify-between items-center w-full md:w-[165px] h-[38px] overflow-hidden px-5 py-1.5 rounded bg-[#072d77] border border-[#072d77] cursor-pointer"
+            className="flex flex-col justify-between items-center w-full md:w-[165px] h-[38px] overflow-hidden px-5 py-1.5 rounded bg-[#072d77] border border-[#072d77] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => {
               if (userId) {
-                onGenerate(answers, userId);
+                onSaveAnswers(answers);
               }
             }}
             disabled={remainingResearches <= 0}

@@ -28,7 +28,7 @@ export const TooltipUsage = ({
           </span>
         </div>
       </PopoverTrigger>
-      <PopoverContent className="!p-0 !border-0 !bg-transparent">
+      <PopoverContent className="!p-0 !border-0 !bg-transparent !w-fit">
         <div className="mb-2 w-[235px] overflow-hidden rounded bg-gray-50 border border-[#d1d5dc] z-10 p-3">
           <p className="text-sm text-left text-[#1e2939]">
             <span className="text-sm text-left text-[#1e2939]">

@@ -1,5 +1,5 @@
 "use client";
-import { getResearch, skipQuestions, storeAnswers } from "@/db/action";
+import { getResearch } from "@/db/action";
 import { useRouter } from "next/navigation";
 
 import { QuestionsPage } from "@/components/app/questions/QuestionsPage";
@@ -25,20 +25,7 @@ export const ChatPage = ({
 
   if (!researchData.answers) {
     return (
-      <QuestionsPage
-        questions={researchData.questions || []}
-        onSkip={() => {
-          skipQuestions({
-            chatId,
-            togetherApiKey,
-          });
-          router.refresh();
-        }}
-        onGenerate={(answers) => {
-          storeAnswers({ chatId, answers, togetherApiKey });
-          router.refresh();
-        }}
-      />
+      <QuestionsPage questions={researchData.questions || []} chatId={chatId} />
     );
   }
 

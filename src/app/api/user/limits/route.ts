@@ -8,8 +8,6 @@ export async function POST(request: Request) {
   // get the API key from the request body
   const { isBringingKey } = await request.json();
 
-  console.log("isBringingKey", isBringingKey);
-
   if (!userId) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
