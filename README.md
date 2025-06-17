@@ -1,9 +1,9 @@
-<a href="https://www.deepseekresearch.io/">
-<img alt="DeepSeek" src="./public/og.jpg">
+<a href="https://www.opendeepresearch.dev/">
+<img alt="Open Deep Research" src="./public/og.jpg">
 </a>
 
 <div align="center">
-    <h1>DeepSeek Research</h1>
+    <h1>Open Deep Research</h1>
     <p>
         AI-powered research reports. Ask a question, get a comprehensive, sourced answer.
     </p>

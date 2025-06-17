@@ -7,6 +7,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { Header } from "@/components/Header";
 import PlausibleProvider from "next-plausible";
+import { cn } from "@/lib/utils";
 
 const figtree = Figtree({
   variable: "--font-figtree",
@@ -14,10 +15,10 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "DeepSeek Research",
+  title: "Open Deep Research",
   description: "Let AI do research for you",
   openGraph: {
-    images: ["https://www.deepseekresearch.io/og.jpg"],
+    images: ["https://www.opendeepresearch.dev/og.jpg"],
   },
 };
 
@@ -33,10 +34,12 @@ export default function RootLayout({
 
         <html lang="en" className="h-full">
           <head>
-            <PlausibleProvider domain="deepseekresearch.io" />
+            <PlausibleProvider domain="opendeepresearch.dev" />
           </head>
           <body
-            className={`${figtree.variable} flex min-h-full flex-col antialiased`}
+            className={cn(
+              `${figtree.variable} flex min-h-full flex-col antialiased mt-[120px] md:mt-0`
+            )}
           >
             <Header />
             <Toaster position="top-center" richColors />

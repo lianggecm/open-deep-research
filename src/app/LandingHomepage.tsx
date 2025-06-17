@@ -15,7 +15,7 @@ export const LandingHomepage = () => {
   if (isLoading) return <LoadingChat />;
 
   return (
-    <div className="flex flex-col size-full items-center h-screen justify-center relative md:bg-[url('/bg.svg')] md:bg-no-repeat md:bg-center md:bg-[size:auto_100%]">
+    <div className="flex flex-col size-full items-center min-h-screen justify-center relative md:bg-[url('/bg.svg')] md:bg-no-repeat md:bg-center md:bg-[size:auto_100%]">
       <div className="px-4 pb-4 pt-8 flex flex-col items-center w-full max-w-3xl justify-center gap-4">
         <LandingHero />
 
@@ -48,7 +48,7 @@ export const LandingHomepage = () => {
                 <LandingCard
                   imageSrc="/cards/search.jpg"
                   title="We Research & Refine"
-                  description="DeepSeek scans vetted sources and extracts the signal."
+                  description="Deep Research scans vetted sources and extracts the signal."
                 />
                 <LandingCard
                   imageSrc="/cards/report.jpg"

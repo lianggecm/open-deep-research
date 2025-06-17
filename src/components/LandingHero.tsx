@@ -9,13 +9,13 @@ export const LandingHero = () => {
   if (!isLoaded) {
     return (
       <>
-        <div className="w-[180px] h-9 rounded bg-gray-200 animate-pulse mb-8" />
+        <div className="w-[180px] h-9 rounded bg-gray-200 animate-pulse mb-8 mt-2" />
         <div className="flex flex-col gap-4 w-full animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto" />
           <div className="h-5 bg-gray-200 rounded w-1/2 mx-auto" />
         </div>
-        <div className="w-40 h-12 bg-gray-200 rounded-lg animate-pulse mb-4" />
-        <div className="h-40 bg-gray-200 w-full rounded-lg animate-pulse" />
+        <div className="w-40 h-12 bg-gray-200 rounded-lg animate-pulse mb-4 mt-8" />
+        <div className="h-[240px] bg-gray-200 w-full rounded-lg animate-pulse" />
       </>
     );
   }
@@ -46,7 +46,7 @@ export const LandingHero = () => {
       >
         <p className="text-[32px] md:text-[40px] font-medium text-center text-[#1e2939] font-serif">
           {!isAuthenticated ? (
-            <>Reports with DeepSeek</>
+            <>Reports with Open Deep Research</>
           ) : (
             <>Welcome Back, {user.firstName || user.fullName || "Researcher"}</>
           )}

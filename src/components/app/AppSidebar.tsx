@@ -62,12 +62,12 @@ export function AppSidebar() {
               <div className=" text-zinc-800 dark:text-zinc-100">
                 <img
                   src="/logo.svg"
-                  alt="DeepSeek Research"
+                  alt="Open Deep Research"
                   className="size-6"
                 />
               </div>
               <div className="text-lg font-bold text-zinc-800 dark:text-zinc-100 tracking-tighter">
-                DeepSeek Research
+                Open Deep Research
               </div>
             </div>
           </Link>
