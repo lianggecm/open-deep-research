@@ -13,7 +13,7 @@ export const LandingCard = ({
         src={imageSrc}
         className="w-full h-full max-w-[212px] max-h-[92px]"
       />
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 px-2">
         <p className="text-base font-medium text-left text-black">{title}</p>
         <p className="text-xs text-left text-[#4a5565] mb-2">{description}</p>
       </div>

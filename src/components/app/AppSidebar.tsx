@@ -154,7 +154,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <ApiKeyControls />
-        <div className="flex flex-row items-center gap-2 px-5">
+        <div className="flex flex-row items-center gap-2 px-5 pt-3 border-t border-t-[#E5E7EB]">
           <SignedIn>
             <UserButton
               appearance={{

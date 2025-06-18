@@ -5,7 +5,6 @@ import { Heading } from "../Heading";
 import { ReportSteps, ReportStepType } from "./reportLoading/ReportSteps";
 import TimelineProgress from "./reportLoading/TimelineProgress";
 import { ResearchEventStreamEvents } from "@/app/api/research/route";
-import { ReportBody } from "./ReportBody";
 import { StreamingReportBody } from "./reportLoading/StreamingReportBody";
 
 export const ReportLoadingPage = ({

@@ -31,7 +31,7 @@ export const LandingHomepage = () => {
                   </p>
                 </div>
               </SignInButton>
-              <p className="text-xs text-center text-[#99a1af]">
+              <p className="text-xs text-center text-[#99a1af] pb-4">
                 No credit cards!
               </p>
             </div>

@@ -99,7 +99,7 @@ const createMarkdownComponents = (
     return (
       <h1
         id={anchor}
-        className="text-[28px] md:text-[40px] font-medium text-left text-[#0f172b] mb-2"
+        className="text-[28px] md:text-[40px] font-medium text-left text-[#0f172b] mb-2 leading-[48px]"
         {...props}
       >
         {children}
@@ -118,7 +118,7 @@ const createMarkdownComponents = (
     return (
       <h2
         id={anchor}
-        className="text-2xl md:text-[28px] text-left font-medium text-[#0f172b] mb-2"
+        className="text-2xl md:text-[28px] text-left font-medium text-[#0f172b] mb-2 "
         {...props}
       >
         {children}
