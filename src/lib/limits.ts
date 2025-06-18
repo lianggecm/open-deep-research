@@ -1,5 +1,6 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { clerkClient } from "@clerk/nextjs/server";
 
 const redis =
   !!process.env.UPSTASH_REDIS_REST_URL && !!process.env.UPSTASH_REDIS_REST_TOKEN
@@ -31,12 +32,6 @@ const byokRateLimit =
       })
     : undefined;
 
-// Whitelist of users with unlimited reports
-const unlimitedUsers = [
-  "user_2yHc1OHZXTGhAfnxxWTlU5Eu6wc",
-  "user_2xp4SMtYXT9nnZ6sdpzcreUdpV7",
-];
-
 const DEFAULT_LIMIT = 5;
 const DEFAULT_RESET = null;
 const BYOK_PREFIX = "byok-";
@@ -55,13 +50,20 @@ export const limitResearch = async ({
   clerkUserId?: string;
   isBringingKey?: boolean;
 }) => {
-  // Unlimited for whitelisted users
-  if (
-    (clerkUserId && unlimitedUsers.includes(clerkUserId)) ||
-    !ratelimit ||
-    !byokRateLimit ||
-    !clerkUserId
-  ) {
+  // Unlimited for users with together.ai email
+  if (clerkUserId) {
+    const client = await clerkClient();
+    try {
+      const user = await client.users.getUser(clerkUserId);
+      const email = user.emailAddresses?.[0]?.emailAddress;
+      if (email && email.endsWith("@together.ai")) {
+        return fallbackResult;
+      }
+    } catch (e) {
+      // If Clerk fails, fallback to normal rate limiting
+    }
+  }
+  if (!ratelimit || !byokRateLimit || !clerkUserId) {
     return fallbackResult;
   }
 
@@ -84,13 +86,20 @@ export const getRemainingResearch = async ({
   clerkUserId?: string;
   isBringingKey?: boolean;
 }) => {
-  // Unlimited for whitelisted users
-  if (
-    (clerkUserId && unlimitedUsers.includes(clerkUserId)) ||
-    !ratelimit ||
-    !byokRateLimit ||
-    !clerkUserId
-  ) {
+  // Unlimited for users with together.ai email
+  if (clerkUserId) {
+    try {
+      const client = await clerkClient();
+      const user = await client.users.getUser(clerkUserId);
+      const email = user.emailAddresses?.[0]?.emailAddress;
+      if (email && email.endsWith("@together.ai")) {
+        return fallbackResult;
+      }
+    } catch (e) {
+      // If Clerk fails, fallback to normal rate limiting
+    }
+  }
+  if (!ratelimit || !byokRateLimit || !clerkUserId) {
     return fallbackResult;
   }
 
