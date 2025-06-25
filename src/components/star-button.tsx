@@ -19,7 +19,7 @@ const Github = (props: SVGProps<SVGSVGElement>) => (
 export function StarButton() {
   return (
     <Link
-      href="https://github.com/vercel-labs/ai-sdk-preview-reasoning"
+      href="https://github.com/Nutlope/open-deep-research"
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-300 hover:text-zinc-700 dark:hover:text-zinc-300"

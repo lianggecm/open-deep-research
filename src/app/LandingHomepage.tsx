@@ -32,7 +32,13 @@ export const LandingHomepage = () => {
                 </div>
               </SignInButton>
               <p className="text-xs text-center text-[#99a1af] pb-4">
-                No credit cards!
+                Fully{" "}
+                <a
+                  href="https://github.com/Nutlope/open-deep-research"
+                  className="text-[#072d77] underline font-semibold"
+                >
+                  open source
+                </a>
               </p>
             </div>
             <div className="max-w-[760px] min-h-[258px] w-fit md:w-full relative overflow-hidden rounded-xl bg-[#f2f6ff] border border-gray-200 px-7 py-5 flex flex-col gap-4 mb-12">

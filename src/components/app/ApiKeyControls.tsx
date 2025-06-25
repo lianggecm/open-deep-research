@@ -76,11 +76,11 @@ export function ApiKeyControls() {
 
   return (
     <div className="flex flex-col gap-3 w-full px-4 pb-2 border-t border-t-[#E5E7EB] pt-5">
-      <p className="text-sm text-[#4a5565]">Add your Together API key</p>
+      <p className="text-sm text-[#4a5565]">[optional] Together API key</p>
       <div className="flex flex-col gap-1 rounded border border-[#d1d5dc] bg-white p-3 relative">
         <input
           type="password"
-          placeholder="Together API key"
+          placeholder="*********************"
           className="text-sm text-[#4a5565] outline-none placeholder-[#d1d5dc] bg-transparent border-none focus:ring-0 p-0"
           value={togetherApiKey}
           onChange={handleApiKeyChange}
@@ -97,7 +97,7 @@ export function ApiKeyControls() {
       <p className="text-xs font-light text-left">
         <span className="text-[#99a1af]">Don't have an API key? </span>
         <a
-          href="https://togetherai.link/"
+          href="https://api.together.xyz/settings/api-keys"
           className="text-[#6a7282] underline underline-offset-2"
         >
           Get one for free.
