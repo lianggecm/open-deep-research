@@ -1,27 +1,71 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useContext,
+  createContext,
+} from "react";
 
 import { toast } from "sonner";
 
-// Custom hook to get Together API key from sessionStorage
-export function useTogetherApiKey() {
-  const [apiKey, setApiKey] = useState<string | undefined>(undefined);
+// Context for Together API Key
+const TogetherApiKeyContext = createContext<
+  | {
+      apiKey: string | undefined;
+      setApiKey: (key: string | undefined) => void;
+    }
+  | undefined
+>(undefined);
+
+export function TogetherApiKeyProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [apiKey, setApiKeyState] = useState<string | undefined>(undefined);
+
   useEffect(() => {
-    setApiKey(sessionStorage.getItem("togetherApiKey") || undefined);
+    setApiKeyState(sessionStorage.getItem("togetherApiKey") || undefined);
   }, []);
-  return apiKey;
+
+  // Sync to sessionStorage and notify listeners
+  const setApiKey = (key: string | undefined) => {
+    setApiKeyState(key);
+    if (key) {
+      sessionStorage.setItem("togetherApiKey", key);
+    } else {
+      sessionStorage.removeItem("togetherApiKey");
+    }
+  };
+
+  return (
+    <TogetherApiKeyContext.Provider value={{ apiKey, setApiKey }}>
+      {children}
+    </TogetherApiKeyContext.Provider>
+  );
+}
+
+export function useTogetherApiKey() {
+  const context = useContext(TogetherApiKeyContext);
+  if (!context) {
+    throw new Error(
+      "useTogetherApiKey must be used within a TogetherApiKeyProvider"
+    );
+  }
+  return context;
 }
 
 export function ApiKeyControls() {
+  const { apiKey, setApiKey } = useTogetherApiKey();
   const [togetherApiKey, setTogetherApiKey] = useState("");
   const [isValidating, setIsValidating] = useState(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const storedKey = sessionStorage.getItem("togetherApiKey") || "";
-    setTogetherApiKey(storedKey);
-  }, []);
+    setTogetherApiKey(apiKey || "");
+  }, [apiKey]);
 
   const validateAndSaveApiKey = async (apiKey: string) => {
     setIsValidating(true);
@@ -35,7 +79,7 @@ export function ApiKeyControls() {
       });
 
       if (response.ok) {
-        sessionStorage.setItem("togetherApiKey", apiKey);
+        setApiKey(apiKey);
         toast.success("API key validated and saved!");
         return true;
       } else {
@@ -46,7 +90,7 @@ export function ApiKeyControls() {
         toast.error(errorMessage);
 
         if (errorMessage.startsWith("Invalid API key")) {
-          sessionStorage.removeItem("togetherApiKey");
+          setApiKey("");
           setTogetherApiKey("");
         }
         return false;
@@ -61,7 +105,7 @@ export function ApiKeyControls() {
     setTogetherApiKey(value);
 
     if (value.length === 0) {
-      sessionStorage.removeItem("togetherApiKey");
+      setApiKey("");
       return;
     }
 
@@ -76,11 +120,11 @@ export function ApiKeyControls() {
 
   return (
     <div className="flex flex-col gap-3 w-full px-4 pb-2 border-t border-t-[#E5E7EB] pt-5">
-      <p className="text-sm text-[#4a5565]">[optional] Together API key</p>
+      <p className="text-sm text-[#4a5565]">Add your Together API key</p>
       <div className="flex flex-col gap-1 rounded border border-[#d1d5dc] bg-white p-3 relative">
         <input
           type="password"
-          placeholder="*********************"
+          placeholder="Together API key"
           className="text-sm text-[#4a5565] outline-none placeholder-[#d1d5dc] bg-transparent border-none focus:ring-0 p-0"
           value={togetherApiKey}
           onChange={handleApiKeyChange}
@@ -97,7 +141,7 @@ export function ApiKeyControls() {
       <p className="text-xs font-light text-left">
         <span className="text-[#99a1af]">Don't have an API key? </span>
         <a
-          href="https://api.together.xyz/settings/api-keys"
+          href="https://togetherai.link/"
           className="text-[#6a7282] underline underline-offset-2"
         >
           Get one for free.

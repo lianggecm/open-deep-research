@@ -8,6 +8,7 @@ import { AppSidebar } from "@/components/app/AppSidebar";
 import { Header } from "@/components/Header";
 import PlausibleProvider from "next-plausible";
 import { cn } from "@/lib/utils";
+import { TogetherApiKeyProvider } from "@/components/app/ApiKeyControls";
 
 const figtree = Figtree({
   variable: "--font-figtree",
@@ -30,22 +31,23 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <SidebarProvider>
-        <AppSidebar />
-
-        <html lang="en" className="h-full">
-          <head>
-            <PlausibleProvider domain="opendeepresearch.dev" />
-          </head>
-          <body
-            className={cn(
-              `${figtree.variable} flex min-h-full flex-col antialiased mt-[120px] md:mt-0`
-            )}
-          >
-            <Header />
-            <Toaster position="top-center" richColors />
-            {children}
-          </body>
-        </html>
+        <TogetherApiKeyProvider>
+          <AppSidebar />
+          <html lang="en" className="h-full">
+            <head>
+              <PlausibleProvider domain="opendeepresearch.dev" />
+            </head>
+            <body
+              className={cn(
+                `${figtree.variable} flex min-h-full flex-col antialiased mt-[120px] md:mt-0`
+              )}
+            >
+              <Header />
+              <Toaster position="top-center" richColors />
+              {children}
+            </body>
+          </html>
+        </TogetherApiKeyProvider>
       </SidebarProvider>
     </ClerkProvider>
   );

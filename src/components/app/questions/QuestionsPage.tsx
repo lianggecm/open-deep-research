@@ -16,7 +16,7 @@ export const QuestionsPage = ({
   questions: string[];
   chatId: string;
 }) => {
-  const apiKey = useTogetherApiKey();
+  const { apiKey } = useTogetherApiKey();
   const [answers, setAnswers] = useState<string[]>(
     Array(questions.length).fill("")
   );
@@ -88,7 +88,32 @@ export const QuestionsPage = ({
     return () => {
       window.removeEventListener("focus", handleFocus);
     };
-  }, [userId, apiKey]);
+  }, [userId]);
+
+  // Refetch limits when apiKey changes and userId is present
+  useEffect(() => {
+    const fetchLimits = async () => {
+      try {
+        const response = await fetch("/api/user/limits", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            isBringingKey: !!apiKey,
+          }),
+        });
+        const data = await response.json();
+        setRemainingResearches(data.remaining);
+        setResetTime(data.reset);
+      } catch (error) {
+        console.error("Failed to fetch limits:", error);
+      }
+    };
+    if (userId) {
+      fetchLimits();
+    }
+  }, [apiKey, userId]);
 
   return (
     <div className="my-5 px-5 h-full flex flex-col flex-1 max-w-[700px] mx-auto w-full">
