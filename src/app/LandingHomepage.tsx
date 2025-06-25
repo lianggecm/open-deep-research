@@ -35,7 +35,7 @@ export const LandingHomepage = () => {
                 Fully{" "}
                 <a
                   href="https://github.com/Nutlope/open-deep-research"
-                  className="text-[#072d77] underline font-semibold"
+                  className="underline font-semibold hover:text-[#072d77] transition"
                 >
                   open source
                 </a>
