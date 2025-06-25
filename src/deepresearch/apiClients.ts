@@ -165,7 +165,7 @@ export const searchOnWeb = async ({
       }
     } catch (e) {
       // ignore individual scrape errors
-      console.error("Error scraping", searchResult.url, " with error", e);
+      console.warn("Error scraping", searchResult.url, " with error", e);
     }
     return {
       title: searchResult.title,

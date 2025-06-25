@@ -1,6 +1,7 @@
 "use client";
 import { toast } from "sonner";
 import { useState } from "react";
+import { slugifyFilename } from "@/lib/utils";
 
 export const DownloadPdfButton = ({ fileName }: { fileName?: string }) => {
   const [loading, setLoading] = useState(false);
@@ -23,9 +24,11 @@ export const DownloadPdfButton = ({ fileName }: { fileName?: string }) => {
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
+      // Use slugified filename to match backend
+      const safeFileName = slugifyFilename(fileName || "report");
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${fileName || "report"}.pdf`;
+      a.download = `${safeFileName}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();

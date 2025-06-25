@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import chrome from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
+import { slugifyFilename } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -50,9 +51,13 @@ export async function POST(req: NextRequest) {
 
   const headers = new Headers();
   headers.set("Content-Type", "application/pdf");
+  const fileName = slugifyFilename(body.fileName || "report");
+
+  console.log("fileName", fileName);
+
   headers.set(
     "Content-Disposition",
-    `attachment; filename="${body.fileName || "report"}.pdf"`
+    `attachment; filename=\"${fileName}.pdf\"; filename*=UTF-8''${fileName}.pdf`
   );
   headers.set("Access-Control-Allow-Credentials", "true");
   headers.set("Access-Control-Allow-Origin", "*");
@@ -65,7 +70,8 @@ export async function POST(req: NextRequest) {
     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
   );
 
-  return new NextResponse(pdf, { status: 200, headers });
+  // Return the PDF as a Blob to avoid ByteString errors and ensure correct filename
+  return new NextResponse(new Blob([pdf]), { status: 200, headers });
 }
 
 export async function GET(req: NextRequest) {
