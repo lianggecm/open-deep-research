@@ -1,0 +1,20 @@
+# Base ADK requirement
+google-adk
+
+# For managing environment variables (API keys, etc.)
+python-dotenv
+
+# For making HTTP requests (potentially for tools if not using ADK built-ins)
+requests
+
+# For AWS S3 interaction (if ImageGenerationTool handles S3 directly)
+boto3
+
+# For PostgreSQL database interaction
+psycopg2-binary
+
+# For Redis interaction (for StreamEventTool)
+redis
+
+# Add other specific libraries as tools are developed, e.g.:
+# together (if there's a Python client for TogetherAI services not covered by simple HTTP)
